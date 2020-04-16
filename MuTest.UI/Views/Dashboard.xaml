@@ -1,0 +1,288 @@
+﻿<dx:DXWindow x:Class="Dashboard.Views.Dashboard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+             xmlns:viewModel="clr-namespace:Dashboard.ViewModel"
+             mc:Ignorable="d"
+             WindowStartupLocation="CenterScreen"
+             Topmost="{Binding TopMost, Mode=TwoWay}"
+             Height="330"
+             Width="750"
+             FontFamily="Consolas"
+             BorderEffect="Default"
+             Icon="../easy-test.ico"
+             d:DataContext="{d:DesignInstance viewModel:DashboardViewModel, IsDesignTimeCreatable=True}"
+             DataContext="{dxmvvm:ViewModelSource Type=viewModel:DashboardViewModel}">
+    <dxmvvm:Interaction.Behaviors>
+        <dx:WindowedDocumentUIService>
+            <dx:WindowedDocumentUIService.WindowStyle>
+                <Style TargetType="dx:DXWindow">
+                    <Setter Property="WindowState" Value="Maximized" />
+                    <Setter Property="FontFamily" Value="Consolas" />
+                </Style>
+            </dx:WindowedDocumentUIService.WindowStyle>
+        </dx:WindowedDocumentUIService>
+        <dx:DXMessageBoxService x:Name="MessageBoxService"/>
+        <dxmvvm:EventToCommand  Command="{Binding GotFocusCommand}" EventName="Activated" />
+    </dxmvvm:Interaction.Behaviors>
+    <Grid>
+        <DockPanel>
+            <dx:LoadingDecorator Name="LoadingDecoratorMain"
+                                 ClipToBounds="True"
+                                 IsSplashScreenShown="{Binding IsSplashScreenShown, Mode=TwoWay}"
+                                 SplashScreenLocation="CenterContainer">
+                <GroupBox Name="MainGrp" Header="Main" Margin="0,0,0,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="155" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="30" />
+                        </Grid.RowDefinitions>
+                        <dxe:ButtonEdit
+                            Grid.Column="0"
+                            Grid.Row="0"
+                            Grid.ColumnSpan="2"
+                            VerticalAlignment="Top"
+                            Name="BtnBrowseSourceCodeProject"
+                            IsTextEditable="False"
+                            AllowDefaultButton="False"
+                            AllowDrop="True"
+                            PreviewDragEnter="BtnEdit_PreviewDragOver"
+                            PreviewDragOver ="BtnEdit_PreviewDragOver"
+                            PreviewDrop="BtnSourceEdit_OnPreviewDrop"
+                            FontFamily="Consolas"
+                            Margin="20 10 20 -10"
+                            Text="{Binding SelectSourceCodeProject}">
+                            <dxe:ButtonInfo Name="BtnBrowseSrcProj" GlyphKind="Regular"
+                                            ToolTipService.ToolTip="Browse Source Code Project">
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxmvvm:EventToCommand Command="{Binding BrowseSourceProjectCommand}"
+                                                           EventName="Click" />
+                                </dxmvvm:Interaction.Behaviors>
+                            </dxe:ButtonInfo>
+                        </dxe:ButtonEdit>
+                        <dxe:ButtonEdit
+                            Grid.Column="0"
+                            Grid.Row="1"
+                            Grid.ColumnSpan="2"
+                            AllowDrop="True"
+                            VerticalAlignment="Top"
+                            PreviewDragEnter="BtnEdit_PreviewDragOver"
+                            PreviewDragOver ="BtnEdit_PreviewDragOver"
+                            PreviewDrop="BtnTestEdit_OnPreviewDrop"
+                            Name="BtnBrowseTestProject"
+                            IsTextEditable="False"
+                            AllowDefaultButton="False"
+                            FontFamily="Consolas"
+                            Margin="20 10 20 -10"
+                            Text="{Binding SelectTestProject}">
+                            <dxe:ButtonInfo Name="BtnBrowseTestProj" GlyphKind="Regular"
+                                            ToolTipService.ToolTip="Browse Test Code Project">
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxmvvm:EventToCommand Command="{Binding BrowseTestProjectCommand}"
+                                                           EventName="Click" />
+                                </dxmvvm:Interaction.Behaviors>
+                            </dxe:ButtonInfo>
+                        </dxe:ButtonEdit>
+                        <dxe:ButtonEdit
+                            Grid.Column="0"
+                            Grid.Row="2"
+                            Grid.ColumnSpan="2"
+                            VerticalAlignment="Top"
+                            Name="BtnBrowseSourceCodeDll"
+                            IsTextEditable="False"
+                            AllowDefaultButton="False"
+                            FontFamily="Consolas"
+                            Margin="20 10 20 -10"
+                            Text="{Binding SelectSourceCodeDll}">
+                            <dxe:ButtonInfo Name="BtnBrowseSourceDll" GlyphKind="Regular"
+                                            ToolTipService.ToolTip="Browse Source Code DLL">
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxmvvm:EventToCommand Command="{Binding BrowseSourceCodeDllCommand}"
+                                                           EventName="Click" />
+                                </dxmvvm:Interaction.Behaviors>
+                            </dxe:ButtonInfo>
+                        </dxe:ButtonEdit>
+                        <dxe:ButtonEdit
+                            Grid.Column="0"
+                            Grid.Row="3"
+                            Grid.ColumnSpan="2"
+                            VerticalAlignment="Top"
+                            Name="BtnBrowseTestCodeDll"
+                            IsTextEditable="False"
+                            AllowDefaultButton="False"
+                            FontFamily="Consolas"
+                            Margin="20 10 20 -10"
+                            Text="{Binding SelectTestCodeDll}">
+                            <dxe:ButtonInfo Name="BtnBrowseTestDll" GlyphKind="Regular"
+                                            ToolTipService.ToolTip="Browse Test Code DLL">
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxmvvm:EventToCommand Command="{Binding BrowseTestCodeDllCommand}"
+                                                           EventName="Click" />
+                                </dxmvvm:Interaction.Behaviors>
+                            </dxe:ButtonInfo>
+                        </dxe:ButtonEdit>
+                        <dxg:LookUpEdit
+                            PopupWidth="600"
+                            Name="ClassLookup"
+                            FilterCondition="Contains"
+                            ItemsSource="{Binding ClassLookup.ItemsSource}"
+                            SelectedIndex="{Binding ClassLookup.SelectedIndex}"
+                            Visibility="{Binding ClassLookup.Visibility}"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="2"
+                            FindMode="Always"
+                            Grid.Row="4"
+                            DisplayMember="DisplayName"
+                            ValueMember="Id"
+                            IsSynchronizedWithCurrentItem="True"
+                            AutoPopulateColumns="False"
+                            FontFamily="Consolas"
+                            CustomDisplayText="ClassLookup_OnCustomDisplayText"
+                            Margin="20 10 20 -10">
+                            <dxg:LookUpEdit.PopupContentTemplate>
+                                <ControlTemplate>
+                                    <dxg:GridControl Name="PART_GridControl">
+                                        <dxg:GridControl.Columns>
+                                            <dxg:GridColumn AutoFilterCondition="Contains" FieldName="DisplayName"
+                                                            Width="350" />
+                                            <dxg:GridColumn AutoFilterCondition="Equals"
+                                                            FieldName="TotalNumberOfMethods" Width="200" />
+                                        </dxg:GridControl.Columns>
+                                        <dxg:GridControl.View>
+                                            <dxg:TableView
+                                                Name="View"
+                                                ShowGroupedColumns="True"
+                                                AutoWidth="True"
+                                                AllowPerPixelScrolling="True"
+                                                ScrollAnimationDuration="0"
+                                                ShowAutoFilterRow="True"
+                                                ShowTotalSummary="True"
+                                                IsSynchronizedWithCurrentItem="False" />
+                                        </dxg:GridControl.View>
+                                    </dxg:GridControl>
+                                </ControlTemplate>
+                            </dxg:LookUpEdit.PopupContentTemplate>
+                            <dxmvvm:Interaction.Behaviors>
+                                <dxmvvm:EventToCommand EventName="SelectedIndexChanged"
+                                                       Command="{Binding ClassLookupSelectedIndexChangedCommand}"
+                                                       CommandParameter="{Binding SelectedItem, ElementName=ClassLookup}" />
+                            </dxmvvm:Interaction.Behaviors>
+                        </dxg:LookUpEdit>
+                        <dxg:LookUpEdit
+                            PopupWidth="600"
+                            Name="TestClassLookup"
+                            FilterCondition="Contains"
+                            ItemsSource="{Binding TestClassLookup.ItemsSource}"
+                            SelectedIndex="{Binding TestClassLookup.SelectedIndex}"
+                            Visibility="{Binding TestClassLookup.Visibility}"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="2"
+                            FindMode="Always"
+                            Grid.Row="5"
+                            DisplayMember="DisplayName"
+                            ValueMember="Id"
+                            IsSynchronizedWithCurrentItem="True"
+                            AutoPopulateColumns="False"
+                            FontFamily="Consolas"
+                            CustomDisplayText="TestClassLookup_OnCustomDisplayText"
+                            Margin="20 20 20 -20">
+                            <dxg:LookUpEdit.PopupContentTemplate>
+                                <ControlTemplate>
+                                    <dxg:GridControl Name="PART_GridControl">
+                                        <dxg:GridControl.Columns>
+                                            <dxg:GridColumn AutoFilterCondition="Contains" FieldName="DisplayName"
+                                                            Width="350" />
+                                            <dxg:GridColumn AutoFilterCondition="Equals"
+                                                            FieldName="TotalNumberOfMethods" Width="200" />
+                                        </dxg:GridControl.Columns>
+                                        <dxg:GridControl.View>
+                                            <dxg:TableView
+                                                Name="View"
+                                                ShowGroupedColumns="True"
+                                                AutoWidth="True"
+                                                AllowPerPixelScrolling="True"
+                                                ScrollAnimationDuration="0"
+                                                ShowAutoFilterRow="True"
+                                                ShowTotalSummary="True"
+                                                IsSynchronizedWithCurrentItem="False" />
+                                        </dxg:GridControl.View>
+                                    </dxg:GridControl>
+                                </ControlTemplate>
+                            </dxg:LookUpEdit.PopupContentTemplate>
+                            <dxmvvm:Interaction.Behaviors>
+                                <dxmvvm:EventToCommand EventName="SelectedIndexChanged"
+                                                       Command="{Binding TestClassLookupSelectedIndexChangedCommand}"
+                                                       CommandParameter="{Binding SelectedItem, ElementName=TestClassLookup}" />
+                            </dxmvvm:Interaction.Behaviors>
+                        </dxg:LookUpEdit>
+                        <dx:SimpleButton
+                            Name="BtnAnalyze"
+                            Content="Analyze"
+                            Visibility="{Binding BtnAnalyze.Visibility}"
+                            Grid.Column="0"
+                            Grid.Row="6"
+                            Grid.ColumnSpan="2"
+                            HorizontalAlignment="Right"
+                            Margin="10 40 10 -40" FontFamily="Consolas">
+                            <dxmvvm:Interaction.Behaviors>
+                                <dxmvvm:EventToCommand EventName="Click"
+                                                       Command="{Binding BtnAnalyzeClickCommand}" />
+                            </dxmvvm:Interaction.Behaviors>
+                        </dx:SimpleButton>
+                        <dxe:CheckEdit
+                            Name="ChkIncludePartialClasses"
+                            Grid.Column="0"
+                            Grid.Row="6"
+                            Grid.ColumnSpan="2"
+                            HorizontalAlignment="Right"
+                            Visibility= "{Binding BtnAnalyze.Visibility}"
+                            IsChecked="{Binding ChkIncludePartialClasses.IsChecked}"
+                            Margin="10 40 120 -40"
+                            FontFamily="Consolas"
+                            Content="Include Tests in Partial Classes"
+                            IsThreeState="False" />
+                        <dxe:CheckEdit
+                            Name="ChkBuildReferences"
+                            Grid.Column="0"
+                            Grid.Row="6"
+                            Grid.ColumnSpan="2"
+                            HorizontalAlignment="Right"
+                            Visibility= "{Binding BtnAnalyze.Visibility}"
+                            IsChecked="{Binding ChkNestedClasses.IsChecked}"
+                            Margin="10 40 370 -40"
+                            FontFamily="Consolas"
+                            Content="Include Nested Classes"
+                            IsThreeState="False" />
+                    </Grid>
+                </GroupBox>
+                <dx:LoadingDecorator.SplashScreenWindowStyle>
+                    <Style TargetType="Window">
+                        <Setter Property="WindowStyle" Value="None"/>
+                        <Setter Property="ResizeMode" Value="NoResize"/>
+                        <Setter Property="AllowsTransparency" Value="True"/>
+                        <Setter Property="Topmost" Value="True"/>
+                        <Setter Property="Focusable" Value="False"/>
+                        <Setter Property="ShowInTaskbar" Value="False"/>
+                        <Setter Property="ShowActivated" Value="False"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="SizeToContent" Value="WidthAndHeight"/>
+                    </Style>
+                </dx:LoadingDecorator.SplashScreenWindowStyle>
+            </dx:LoadingDecorator>
+        </DockPanel>
+    </Grid>
+</dx:DXWindow>

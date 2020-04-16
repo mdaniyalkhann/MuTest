@@ -50,10 +50,10 @@
       <HintPath>..\packages\Microsoft.CodeAnalysis.Workspaces.Common.3.5.0\lib\netstandard2.0\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Coverage.Analysis">
-      <HintPath>..\Dashboard\libs\Microsoft.VisualStudio.Coverage.Analysis.dll</HintPath>
+      <HintPath>..\MuTest.UI\libs\Microsoft.VisualStudio.Coverage.Analysis.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Coverage.Interop">
-      <HintPath>..\Dashboard\libs\Microsoft.VisualStudio.Coverage.Interop.dll</HintPath>
+      <HintPath>..\MuTest.UI\libs\Microsoft.VisualStudio.Coverage.Interop.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -121,11 +121,7 @@
   <ItemGroup>
     <Compile Include="Common\BuildExecutor.cs" />
     <Compile Include="Common\Constants.cs" />
-    <Compile Include="Common\CoverageAnalyzers\ClassCoverageAnalyzer.cs" />
     <Compile Include="Common\CoverageAnalyzer.cs" />
-    <Compile Include="Common\CoverageAnalyzers\CoberturaClassCoverageAnalyzer.cs" />
-    <Compile Include="Common\CoverageAnalyzers\CodeCoverageTypes.cs" />
-    <Compile Include="Common\CoverageAnalyzers\IClassCoverageAnalyzer.cs" />
     <Compile Include="Common\HtmlHelper.cs" />
     <Compile Include="Common\HtmlUtilities.cs" />
     <Compile Include="Common\IBuildExecutor.cs" />
@@ -182,8 +178,6 @@
     <Compile Include="Model\AssertMethod.cs" />
     <Compile Include="Model\AssertString.cs" />
     <Compile Include="Model\ClassCoverage.cs" />
-    <Compile Include="Model\CoverageAnalysis\FindCoverageResult.cs" />
-    <Compile Include="Model\CoverageReports\CoberturaCoverageReport.cs" />
     <Compile Include="Model\Jira\Converter.cs" />
     <Compile Include="Model\Jira\Fields.cs" />
     <Compile Include="Model\Jira\Issue.cs" />
