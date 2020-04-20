@@ -30,29 +30,6 @@ namespace MuTest.Core.Utility
             return null;
         }
 
-        public static IList<string> GetCodeCoverages(this string path)
-        {
-            if (Directory.Exists(path))
-            {
-                var directoryInfo = new DirectoryInfo(path);
-                var coverageFiles = directoryInfo.EnumerateFiles("*.coverage", SearchOption.AllDirectories)
-                    .Where(x => x.Name.EndsWith(".coverage", StringComparison.CurrentCulture) &&
-                                !x.Name.StartsWith("f.") &&
-                                !x.Name.StartsWith("TemporaryGeneratedFile_") &&
-                                !x.Name.StartsWith("AssemblyInfo")).ToList();
-
-                coverageFiles.AddRange(directoryInfo.EnumerateFiles("*.coveragexml", SearchOption.AllDirectories)
-                    .Where(x => x.Name.EndsWith(".coveragexml", StringComparison.CurrentCulture) &&
-                                !x.Name.StartsWith("f.") &&
-                                !x.Name.StartsWith("TemporaryGeneratedFile_") &&
-                                !x.Name.StartsWith("AssemblyInfo")).ToList());
-
-                return coverageFiles.OrderByDescending(x => x.LastWriteTime).Select(x => x.FullName).ToList();
-            }
-
-            return null;
-        }
-
         public static FileInfo FindFile(this string path, string fileName)
         {
             if (Directory.Exists(path))
@@ -100,20 +77,6 @@ namespace MuTest.Core.Utility
             }
 
             return projectFile;
-        }
-
-        public static FileInfo[] FindSolutionFiles(this string path)
-        {
-            if (Directory.Exists(path))
-            {
-                return new DirectoryInfo(path).EnumerateFiles("*.sln", SearchOption.AllDirectories)
-                    .Where(x => x.Name.EndsWith(".sln", StringComparison.CurrentCulture) &&
-                                !x.Name.StartsWith("f.") &&
-                                !x.Name.StartsWith("TemporaryGeneratedFile_") &&
-                                !x.Name.StartsWith("AssemblyInfo")).ToArray();
-            }
-
-            return null;
         }
 
         public static FileInfo FindLibraryPath(this FileInfo project, string configuration = "Debug")
@@ -233,48 +196,6 @@ namespace MuTest.Core.Utility
 
 
             return newPath;
-        }
-
-        public static FileInfo FindLibraryPathWithoutValidation(this FileInfo project, string configuration = "Debug")
-        {
-            if (project != null && project.Exists)
-            {
-                var projectXml = project.GetProjectDocument();
-                var assembly = projectXml.SelectSingleNode("/Project/PropertyGroup/AssemblyName");
-                var outputPath = projectXml.SelectSingleNode("/Project/PropertyGroup/OutputPath");
-                var outputType = GetOutputType(projectXml);
-
-                if (assembly != null &&
-                    outputPath != null &&
-                    !string.IsNullOrWhiteSpace(project.DirectoryName))
-                {
-                    var outputPathText = outputPath.InnerText;
-                    outputPathText = outputPathText.Replace("$(Configuration)", configuration);
-                    var sourceDllPath = Path.GetFullPath(Path.Combine(project.DirectoryName, outputPathText));
-
-                    return new FileInfo(Path.Combine(sourceDllPath, $"{assembly.InnerText}{outputType}"));
-                }
-            }
-
-            return null;
-        }
-
-        private static string GetOutputType(XmlNode projectXml)
-        {
-            var outputTypeNode = projectXml.SelectSingleNode("/Project/PropertyGroup/OutputType");
-            var outputType = outputTypeNode != null
-                                 && (outputTypeNode.InnerText.Equals("Exe", StringComparison.InvariantCultureIgnoreCase) || outputTypeNode.InnerText.Equals("WinExe", StringComparison.InvariantCultureIgnoreCase))
-                    ? ".exe"
-                    : ".dll";
-            return outputType;
-        }
-
-        public static string GetAssemblyName(this FileInfo project)
-        {
-            var projectXml = project.GetProjectDocument();
-            var assembly = projectXml.SelectSingleNode("/Project/PropertyGroup/AssemblyName");
-            var outputType = GetOutputType(projectXml);
-            return $"{assembly?.InnerText}{outputType}";
         }
 
         public static NameValueCollection GetProjectFiles(this FileInfo project)
@@ -408,43 +329,6 @@ namespace MuTest.Core.Utility
                     writer.WriteLine(fileLine);
                 }
             }
-        }
-
-        public static bool IsSubdirectoryOf(this string dir1, string dir2)
-        {
-            var di1 = new DirectoryInfo(dir1.TrimEnd(Path.DirectorySeparatorChar));
-            var di2 = new DirectoryInfo(dir2.TrimEnd(Path.DirectorySeparatorChar));
-            while (di1.Parent != null)
-            {
-                if (di1.Parent.FullName == di2.FullName)
-                {
-                    return true;
-                }
-
-                di1 = di1.Parent;
-            }
-
-            return false;
-        }
-
-        public static string GetExactPathName(this string pathName)
-        {
-            if (!(File.Exists(pathName) || Directory.Exists(pathName)))
-                return pathName;
-
-            var di = new DirectoryInfo(pathName);
-
-            if (di.Parent != null)
-            {
-                return Path.Combine(
-                    GetExactPathName(di.Parent.FullName),
-                    di.Parent.GetFileSystemInfos(di.Name)[0].Name);
-            }
-            else
-            {
-                return di.Name.ToUpper();
-            }
-
         }
     }
 }

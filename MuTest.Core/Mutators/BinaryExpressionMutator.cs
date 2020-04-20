@@ -9,7 +9,7 @@ namespace MuTest.Core.Mutators
     {
         private IReadOnlyDictionary<SyntaxKind, IEnumerable<SyntaxKind>> KindsToMutate { get; }
 
-        public string Description { get; } = "CONDITIONALS [<, <=, >, >=, ==, !=, &&, ||]";
+        public string Description { get; } = "BINARY [+, - , / , %, <, <=, >, >=, ==, !=, &&, ||]";
 
         public bool DefaultMutant { get; } = true;
 

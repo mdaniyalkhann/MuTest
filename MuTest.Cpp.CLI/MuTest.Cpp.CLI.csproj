@@ -104,9 +104,26 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CLIOptions.cs" />
+    <Compile Include="Core\CppBuildExecutor.cs" />
     <Compile Include="Core\CppDirectoryFactory.cs" />
+    <Compile Include="Core\GoogleTestExecutor.cs" />
     <Compile Include="IMuTestRunner.cs" />
+    <Compile Include="Model\CodeLine.cs" />
+    <Compile Include="Model\CppBuildContext.cs" />
     <Compile Include="Model\CppTestContext.cs" />
+    <Compile Include="Model\StringLine.cs" />
+    <Compile Include="Mutants\CppMutant.cs" />
+    <Compile Include="Mutants\CppMutation.cs" />
+    <Compile Include="Mutants\IMutantOrchestrator.cs" />
+    <Compile Include="Mutants\MutantOrchestrator.cs" />
+    <Compile Include="Mutators\EqualityMutator.cs" />
+    <Compile Include="Mutators\BooleanMutator.cs" />
+    <Compile Include="Mutators\PrePostfixUnaryMutator.cs" />
+    <Compile Include="Mutators\LogicalMutator.cs" />
+    <Compile Include="Mutators\ArithmeticMutator.cs" />
+    <Compile Include="Mutators\AssignmentStatementMutator.cs" />
+    <Compile Include="Mutators\IMutator.cs" />
+    <Compile Include="Mutators\Mutator.cs" />
     <Compile Include="MuTestCli.cs" />
     <Compile Include="MuTestRunner.cs" />
     <Compile Include="OptionsBuilder.cs" />

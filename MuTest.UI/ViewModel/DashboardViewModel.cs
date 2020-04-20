@@ -265,6 +265,8 @@ namespace Dashboard.ViewModel
                     {
                         SelectTestProject = dialog.FileName;
                         StoreBrowseFolderSetting(TestCodeProjectSetting, SelectTestProject);
+                        InitTestSource(new FileInfo(SelectTestProject).DirectoryName);
+                        InitializeTestClassLookup();
                     }
                 }
             }
@@ -307,6 +309,8 @@ namespace Dashboard.ViewModel
                     {
                         SelectSourceCodeProject = dialog.FileName;
                         StoreBrowseFolderSetting(SourceCodeProjectSetting, SelectSourceCodeProject);
+                        InitSourceCode(new FileInfo(SelectSourceCodeProject).DirectoryName);
+                        InitializeClassLookup();
                     }
                 }
             }
