@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using MuTest.Core.Mutators;
-using MuTest.Core.Utility;
 using MuTest.Cpp.CLI.Model;
 using MuTest.Cpp.CLI.Mutants;
 
@@ -39,12 +39,24 @@ namespace MuTest.Cpp.CLI.Mutators
                             {
                                 if (node.Index == match.Index)
                                 {
+                                    if (replacement == "RL")
+                                    {
+                                        return " ; ";
+                                    }
+
                                     return replacement;
                                 }
 
                                 return match.Value;
                             })
                         };
+
+
+                        if (replacement == "RL")
+                        {
+                            mutation.ReplacementNode = mutation.ReplacementNode.Substring(0, match.Index + match.Length);
+                        }
+
 
                         mutation.DisplayName = $"Line Number: {line.LineNumber} - Type: {MutatorType} - {mutation.OriginalNode} replace with {mutation.ReplacementNode}";
 
