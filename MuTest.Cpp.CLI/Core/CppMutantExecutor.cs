@@ -209,7 +209,9 @@ namespace MuTest.Cpp.CLI.Core
         {
             var testExecutor = new GoogleTestExecutor
             {
-                KillProcessOnTestFail = true
+                KillProcessOnTestFail = true,
+                EnableTestTimeout = true,
+                TestTimeout = _settings.TestTimeout
             };
 
             var log = new StringBuilder();

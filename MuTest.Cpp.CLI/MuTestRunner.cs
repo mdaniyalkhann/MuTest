@@ -98,6 +98,14 @@ namespace MuTest.Cpp.CLI
                 {
                     _chalk.Yellow($"{status}{Environment.NewLine}");
                 }
+                else if (mutant.ResultStatus == MutantStatus.BuildError)
+                {
+                    _chalk.Red($"{status}{Environment.NewLine}");
+                }
+                else if (mutant.ResultStatus == MutantStatus.Timeout)
+                {
+                    _chalk.Cyan($"{status}{Environment.NewLine}");
+                }
                 else
                 {
                     _chalk.Green($"{status}{Environment.NewLine}");

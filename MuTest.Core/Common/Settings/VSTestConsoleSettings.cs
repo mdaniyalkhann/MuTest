@@ -46,6 +46,13 @@ namespace MuTest.Core.Common.Settings
             set => value = (string)this[nameof(TestsResultDirectory)];
         }
 
+        [ConfigurationProperty(nameof(TestTimeout), DefaultValue = 20000, IsRequired = false)]
+        public int TestTimeout
+        {
+            get => (int)this[nameof(TestTimeout)];
+            set => value = (int)this[nameof(TestTimeout)];
+        }
+
         [ConfigurationProperty(nameof(MSBuildLogDirectory), IsRequired = true)]
         public string MSBuildLogDirectory
         {
