@@ -15,7 +15,7 @@ using MuTest.Cpp.CLI.Utility;
 
 namespace MuTest.Cpp.CLI.Core
 {
-    public class CppMutantExecutor
+    public class CppMutantExecutor : ICppMutantExecutor
     {
         public double SurvivedThreshold { get; set; } = 1;
 

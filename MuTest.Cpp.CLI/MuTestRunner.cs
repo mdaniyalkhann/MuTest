@@ -20,7 +20,8 @@ namespace MuTest.Cpp.CLI
     {
         public static readonly VSTestConsoleSettings VsTestConsoleSettings = VSTestConsoleSettingsSection.GetSettings();
 
-        private IChalk _chalk;
+        private readonly IChalk _chalk;
+        private readonly ICppDirectoryFactory _directoryFactory;
         private MuTestOptions _options;
         private Stopwatch _stopwatch;
         private CppBuildContext _context;
@@ -28,22 +29,24 @@ namespace MuTest.Cpp.CLI
         private int _mutantProgress;
         private static readonly object Sync = new object();
 
-        public CppMutantExecutor MutantsExecutor { get; private set; }
+        public ICppMutantExecutor MutantsExecutor { get; private set; }
+
+        public MuTestRunner(IChalk chalk, ICppDirectoryFactory directoryFactory)
+        {
+            _chalk = chalk;
+            _directoryFactory = directoryFactory;
+        }
 
         public async Task RunMutationTest(MuTestOptions options)
         {
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
-
-            _chalk = new Chalk();
             _options = options;
 
             _chalk.Default("\nPreparing Required Files...\n");
 
-            _context = new CppDirectoryFactory
-            {
-                NumberOfMutantsExecutingInParallel = _options.ConcurrentTestRunners
-            }.PrepareTestDirectories(
+            _directoryFactory.NumberOfMutantsExecutingInParallel = _options.ConcurrentTestRunners;
+            _context = _directoryFactory.PrepareTestDirectories(
                 options.TestClass,
                 options.SourceClass,
                 options.TestProject,
@@ -164,13 +167,13 @@ namespace MuTest.Cpp.CLI
             var log = new StringBuilder();
             void OutputData(object sender, string args) => log.AppendLine(args);
             var testExecutor = new GoogleTestExecutor();
-      
+
             testExecutor.OutputDataReceived += OutputData;
             var projectDirectory = Path.GetDirectoryName(_options.TestProject);
             var projectName = Path.GetFileNameWithoutExtension(_options.TestProject);
 
             await testExecutor.ExecuteTests(
-                $"{projectDirectory}/{_context.OutDir}{projectName}.exe", 
+                $"{projectDirectory}/{_context.OutDir}{projectName}.exe",
                 $"{Path.GetFileNameWithoutExtension(_context.TestContexts.First().TestClass.Name)}.*");
 
             if (testExecutor.LastTestExecutionStatus != Constants.TestExecutionStatus.Success)

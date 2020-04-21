@@ -8,6 +8,6 @@ namespace MuTest.Cpp.CLI
     {
         Task RunMutationTest(MuTestOptions options);
 
-        CppMutantExecutor MutantsExecutor { get; }
+        ICppMutantExecutor MutantsExecutor { get; }
     }
 }

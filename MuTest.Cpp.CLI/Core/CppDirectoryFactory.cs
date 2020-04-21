@@ -8,7 +8,7 @@ using MuTest.Cpp.CLI.Utility;
 
 namespace MuTest.Cpp.CLI.Core
 {
-    internal class CppDirectoryFactory
+    public class CppDirectoryFactory : ICppDirectoryFactory
     {
         public int NumberOfMutantsExecutingInParallel { get; set; } = 5;
 

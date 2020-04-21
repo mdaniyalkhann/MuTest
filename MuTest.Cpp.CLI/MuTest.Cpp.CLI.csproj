@@ -109,6 +109,8 @@
     <Compile Include="Core\GoogleTestExecutor.cs" />
     <Compile Include="Core\CppMutantExecutor.cs" />
     <Compile Include="Core\CppMutantEventArgs.cs" />
+    <Compile Include="Core\ICppDirectoryFactory.cs" />
+    <Compile Include="Core\ICppMutantExecutor.cs" />
     <Compile Include="IMuTestRunner.cs" />
     <Compile Include="Model\CodeLine.cs" />
     <Compile Include="Model\CppBuildContext.cs" />

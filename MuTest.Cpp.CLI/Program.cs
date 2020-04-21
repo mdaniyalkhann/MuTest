@@ -5,6 +5,7 @@ using Microsoft.Extensions.CommandLineUtils;
 using MuTest.Core.Common;
 using MuTest.Core.Exceptions;
 using MuTest.Core.Testing;
+using MuTest.Cpp.CLI.Core;
 using static System.Console;
 
 namespace MuTest.Cpp.CLI
@@ -21,7 +22,7 @@ namespace MuTest.Cpp.CLI
                 _chalk = new Chalk();
                 Trace.Listeners.Add(new EventLogTraceListener("MuTest_CPP_CLI"));
 
-                _muTest = new MuTestRunner();
+                _muTest = new MuTestRunner(_chalk, new CppDirectoryFactory());
                 var app = new MuTestCli(_muTest);
 
                 CancelKeyPress += CancelMutationHandler;
