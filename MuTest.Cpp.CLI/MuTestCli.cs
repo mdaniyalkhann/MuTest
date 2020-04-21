@@ -31,6 +31,7 @@ namespace MuTest.Cpp.CLI
 
             var testSolution = CreateOption(app, CliOptions.TestSolution);
             var sourceClass = CreateOption(app, CliOptions.SourceClass);
+            var sourceHeader = CreateOption(app, CliOptions.SourceHeader);
 
             var testProject = CreateOption(app, CliOptions.TestProject);
             var testClass = CreateOption(app, CliOptions.TestClass);
@@ -52,6 +53,7 @@ namespace MuTest.Cpp.CLI
                     Diagnostics = diagnostic,
                     TestSolution = testSolution,
                     SourceClass = sourceClass,
+                    SourceHeader = sourceHeader,
                     TestProject = testProject,
                     TestClass = testClass,
                     Parallel = parallel,

@@ -76,10 +76,17 @@ namespace MuTest.Cpp.CLI.Core
                 {
                     directoryIndex++;
                     var mutant = mutants[mutationIndex];
+
+                    var codeLine = mutant.Mutation.LineNumber;
+                    var testContext = _context.TestContexts[directoryIndex];
+                    var destinationFile = testContext.SourceClass.FullName;
+
                     _cpp.SourceClass.ReplaceLine(
-                        mutant.Mutation.LineNumber,
+                        codeLine,
                         mutant.Mutation.ReplacementNode,
-                        _context.TestContexts[directoryIndex].SourceClass.FullName);
+                        destinationFile);
+
+                    destinationFile.AddNameSpace(testContext.Index);
                 }
 
                 var buildExecutor = new CppBuildExecutor(

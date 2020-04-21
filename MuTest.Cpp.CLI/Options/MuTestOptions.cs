@@ -54,13 +54,49 @@ namespace MuTest.Cpp.CLI.Options
         [JsonProperty("enable-diagnostics")]
         public bool EnableDiagnostics { get; set; }
 
+        public string SourceHeader { get; set; }
+
         public void ValidateOptions()
         {
             ValidateRequiredParameters();
             ValidateTestProject();
             ValidateTestSolution();
+            ValidateSourceHeader();
             ConcurrentTestRunners = ValidateConcurrentTestRunners();
             SetOutputPath();
+        }
+
+        private void ValidateSourceHeader()
+        {
+            if (string.IsNullOrWhiteSpace(SourceHeader))
+            {
+                var sourceClass = new FileInfo(SourceClass);
+                var sourceClassExtension = Path.GetExtension(sourceClass.Name);
+
+                if (sourceClassExtension.Equals(".h", StringComparison.InvariantCultureIgnoreCase) ||
+                    sourceClassExtension.Equals(".hpp", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    SourceHeader = SourceClass;
+                    return;
+                }
+
+                var headerFile = new FileInfo($"{sourceClass.DirectoryName}\\{Path.GetFileNameWithoutExtension(sourceClass.Name)}.h");
+                var headerCppFile = new FileInfo($"{sourceClass.DirectoryName}\\{Path.GetFileNameWithoutExtension(sourceClass.Name)}.hpp");
+
+                if (headerFile.Exists)
+                {
+                    SourceHeader = headerFile.FullName;
+                    return;
+                }
+
+                if (headerCppFile.Exists)
+                {
+                    SourceHeader = headerCppFile.FullName;
+                    return;
+                }
+
+                throw new MuTestInputException(ErrorMessage, $"Unable to find Source header file. Valid options are {CliOptions.SourceHeader.ArgumentShortName}");
+            }
         }
 
         private void ValidateTestProject()

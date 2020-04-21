@@ -32,12 +32,15 @@ namespace MuTest.Cpp.CLI
 
         public CommandOption KilledThreshold { get; set; }
 
+        public CommandOption SourceHeader { get; set; }
+
         public MuTestOptions Build()
         {
             var muTestOptions = new MuTestOptions
             {
                 TestSolution = GetOption(TestSolution.Value(), CliOptions.TestSolution),
                 SourceClass = GetOption(SourceClass.Value(), CliOptions.SourceClass),
+                SourceHeader = GetOption(SourceHeader.Value(), CliOptions.SourceHeader),
                 TestProject = GetOption(TestProject.Value(), CliOptions.TestProject),
                 TestClass = GetOption(TestClass.Value(), CliOptions.TestClass),
                 EnableDiagnostics = GetOption(Diagnostics.Value(), CliOptions.EnableDiagnostics),

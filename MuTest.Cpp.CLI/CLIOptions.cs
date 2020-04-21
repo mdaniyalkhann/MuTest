@@ -33,7 +33,14 @@ namespace MuTest.Cpp.CLI
         {
             ArgumentName = "--src-class",
             ArgumentShortName = "-sc <sourceClass>",
-            ArgumentDescription = @"Used for matching the source code file references when finding the source code file to mutate. Example: ""<relative-path>\ExampleClass.cpp, ExampleClass.h, ExampleClass.hpp"""
+            ArgumentDescription = @"Used for matching the source code file references when finding the source code file to mutate. Example: ""<relative-path>\ExampleClass.cpp"""
+        };
+
+        public static readonly CliOption<string> SourceHeader = new CliOption<string>
+        {
+            ArgumentName = "--src-header",
+            ArgumentShortName = "-sh <header>",
+            ArgumentDescription = @"Used for matching the source code header file references when finding the source code file to mutate. Example: ""ExampleClass.h, ExampleClass.hpp"""
         };
 
         public static readonly CliOption<string> OutputPath = new CliOption<string>

@@ -12,7 +12,12 @@ namespace MuTest.Cpp.CLI.Core
     {
         public int NumberOfMutantsExecutingInParallel { get; set; } = 5;
 
-        public CppBuildContext PrepareTestDirectories(string testClass, string sourceClass, string testProject, string testSolution)
+        public CppBuildContext PrepareTestDirectories(
+            string testClass, 
+            string sourceClass, 
+            string sourceHeader,
+            string testProject, 
+            string testSolution)
         {
             if (testClass == null)
             {
@@ -22,6 +27,11 @@ namespace MuTest.Cpp.CLI.Core
             if (sourceClass == null)
             {
                 throw new ArgumentNullException(nameof(sourceClass));
+            }
+
+            if (sourceHeader == null)
+            {
+                throw new ArgumentNullException(nameof(sourceHeader));
             }
 
             if (testProject == null)
@@ -46,6 +56,7 @@ namespace MuTest.Cpp.CLI.Core
 
             var solution = testSolution.GetCodeFileContent();
             var test = testClass.GetCodeFileContent();
+            var source = sourceClass.GetCodeFileContent();
 
             var newTestProject = $"{testProjectName}_mutest_project{testProjectExtension}";
             var newTestSolution = $"{testSolutionName}_mutest_sln{testSolutionExtension}";
@@ -69,7 +80,9 @@ namespace MuTest.Cpp.CLI.Core
             };
 
             var sourceClassName = Path.GetFileNameWithoutExtension(sourceClass);
+            var sourceHeaderName = Path.GetFileNameWithoutExtension(sourceHeader);
             var sourceClassExtension = Path.GetExtension(sourceClass);
+            var sourceHeaderExtension = Path.GetExtension(sourceHeader);
 
             var testClassName = Path.GetFileNameWithoutExtension(testClass);
             var testClassExtension = Path.GetExtension(testClass);
@@ -85,14 +98,17 @@ namespace MuTest.Cpp.CLI.Core
                     };
 
                     var newSourceClass = $"{sourceClassName}_mutest_src_{index}{sourceClassExtension}";
+                    var newSourceHeader = $"{sourceHeaderName}_mutest_src_{index}{sourceHeaderExtension}";
                     var newTestClass = $"{testClassName}_mutest_test_{index}{testClassExtension}";
 
                     var testCode = test.Replace(
                         $"{sourceClassName}{sourceClassExtension}",
                         newSourceClass)
-                        .Replace(testClassName, Path.GetFileNameWithoutExtension(newTestClass));
+                        .Replace(testClassName, Path.GetFileNameWithoutExtension(newTestClass))
+                        .Replace($"{sourceHeaderName}{sourceHeaderExtension}", newSourceHeader);
 
                     var newSourceClassLocation = $"{Path.GetDirectoryName(sourceClass)}\\{newSourceClass}";
+                    var newHeaderClassLocation = $"{Path.GetDirectoryName(sourceHeader)}\\{newSourceHeader}";
                     var newTestClassLocation = $"{Path.GetDirectoryName(testClass)}\\{newTestClass}";
 
                     if (File.Exists(newSourceClassLocation))
@@ -105,34 +121,26 @@ namespace MuTest.Cpp.CLI.Core
                         File.Delete(newTestClassLocation);
                     }
 
-                    new FileInfo(sourceClass).CopyTo(newSourceClassLocation, true);
                     testContext.SourceClass = new FileInfo(newSourceClassLocation);
+
+                    if (!sourceHeaderExtension.Equals(sourceClassExtension))
+                    {
+                        var sourceCode = source.Replace($"{sourceHeaderName}{sourceHeaderExtension}", newSourceHeader);
+                        sourceCode.UpdateCode(newSourceClassLocation);
+                        new FileInfo(sourceHeader).CopyTo(newHeaderClassLocation, true);
+
+                        newHeaderClassLocation.AddNameSpace(index);
+                        newSourceClassLocation.AddNameSpace(index);
+                    }
+                    else
+                    {
+                        new FileInfo(sourceClass).CopyTo(newSourceClassLocation);
+                    }
 
                     testCode.UpdateCode(newTestClassLocation);
                     testContext.TestClass = new FileInfo(newTestClassLocation);
 
-                    var fileLines = new List<string>();
-                    using (var reader = new StreamReader(newTestClassLocation))
-                    {
-                        string line;
-                        var namespaceAdded = false;
-                        while ((line = reader.ReadLine()) != null)
-                        {
-                            if (line.Trim().StartsWith("#include") || string.IsNullOrWhiteSpace(line) || namespaceAdded)
-                            {
-                                fileLines.Add(line);
-                                continue;
-                            }
-
-                            fileLines.Add($"namespace mutest_test_{index} {{ {Environment.NewLine}{Environment.NewLine}");
-                            fileLines.Add(line);
-                            namespaceAdded = true;
-                        }
-
-                        fileLines.Add("}");
-                    }
-
-                    newTestClassLocation.WriteLines(fileLines);
+                    AddNameSpaceWithSourceReference(newTestClassLocation, testContext, index);
 
                     var relativeTestCodePath = testClass.RelativePath(projectDirectory);
                     var relativeNewTestCodePath = newTestClassLocation.RelativePath(projectDirectory);
@@ -149,6 +157,36 @@ namespace MuTest.Cpp.CLI.Core
             }
 
             return context;
+        }
+
+        private static void AddNameSpaceWithSourceReference(string codeFile, CppTestContext testContext, int index)
+        {
+            var fileLines = new List<string>();
+            using (var reader = new StreamReader(codeFile))
+            {
+                string line;
+                var namespaceAdded = false;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if (line.Trim().StartsWith("#") ||
+                        line.Trim().StartsWith("//") ||
+                        string.IsNullOrWhiteSpace(line) || 
+                        namespaceAdded)
+                    {
+                        fileLines.Add(line);
+                        continue;
+                    }
+
+                    fileLines.Add($"{Environment.NewLine}#include <{testContext.SourceClass.FullName}>{Environment.NewLine}");
+                    fileLines.Add($"namespace mutest_test_{index} {{ {Environment.NewLine}{Environment.NewLine}");
+                    fileLines.Add(line);
+                    namespaceAdded = true;
+                }
+
+                fileLines.Add("}");
+            }
+
+            codeFile.WriteLines(fileLines);
         }
 
         private static void Reset()

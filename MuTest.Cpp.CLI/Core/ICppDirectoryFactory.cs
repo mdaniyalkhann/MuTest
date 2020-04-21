@@ -6,6 +6,6 @@ namespace MuTest.Cpp.CLI.Core
     {
         int NumberOfMutantsExecutingInParallel { get; set; }
 
-        CppBuildContext PrepareTestDirectories(string testClass, string sourceClass, string testProject, string testSolution);
+        CppBuildContext PrepareTestDirectories(string testClass, string sourceClass, string sourceHeader, string testProject, string testSolution);
     }
 }

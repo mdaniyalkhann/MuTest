@@ -49,6 +49,7 @@ namespace MuTest.Cpp.CLI
             _context = _directoryFactory.PrepareTestDirectories(
                 options.TestClass,
                 options.SourceClass,
+                options.SourceHeader,
                 options.TestProject,
                 options.TestSolution);
 
