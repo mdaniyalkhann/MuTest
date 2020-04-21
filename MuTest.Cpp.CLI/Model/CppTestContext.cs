@@ -2,7 +2,7 @@
 
 namespace MuTest.Cpp.CLI.Model
 {
-    internal class CppTestContext
+    public class CppTestContext
     {
         public int Index { get; set; }
 

@@ -81,7 +81,10 @@ namespace MuTest.Cpp.CLI
 
         private static void CancelMutation()
         {
-            _chalk?.Cyan("\nCompleted!\n");
+            if (_muTest?.MutantsExecutor != null)
+            {
+                _muTest.MutantsExecutor.CancelMutationOperation = true;
+            }
         }
 
         private static void ShowMessage(MuTestInputException strEx)

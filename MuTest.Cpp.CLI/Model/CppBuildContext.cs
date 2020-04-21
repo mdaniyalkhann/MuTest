@@ -3,7 +3,7 @@ using System.IO;
 
 namespace MuTest.Cpp.CLI.Model
 {
-    internal class CppBuildContext
+    public class CppBuildContext
     {
         public FileInfo TestProject { get; set; }
 

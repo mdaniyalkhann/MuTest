@@ -7,13 +7,13 @@ using MuTest.Cpp.CLI.Mutators;
 
 namespace MuTest.Cpp.CLI.Mutants
 {
-    public class MutantOrchestrator : IMutantOrchestrator
+    public class CppMutantOrchestrator : IMutantOrchestrator
     {
         private ICollection<CppMutant> Mutants { get; set; }
 
         private IList<IMutator> Mutators { get; }
 
-        public MutantOrchestrator(IList<IMutator> mutators = null)
+        public CppMutantOrchestrator(IList<IMutator> mutators = null)
         {
             Mutators = mutators ?? new List<IMutator>
             {
@@ -35,7 +35,7 @@ namespace MuTest.Cpp.CLI.Mutants
                 new Collection<CppMutant>();
             }
 
-            var orchestrator = new MutantOrchestrator(new List<IMutator>
+            var orchestrator = new CppMutantOrchestrator(new List<IMutator>
             {
                 new AssignmentStatementMutator(),
                 new ArithmeticMutator(),
@@ -148,7 +148,6 @@ namespace MuTest.Cpp.CLI.Mutants
 
                         foreach (var mutator in Mutators)
                         {
-
                             var cppMutants = mutator.Mutate(codeLine).ToList();
 
                             foreach (var mutant in cppMutants)

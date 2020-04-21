@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -6,6 +7,7 @@ using System.Threading.Tasks;
 using MuTest.Core.Common;
 using MuTest.Core.Common.Settings;
 using MuTest.Core.Exceptions;
+using MuTest.Core.Mutants;
 using MuTest.Core.Testing;
 using MuTest.Cpp.CLI.Core;
 using MuTest.Cpp.CLI.Model;
@@ -22,6 +24,11 @@ namespace MuTest.Cpp.CLI
         private MuTestOptions _options;
         private Stopwatch _stopwatch;
         private CppBuildContext _context;
+        private int _totalMutants;
+        private int _mutantProgress;
+        private static readonly object Sync = new object();
+
+        public CppMutantExecutor MutantsExecutor { get; private set; }
 
         public async Task RunMutationTest(MuTestOptions options)
         {
@@ -47,11 +54,73 @@ namespace MuTest.Cpp.CLI
                 await ExecuteBuild();
                 await ExecuteTests();
 
-                var mutant = MutantOrchestrator.GetDefaultMutants(_options.SourceClass);
-                foreach (var defaultMutant in mutant)
+                _chalk.Default("\nRunning Mutation...\n");
+                var cppClass = new CppClass
                 {
-                    _chalk.Green($"\n{defaultMutant.Mutation.DisplayName}\n");
+                    Configuration = _options.Configuration,
+                    SourceClass = _options.SourceClass,
+                    Platform = _options.Platform,
+                    TestClass = _options.TestClass,
+                    TestProject = _options.TestProject
+                };
+
+                cppClass.Mutants.AddRange(
+                    CppMutantOrchestrator.GetDefaultMutants(_options.SourceClass));
+
+                MutantsExecutor = new CppMutantExecutor(cppClass, _context, VsTestConsoleSettings)
+                {
+                    EnableDiagnostics = _options.EnableDiagnostics,
+                    KilledThreshold = _options.KilledThreshold,
+                    SurvivedThreshold = _options.SurvivedThreshold,
+                    NumberOfMutantsExecutingInParallel = _options.ConcurrentTestRunners
+                };
+
+                _totalMutants = cppClass.Mutants.Count;
+                _mutantProgress = 0;
+                MutantsExecutor.MutantExecuted += MutantAnalyzerOnMutantExecuted;
+                await MutantsExecutor.ExecuteMutants();
+            }
+        }
+
+        private void MutantAnalyzerOnMutantExecuted(object sender, CppMutantEventArgs e)
+        {
+            lock (Sync)
+            {
+                var mutant = e.Mutant;
+                var lineNumber = mutant.Mutation.LineNumber;
+                var status = $"{Environment.NewLine}Line: {lineNumber} - {mutant.ResultStatus.ToString()} - {mutant.Mutation.DisplayName}".PrintWithDateTimeSimple();
+
+                if (mutant.ResultStatus == MutantStatus.Survived)
+                {
+                    _chalk.Yellow($"{status}{Environment.NewLine}");
                 }
+                else
+                {
+                    _chalk.Green($"{status}{Environment.NewLine}");
+                }
+
+                if (_options.EnableDiagnostics)
+                {
+                    _chalk.Red($"{e.BuildLog.ConvertToPlainText()}{Environment.NewLine}");
+                    _chalk.Red($"{e.TestLog.ConvertToPlainText()}{Environment.NewLine}");
+                }
+
+                _mutantProgress++;
+                UpdateProgress();
+            }
+        }
+
+        private void UpdateProgress()
+        {
+            if (_totalMutants == 0)
+            {
+                return;
+            }
+
+            var percentage = (int)100.0 * _mutantProgress / _totalMutants;
+            lock (Sync)
+            {
+                _chalk.Cyan(" [" + new string('*', percentage / 2) + "] " + percentage + "%");
             }
         }
 

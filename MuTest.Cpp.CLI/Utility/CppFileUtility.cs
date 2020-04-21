@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -64,6 +65,44 @@ namespace MuTest.Cpp.CLI.Utility
             }
 
             return projectFile;
+        }
+
+        public static void ReplaceLine(this string originalFile, int lineNumber, string newLine, string destinationFolder)
+        {
+            if (string.IsNullOrWhiteSpace(originalFile))
+            {
+                throw new ArgumentNullException(nameof(originalFile));
+            }
+
+            if (string.IsNullOrWhiteSpace(newLine))
+            {
+                throw new ArgumentNullException(nameof(newLine));
+            }
+
+            if (string.IsNullOrWhiteSpace(destinationFolder))
+            {
+                throw new ArgumentNullException(nameof(destinationFolder));
+            }
+
+            var lines = new List<string>();
+            using (var reader = new StreamReader(originalFile))
+            {
+                var lineIndex = 0;
+                string line;
+                while ((line = reader.ReadLine())!= null)
+                {
+                    lineIndex++;
+                    if (lineNumber == lineIndex)
+                    {
+                        lines.Add(newLine);
+                        continue;
+                    }
+
+                    lines.Add(line);
+                }
+            }
+
+            destinationFolder.WriteLines(lines);
         }
 
         public static void UpdateCode(this string updatedSourceCode, string codeFile)
