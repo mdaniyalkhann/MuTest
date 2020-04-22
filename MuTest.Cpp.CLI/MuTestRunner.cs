@@ -46,7 +46,7 @@ namespace MuTest.Cpp.CLI
             _chalk.Default("\nPreparing Required Files...\n");
 
             _directoryFactory.NumberOfMutantsExecutingInParallel = _options.ConcurrentTestRunners;
-            _context = _directoryFactory.PrepareTestDirectories(
+            _context = _directoryFactory.PrepareTestFiles(
                 options.TestClass,
                 options.SourceClass,
                 options.SourceHeader,
@@ -83,6 +83,8 @@ namespace MuTest.Cpp.CLI
                 _mutantProgress = 0;
                 MutantsExecutor.MutantExecuted += MutantAnalyzerOnMutantExecuted;
                 await MutantsExecutor.ExecuteMutants();
+
+                _directoryFactory.DeleteTestFiles(_context);
             }
         }
 

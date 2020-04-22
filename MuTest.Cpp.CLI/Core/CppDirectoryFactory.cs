@@ -12,11 +12,11 @@ namespace MuTest.Cpp.CLI.Core
     {
         public int NumberOfMutantsExecutingInParallel { get; set; } = 5;
 
-        public CppBuildContext PrepareTestDirectories(
-            string testClass, 
-            string sourceClass, 
+        public CppBuildContext PrepareTestFiles(
+            string testClass,
+            string sourceClass,
             string sourceHeader,
-            string testProject, 
+            string testProject,
             string testSolution)
         {
             if (testClass == null)
@@ -94,7 +94,7 @@ namespace MuTest.Cpp.CLI.Core
                     var testContext = new CppTestContext
                     {
                         Index = index
-                   
+
                     };
 
                     var newSourceClass = $"{sourceClassName}_mutest_src_{index}{sourceClassExtension}";
@@ -111,17 +111,11 @@ namespace MuTest.Cpp.CLI.Core
                     var newHeaderClassLocation = $"{Path.GetDirectoryName(sourceHeader)}\\{newSourceHeader}";
                     var newTestClassLocation = $"{Path.GetDirectoryName(testClass)}\\{newTestClass}";
 
-                    if (File.Exists(newSourceClassLocation))
-                    {
-                        File.Delete(newSourceClassLocation);
-                    }
-
-                    if (File.Exists(newTestClassLocation))
-                    {
-                        File.Delete(newTestClassLocation);
-                    }
+                    newSourceClassLocation.DeleteIfExists();
+                    newTestClassLocation.DeleteIfExists();
 
                     testContext.SourceClass = new FileInfo(newSourceClassLocation);
+                    testContext.SourceHeader = new FileInfo(newHeaderClassLocation);
 
                     if (!sourceHeaderExtension.Equals(sourceClassExtension))
                     {
@@ -159,6 +153,24 @@ namespace MuTest.Cpp.CLI.Core
             return context;
         }
 
+        public void DeleteTestFiles(CppBuildContext context)
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            context.TestProject.DeleteIfExists();
+            context.TestSolution.DeleteIfExists();
+
+            foreach (var testContext in context.TestContexts)
+            {
+                testContext.SourceClass.DeleteIfExists();
+                testContext.SourceHeader.DeleteIfExists();
+                testContext.TestClass.DeleteIfExists();
+            }
+        }
+
         private static void AddNameSpaceWithSourceReference(string codeFile, CppTestContext testContext, int index)
         {
             var fileLines = new List<string>();
@@ -170,7 +182,7 @@ namespace MuTest.Cpp.CLI.Core
                 {
                     if (line.Trim().StartsWith("#") ||
                         line.Trim().StartsWith("//") ||
-                        string.IsNullOrWhiteSpace(line) || 
+                        string.IsNullOrWhiteSpace(line) ||
                         namespaceAdded)
                     {
                         fileLines.Add(line);

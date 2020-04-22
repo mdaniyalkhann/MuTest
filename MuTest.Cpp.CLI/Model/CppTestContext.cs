@@ -9,5 +9,7 @@ namespace MuTest.Cpp.CLI.Model
         public FileInfo TestClass { get; set; }
 
         public FileInfo SourceClass { get; set; }
+
+        public FileInfo SourceHeader { get; set; }
     }
 }

@@ -105,6 +105,34 @@ namespace MuTest.Cpp.CLI.Utility
             destinationFolder.WriteLines(lines);
         }
 
+        public static void DeleteIfExists(this FileSystemInfo file)
+        {
+            if (file == null)
+            {
+                throw new ArgumentNullException(nameof(file));
+            }
+
+            if (file.Exists)
+            {
+                file.Delete();
+            }
+        }
+
+        public static void DeleteIfExists(this string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            var file = new FileInfo(path);
+
+            if (file.Exists)
+            {
+                file.Delete();
+            }
+        }
+
         public static void UpdateCode(this string updatedSourceCode, string codeFile)
         {
             if (codeFile == null)
