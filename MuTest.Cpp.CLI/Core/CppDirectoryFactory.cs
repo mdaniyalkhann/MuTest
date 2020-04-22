@@ -12,62 +12,38 @@ namespace MuTest.Cpp.CLI.Core
     {
         public int NumberOfMutantsExecutingInParallel { get; set; } = 5;
 
-        public CppBuildContext PrepareTestFiles(
-            string testClass,
-            string sourceClass,
-            string sourceHeader,
-            string testProject,
-            string testSolution)
+        public CppBuildContext PrepareTestFiles(CppClass cppClass)
         {
-            if (testClass == null)
+            if (cppClass == null)
             {
-                throw new ArgumentNullException(nameof(testClass));
+                throw new ArgumentNullException(nameof(cppClass));
             }
 
-            if (sourceClass == null)
-            {
-                throw new ArgumentNullException(nameof(sourceClass));
-            }
-
-            if (sourceHeader == null)
-            {
-                throw new ArgumentNullException(nameof(sourceHeader));
-            }
-
-            if (testProject == null)
-            {
-                throw new ArgumentNullException(nameof(testProject));
-            }
-
-            if (testSolution == null)
-            {
-                throw new ArgumentNullException(nameof(testSolution));
-            }
-
+            cppClass.Validate();
             Reset();
 
-            var projectDirectory = Path.GetDirectoryName(testProject);
+            var projectDirectory = Path.GetDirectoryName(cppClass.TestProject);
 
-            var testProjectName = Path.GetFileNameWithoutExtension(testProject);
-            var testProjectExtension = Path.GetExtension(testProject);
+            var testProjectName = Path.GetFileNameWithoutExtension(cppClass.TestProject);
+            var testProjectExtension = Path.GetExtension(cppClass.TestProject);
 
-            var testSolutionName = Path.GetFileNameWithoutExtension(testSolution);
-            var testSolutionExtension = Path.GetExtension(testSolution);
+            var testSolutionName = Path.GetFileNameWithoutExtension(cppClass.TestSolution);
+            var testSolutionExtension = Path.GetExtension(cppClass.TestSolution);
 
-            var solution = testSolution.GetCodeFileContent();
-            var test = testClass.GetCodeFileContent();
-            var source = sourceClass.GetCodeFileContent();
+            var solution = cppClass.TestSolution.GetCodeFileContent();
+            var test = cppClass.TestClass.GetCodeFileContent();
+            var source = cppClass.SourceClass.GetCodeFileContent();
 
             var newTestProject = $"{testProjectName}_mutest_project{testProjectExtension}";
             var newTestSolution = $"{testSolutionName}_mutest_sln{testSolutionExtension}";
 
             var newTestProjectLocation = $"{projectDirectory}\\{newTestProject}";
-            var newSolutionLocation = $"{Path.GetDirectoryName(testSolution)}\\{newTestSolution}";
+            var newSolutionLocation = $"{Path.GetDirectoryName(cppClass.TestSolution)}\\{newTestSolution}";
 
             var solutionCode = solution.Replace($"{testProjectName}{testProjectExtension}", newTestProject);
             solutionCode.UpdateCode(newSolutionLocation);
 
-            new FileInfo(testProject).CopyTo(newTestProjectLocation, true);
+            new FileInfo(cppClass.TestProject).CopyTo(newTestProjectLocation, true);
 
             var context = new CppBuildContext
             {
@@ -79,13 +55,13 @@ namespace MuTest.Cpp.CLI.Core
                 TestSolution = new FileInfo(newSolutionLocation)
             };
 
-            var sourceClassName = Path.GetFileNameWithoutExtension(sourceClass);
-            var sourceHeaderName = Path.GetFileNameWithoutExtension(sourceHeader);
-            var sourceClassExtension = Path.GetExtension(sourceClass);
-            var sourceHeaderExtension = Path.GetExtension(sourceHeader);
+            var sourceClassName = Path.GetFileNameWithoutExtension(cppClass.SourceClass);
+            var sourceHeaderName = Path.GetFileNameWithoutExtension(cppClass.SourceHeader);
+            var sourceClassExtension = Path.GetExtension(cppClass.SourceClass);
+            var sourceHeaderExtension = Path.GetExtension(cppClass.SourceHeader);
 
-            var testClassName = Path.GetFileNameWithoutExtension(testClass);
-            var testClassExtension = Path.GetExtension(testClass);
+            var testClassName = Path.GetFileNameWithoutExtension(cppClass.TestClass);
+            var testClassExtension = Path.GetExtension(cppClass.TestClass);
 
             for (var index = 0; index < NumberOfMutantsExecutingInParallel; index++)
             {
@@ -107,9 +83,9 @@ namespace MuTest.Cpp.CLI.Core
                         .Replace(testClassName, Path.GetFileNameWithoutExtension(newTestClass))
                         .Replace($"{sourceHeaderName}{sourceHeaderExtension}", newSourceHeader);
 
-                    var newSourceClassLocation = $"{Path.GetDirectoryName(sourceClass)}\\{newSourceClass}";
-                    var newHeaderClassLocation = $"{Path.GetDirectoryName(sourceHeader)}\\{newSourceHeader}";
-                    var newTestClassLocation = $"{Path.GetDirectoryName(testClass)}\\{newTestClass}";
+                    var newSourceClassLocation = $"{Path.GetDirectoryName(cppClass.SourceClass)}\\{newSourceClass}";
+                    var newHeaderClassLocation = $"{Path.GetDirectoryName(cppClass.SourceHeader)}\\{newSourceHeader}";
+                    var newTestClassLocation = $"{Path.GetDirectoryName(cppClass.TestClass)}\\{newTestClass}";
 
                     newSourceClassLocation.DeleteIfExists();
                     newTestClassLocation.DeleteIfExists();
@@ -121,14 +97,14 @@ namespace MuTest.Cpp.CLI.Core
                     {
                         var sourceCode = source.Replace($"{sourceHeaderName}{sourceHeaderExtension}", newSourceHeader);
                         sourceCode.UpdateCode(newSourceClassLocation);
-                        new FileInfo(sourceHeader).CopyTo(newHeaderClassLocation, true);
+                        new FileInfo(cppClass.SourceHeader).CopyTo(newHeaderClassLocation, true);
 
                         newHeaderClassLocation.AddNameSpace(index);
                         newSourceClassLocation.AddNameSpace(index);
                     }
                     else
                     {
-                        new FileInfo(sourceClass).CopyTo(newSourceClassLocation);
+                        new FileInfo(cppClass.SourceClass).CopyTo(newSourceClassLocation);
                     }
 
                     testCode.UpdateCode(newTestClassLocation);
@@ -136,7 +112,7 @@ namespace MuTest.Cpp.CLI.Core
 
                     AddNameSpaceWithSourceReference(newTestClassLocation, testContext, index);
 
-                    var relativeTestCodePath = testClass.RelativePath(projectDirectory);
+                    var relativeTestCodePath = cppClass.TestClass.RelativePath(projectDirectory);
                     var relativeNewTestCodePath = newTestClassLocation.RelativePath(projectDirectory);
 
                     context.TestProject.FullName.UpdateTestProject(relativeTestCodePath, relativeNewTestCodePath);

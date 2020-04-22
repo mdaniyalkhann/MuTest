@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using MuTest.Core.Model;
 using MuTest.Core.Mutants;
@@ -17,6 +18,9 @@ namespace MuTest.Cpp.CLI.Model
 
         [JsonProperty("source-class")]
         public string SourceClass { get; set; }
+
+        [JsonProperty("source-header")]
+        public string SourceHeader { get; set; }
 
         [JsonProperty("test-class")]
         public string TestClass { get; set; }
@@ -59,6 +63,9 @@ namespace MuTest.Cpp.CLI.Model
         [JsonProperty("platform")]
         public string Platform { get; set; }
 
+        [JsonProperty("test-solution")]
+        public string TestSolution { get; set; }
+
         public void CalculateMutationScore()
         {
             MutationScore.Survived = SurvivedMutants.Count;
@@ -71,6 +78,34 @@ namespace MuTest.Cpp.CLI.Model
             MutationScore.Coverage = decimal.Divide(MutationScore.Killed, MutationScore.Covered == 0
                 ? 1
                 : MutationScore.Covered);
+        }
+
+        public void Validate()
+        {
+            if (string.IsNullOrWhiteSpace(TestClass))
+            {
+                throw new ArgumentNullException(nameof(TestClass));
+            }
+
+            if (string.IsNullOrWhiteSpace(SourceClass))
+            {
+                throw new ArgumentNullException(nameof(SourceClass));
+            }
+
+            if (string.IsNullOrWhiteSpace(SourceHeader))
+            {
+                throw new ArgumentNullException(nameof(SourceHeader));
+            }
+
+            if (string.IsNullOrWhiteSpace(TestProject))
+            {
+                throw new ArgumentNullException(nameof(TestProject));
+            }
+
+            if (string.IsNullOrWhiteSpace(TestSolution))
+            {
+                throw new ArgumentNullException(nameof(TestSolution));
+            }
         }
     }
 }

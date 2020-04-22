@@ -28,6 +28,7 @@ namespace MuTest.Cpp.CLI
         private int _totalMutants;
         private int _mutantProgress;
         private static readonly object Sync = new object();
+        private CppClass _cppClass;
 
         public ICppMutantExecutor MutantsExecutor { get; private set; }
 
@@ -46,12 +47,19 @@ namespace MuTest.Cpp.CLI
             _chalk.Default("\nPreparing Required Files...\n");
 
             _directoryFactory.NumberOfMutantsExecutingInParallel = _options.ConcurrentTestRunners;
-            _context = _directoryFactory.PrepareTestFiles(
-                options.TestClass,
-                options.SourceClass,
-                options.SourceHeader,
-                options.TestProject,
-                options.TestSolution);
+
+            _cppClass = new CppClass
+            {
+                Configuration = _options.Configuration,
+                SourceClass = _options.SourceClass,
+                Platform = _options.Platform,
+                TestClass = _options.TestClass,
+                TestProject = _options.TestProject,
+                SourceHeader = _options.SourceHeader,
+                TestSolution = _options.TestSolution
+            };
+
+            _context = _directoryFactory.PrepareTestFiles(_cppClass);
 
             if (_context.TestContexts.Any())
             {
@@ -59,19 +67,12 @@ namespace MuTest.Cpp.CLI
                 await ExecuteTests();
 
                 _chalk.Default("\nRunning Mutation...\n");
-                var cppClass = new CppClass
-                {
-                    Configuration = _options.Configuration,
-                    SourceClass = _options.SourceClass,
-                    Platform = _options.Platform,
-                    TestClass = _options.TestClass,
-                    TestProject = _options.TestProject
-                };
+         
 
-                cppClass.Mutants.AddRange(
+                _cppClass.Mutants.AddRange(
                     CppMutantOrchestrator.GetDefaultMutants(_options.SourceClass));
 
-                MutantsExecutor = new CppMutantExecutor(cppClass, _context, VsTestConsoleSettings)
+                MutantsExecutor = new CppMutantExecutor(_cppClass, _context, VsTestConsoleSettings)
                 {
                     EnableDiagnostics = _options.EnableDiagnostics,
                     KilledThreshold = _options.KilledThreshold,
@@ -79,7 +80,7 @@ namespace MuTest.Cpp.CLI
                     NumberOfMutantsExecutingInParallel = _options.ConcurrentTestRunners
                 };
 
-                _totalMutants = cppClass.Mutants.Count;
+                _totalMutants = _cppClass.Mutants.Count;
                 _mutantProgress = 0;
                 MutantsExecutor.MutantExecuted += MutantAnalyzerOnMutantExecuted;
                 await MutantsExecutor.ExecuteMutants();
