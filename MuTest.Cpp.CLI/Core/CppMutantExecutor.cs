@@ -136,26 +136,8 @@ namespace MuTest.Cpp.CLI.Core
                                 mutant.Mutation.LineNumber,
                                 mutant.Mutation.ReplacementNode,
                                 destinationFile);
-
-                            buildExecutor = new CppBuildExecutor(
-                                _settings,
-                                string.Format(_context.TestSolution.FullName, directoryIndex),
-                                Path.GetFileNameWithoutExtension(_cpp.TestProject))
-                            {
-                                EnableLogging = false,
-                                Configuration = _cpp.Configuration,
-                                Platform = _cpp.Platform,
-                                IntDir = string.Format(_context.IntDir, directoryIndex),
-                                OutDir = string.Format(_context.OutDir, directoryIndex),
-                                OutputPath = string.Format(_context.OutputPath, directoryIndex),
-                                IntermediateOutputPath = string.Format(_context.IntermediateOutputPath, directoryIndex)
-                            };
-
-                            await buildExecutor.ExecuteBuild();
-                            SetBuildLog(buildExecutor);
                         }
-
-                        if (buildExecutor.LastBuildStatus == Constants.BuildExecutionStatus.Failed)
+                        else if (buildExecutor.LastBuildStatus == Constants.BuildExecutionStatus.Failed)
                         {
                             mutant.ResultStatus = MutantStatus.BuildError;
                             OnMutantExecuted(new CppMutantEventArgs
@@ -242,6 +224,39 @@ namespace MuTest.Cpp.CLI.Core
 
         private async Task ExecuteTests(CppMutant mutant, int index)
         {
+            if (_context.UseMultipleSolutions)
+            {
+                var buildExecutor = new CppBuildExecutor(
+                    _settings,
+                    string.Format(_context.TestSolution.FullName, index),
+                    Path.GetFileNameWithoutExtension(_cpp.TestProject))
+                {
+                    EnableLogging = false,
+                    Configuration = _cpp.Configuration,
+                    Platform = _cpp.Platform,
+                    IntDir = string.Format(_context.IntDir, index),
+                    OutDir = string.Format(_context.OutDir, index),
+                    OutputPath = string.Format(_context.OutputPath, index),
+                    IntermediateOutputPath = string.Format(_context.IntermediateOutputPath, index)
+                };
+
+                await buildExecutor.ExecuteBuild();
+                SetBuildLog(buildExecutor);
+
+                if (buildExecutor.LastBuildStatus == Constants.BuildExecutionStatus.Failed)
+                {
+                    mutant.ResultStatus = MutantStatus.BuildError;
+                    OnMutantExecuted(new CppMutantEventArgs
+                    {
+                        Mutant = mutant,
+                        TestLog = _testDiagnostics,
+                        BuildLog = _buildDiagnostics
+                    });
+
+                    return;
+                }
+            }
+
             var testExecutor = new GoogleTestExecutor
             {
                 KillProcessOnTestFail = true,
