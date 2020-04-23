@@ -144,7 +144,9 @@ namespace MuTest.Core.Common
         {
             [-1] = TestExecutionStatus.Failed,
             [0] = TestExecutionStatus.Success,
-            [1] = TestExecutionStatus.Timeout
+            [1] = TestExecutionStatus.Timeout,
+            [2] = TestExecutionStatus.Failed,
+            [3] = TestExecutionStatus.Failed
         };
     }
 }
