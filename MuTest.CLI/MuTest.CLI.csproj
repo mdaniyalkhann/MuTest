@@ -100,9 +100,12 @@
     <Reference Include="Microsoft.Extensions.Primitives, Version=3.1.3.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.Primitives.3.1.3\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.Coverage.Analysis, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="Microsoft.VisualStudio.Coverage.Analysis, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\MuTest.UI\libs\Microsoft.VisualStudio.Coverage.Analysis.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.Coverage.Interop">
-      <HintPath>..\Dashboard\libs\Microsoft.VisualStudio.Coverage.Interop.dll</HintPath>
+      <HintPath>..\MuTest.UI\libs\Microsoft.VisualStudio.Coverage.Interop.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
