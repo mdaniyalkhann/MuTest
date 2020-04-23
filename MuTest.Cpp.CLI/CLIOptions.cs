@@ -105,7 +105,7 @@ namespace MuTest.Cpp.CLI
         {
             ArgumentName = "--in-isolation",
             ArgumentShortName = "-i",
-            ArgumentDescription = "Runs mutant in isolated test project and solution instead of sharing one test project and solution. It might run slower",
+            ArgumentDescription = "Runs mutants in isolated test project and solution instead of sharing one test project and solution. It might run slower",
             DefaultValue = DefaultOptions.InIsolation,
             ValueType = CommandOptionType.NoValue
         };
