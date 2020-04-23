@@ -1,4 +1,4 @@
-﻿using MuTest.Core.Model;
+﻿using MuTest.Cpp.CLI.Model;
 using Newtonsoft.Json;
 
 namespace MuTest.Cpp.CLI.Options
@@ -9,6 +9,6 @@ namespace MuTest.Cpp.CLI.Options
         public MuTestOptions Options { get; set; }
 
         [JsonProperty("result")]
-        public SourceClassDetail Result { get; set; }
+        public CppClass Result { get; set; }
     }
 }

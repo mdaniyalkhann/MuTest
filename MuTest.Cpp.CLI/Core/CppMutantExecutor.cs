@@ -72,26 +72,9 @@ namespace MuTest.Cpp.CLI.Core
                 }
 
                 var directoryIndex = -1;
-                for (var mutationIndex = index; mutationIndex < Math.Min(index + NumberOfMutantsExecutingInParallel, mutants.Count); mutationIndex++)
-                {
-                    directoryIndex++;
-                    var mutant = mutants[mutationIndex];
-
-                    var codeLine = mutant.Mutation.LineNumber;
-                    var testContext = _context.TestContexts[directoryIndex];
-                    var destinationFile = testContext.SourceClass.FullName;
-
-                    _cpp.SourceClass.ReplaceLine(
-                        codeLine,
-                        mutant.Mutation.ReplacementNode,
-                        destinationFile);
-
-                    destinationFile.AddNameSpace(testContext.Index);
-                }
-
                 var buildExecutor = new CppBuildExecutor(
-                    _settings, 
-                    _context.TestSolution.FullName, 
+                    _settings,
+                    _context.TestSolution.FullName,
                     Path.GetFileNameWithoutExtension(_cpp.TestProject))
                 {
                     EnableLogging = false,
@@ -103,23 +86,26 @@ namespace MuTest.Cpp.CLI.Core
                     IntermediateOutputPath = _context.IntermediateOutputPath
                 };
 
-                await buildExecutor.ExecuteBuild();
-
-                var log = new StringBuilder();
-                void OutputDataReceived(object sender, string args) => log.Append(args.PrintWithPreTag());
-
-                if (buildExecutor.LastBuildStatus == Constants.BuildExecutionStatus.Failed)
+                if (!_context.UseMultipleSolutions)
                 {
-                    if (EnableDiagnostics)
+                    for (var mutationIndex = index; mutationIndex < Math.Min(index + NumberOfMutantsExecutingInParallel, mutants.Count); mutationIndex++)
                     {
-                        log.AppendLine("<fieldset style=\"margin-bottom:10\">");
-                        buildExecutor.OutputDataReceived += OutputDataReceived;
+                        directoryIndex++;
+                        var mutant = mutants[mutationIndex];
 
-                        log.AppendLine("</fieldset>");
-                        _buildDiagnostics = log.ToString();
+                        var testContext = _context.TestContexts[directoryIndex];
+                        var destinationFile = testContext.SourceClass.FullName;
+
+                        _cpp.SourceClass.ReplaceLine(
+                            mutant.Mutation.LineNumber,
+                            mutant.Mutation.ReplacementNode,
+                            destinationFile);
+
+                        destinationFile.AddNameSpace(testContext.Index);
                     }
 
-                    buildExecutor.OutputDataReceived -= OutputDataReceived;
+                    await buildExecutor.ExecuteBuild();
+                    SetBuildLog(buildExecutor);
                 }
 
                 directoryIndex = -1;
@@ -137,9 +123,38 @@ namespace MuTest.Cpp.CLI.Core
                     }
 
                     var mutant = mutants[mutationIndex];
+                    directoryIndex++;
 
                     try
                     {
+                        if (_context.UseMultipleSolutions)
+                        {
+                            var testContext = _context.TestContexts[directoryIndex];
+                            var destinationFile = testContext.SourceClass.FullName;
+
+                            _cpp.SourceClass.ReplaceLine(
+                                mutant.Mutation.LineNumber,
+                                mutant.Mutation.ReplacementNode,
+                                destinationFile);
+
+                            buildExecutor = new CppBuildExecutor(
+                                _settings,
+                                string.Format(_context.TestSolution.FullName, directoryIndex),
+                                Path.GetFileNameWithoutExtension(_cpp.TestProject))
+                            {
+                                EnableLogging = false,
+                                Configuration = _cpp.Configuration,
+                                Platform = _cpp.Platform,
+                                IntDir = string.Format(_context.IntDir, directoryIndex),
+                                OutDir = string.Format(_context.OutDir, directoryIndex),
+                                OutputPath = string.Format(_context.OutputPath, directoryIndex),
+                                IntermediateOutputPath = string.Format(_context.IntermediateOutputPath, directoryIndex)
+                            };
+
+                            await buildExecutor.ExecuteBuild();
+                            SetBuildLog(buildExecutor);
+                        }
+
                         if (buildExecutor.LastBuildStatus == Constants.BuildExecutionStatus.Failed)
                         {
                             mutant.ResultStatus = MutantStatus.BuildError;
@@ -152,7 +167,6 @@ namespace MuTest.Cpp.CLI.Core
                             continue;
                         }
 
-                        directoryIndex++;
                         var current = directoryIndex;
                         testTasks.Add(Task.Run(() => ExecuteTests(mutant, current)));
                     }
@@ -167,6 +181,27 @@ namespace MuTest.Cpp.CLI.Core
             }
 
             PrintMutationReport(mutationProcessLog, mutants);
+        }
+
+        private void SetBuildLog(CppBuildExecutor buildExecutor)
+        {
+            var log = new StringBuilder();
+            _buildDiagnostics = string.Empty;
+            void OutputDataReceived(object sender, string args) => log.Append(args.PrintWithPreTag());
+
+            if (buildExecutor.LastBuildStatus == Constants.BuildExecutionStatus.Failed)
+            {
+                if (EnableDiagnostics)
+                {
+                    log.AppendLine("<fieldset style=\"margin-bottom:10\">");
+                    buildExecutor.OutputDataReceived += OutputDataReceived;
+
+                    log.AppendLine("</fieldset>");
+                    _buildDiagnostics = log.ToString();
+                }
+
+                buildExecutor.OutputDataReceived -= OutputDataReceived;
+            }
         }
 
         private void PrintMutationReport(StringBuilder mutationProcessLog, IList<CppMutant> mutants)
@@ -231,7 +266,7 @@ namespace MuTest.Cpp.CLI.Core
             var projectName = Path.GetFileNameWithoutExtension(_cpp.TestProject);
 
             await testExecutor.ExecuteTests(
-                $"{projectDirectory}/{_context.OutDir}{projectName}.exe",
+                $"{projectDirectory}/{string.Format(_context.OutDir, index)}{projectName}.exe",
                 $"{Path.GetFileNameWithoutExtension(_context.TestContexts[index].TestClass.Name)}.*");
 
             testExecutor.OutputDataReceived -= OutputDataReceived;

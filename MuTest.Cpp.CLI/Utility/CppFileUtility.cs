@@ -109,7 +109,7 @@ namespace MuTest.Cpp.CLI.Utility
         {
             if (file == null)
             {
-                throw new ArgumentNullException(nameof(file));
+                return;
             }
 
             if (file.Exists)

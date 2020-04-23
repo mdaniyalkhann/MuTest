@@ -18,5 +18,7 @@ namespace MuTest.Cpp.CLI.Model
         public string IntDir { get; set; }
 
         public IList<CppTestContext> TestContexts { get; } = new List<CppTestContext>();
+
+        public bool UseMultipleSolutions { get; set; }
     }
 }

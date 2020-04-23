@@ -100,5 +100,14 @@ namespace MuTest.Cpp.CLI
             DefaultValue = DefaultOptions.KilledThreshold,
             ValueType = CommandOptionType.SingleValue
         };
+
+        public static readonly CliOption<bool> InIsolation = new CliOption<bool>
+        {
+            ArgumentName = "--in-isolation",
+            ArgumentShortName = "-i",
+            ArgumentDescription = "Runs mutant in isolated test project and solution instead of sharing one test project and solution. It might run slower",
+            DefaultValue = DefaultOptions.InIsolation,
+            ValueType = CommandOptionType.NoValue
+        };
     }
 }

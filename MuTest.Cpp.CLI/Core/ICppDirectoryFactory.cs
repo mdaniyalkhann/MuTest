@@ -9,5 +9,7 @@ namespace MuTest.Cpp.CLI.Core
         CppBuildContext PrepareTestFiles(CppClass cppClass);
 
         void DeleteTestFiles(CppBuildContext context);
+
+        CppBuildContext PrepareSolutionFiles(CppClass cppClass);
     }
 }
