@@ -94,7 +94,8 @@ namespace MuTest.Cpp.CLI.Mutants
                     line = line.Trim();
 
                     if (string.IsNullOrWhiteSpace(line) ||
-                        skipList.Any(x => line.StartsWith(x)))
+                        skipList.Any(x => line.StartsWith(x)) ||
+                        line.EndsWith("):"))
                     {
                         continue;
                     }
