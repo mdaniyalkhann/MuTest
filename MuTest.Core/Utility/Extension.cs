@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
@@ -20,29 +20,31 @@ namespace MuTest.Core.Utility
         /// </summary>
         /// <param name="folderPath"></param>
         /// <returns></returns>
-        public static IList<SyntaxFile> GetCSharpClassDeclarations(this string folderPath)
+        public static ConcurrentBag<SyntaxFile> GetCSharpClassDeclarations(this string folderPath)
         {
             if (string.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath))
             {
                 throw new InvalidOperationException("Source/Test Project Folder Not Exist");
             }
 
-            var cus = new List<SyntaxFile>();
-
-            Task.WaitAll(FileUtility.GetCSharpFileInfos(folderPath)
-                .Select(cSharpFileInfo => Task.Run(() =>
+            var cus = new ConcurrentBag<SyntaxFile>();
+            var files = FileUtility.GetCSharpFileInfos(folderPath).ToList();
+            Parallel.ForEach(files, currentFile =>
+            {
+                if (currentFile != null)
                 {
-                    SyntaxNode codeFileContent = cSharpFileInfo.GetCodeFileContent()?.RootNode();
+                    SyntaxNode codeFileContent = currentFile.GetCodeFileContent()?.RootNode();
 
                     if (codeFileContent is CompilationUnitSyntax syntax)
                     {
                         cus.Add(new SyntaxFile
                         {
                             CompilationUnitSyntax = syntax,
-                            FileName = cSharpFileInfo.FullName
+                            FileName = currentFile.FullName
                         });
                     }
-                })).ToArray());
+                }
+            });
 
             return cus;
         }
@@ -52,14 +54,14 @@ namespace MuTest.Core.Utility
         /// </summary>
         /// <param name="projectPath"></param>
         /// <returns></returns>
-        public static IList<SyntaxFile> GetCSharpClassDeclarationsFromProject(this string projectPath)
+        public static ConcurrentBag<SyntaxFile> GetCSharpClassDeclarationsFromProject(this string projectPath)
         {
             if (string.IsNullOrWhiteSpace(projectPath) || !File.Exists(projectPath))
             {
                 throw new InvalidOperationException("Project File Not Exist");
             }
 
-            var cus = new List<SyntaxFile>();
+            var cus = new ConcurrentBag<SyntaxFile>();
             var projectFile = new FileInfo(projectPath);
 
             if (projectPath.DoNetCoreProject())

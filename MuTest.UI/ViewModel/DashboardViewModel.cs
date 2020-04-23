@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -49,8 +50,8 @@ namespace Dashboard.ViewModel
         [ServiceProperty(Key = "MessageBoxService")]
         protected virtual IMessageBoxService MessageBoxService => null;
 
-        private static IList<SyntaxFile> _compilationUnitSyntaxList;
-        private static IList<SyntaxFile> _testCompilationUnitSyntaxList;
+        private static ConcurrentBag<SyntaxFile> _compilationUnitSyntaxList;
+        private static ConcurrentBag<SyntaxFile> _testCompilationUnitSyntaxList;
         private SourceClassDetail _selectedClass;
         private TestClassDetail _selectedTestClass;
         private IList<TestClassDetail> _testLookUpDataSource;
