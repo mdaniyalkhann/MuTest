@@ -92,11 +92,6 @@ namespace MuTest.Cpp.CLI.Model
                 throw new ArgumentNullException(nameof(SourceClass));
             }
 
-            if (string.IsNullOrWhiteSpace(SourceHeader))
-            {
-                throw new ArgumentNullException(nameof(SourceHeader));
-            }
-
             if (string.IsNullOrWhiteSpace(TestProject))
             {
                 throw new ArgumentNullException(nameof(TestProject));

@@ -211,7 +211,11 @@ namespace MuTest.Cpp.CLI.Core
 
                     testCode.UpdateCode(newTestClassLocation);
                     testContext.TestClass = new FileInfo(newTestClassLocation);
-                    AddSourceReference(testContext);
+
+                    if (!testCode.Contains(testContext.SourceClass.Name))
+                    {
+                        AddSourceReference(testContext);
+                    }
 
                     context.TestContexts.Add(testContext);
                 }

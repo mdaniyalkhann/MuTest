@@ -13,17 +13,12 @@ namespace MuTest.Cpp.CLI.Mutators
                 [" - "] = new List<string> { " + " },
                 [" \\* "] = new List<string> { " / " },
                 [" \\/ "] = new List<string> { " * " },
-                [" & "] = new List<string> { " | " },
-                [" \\| "] = new List<string> { " & " },
-                [" ^ "] = new List<string> { " & " },
-                [" << "] = new List<string> { " >> " },
-                [" >> "] = new List<string> { " << " },
             };
         }
 
         public override MutatorType MutatorType { get; } = MutatorType.Arithmetic;
 
-        public string Description { get; } = "MATH [+, -, x, %, &, |, ^, <<, >>]";
+        public string Description { get; } = "MATH [+, -, x, %]";
 
         public bool DefaultMutant { get; } = true;
     }

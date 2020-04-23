@@ -215,9 +215,22 @@ namespace MuTest.Cpp.CLI
             testExecutor.OutputDataReceived += OutputData;
             var projectDirectory = Path.GetDirectoryName(_options.TestProject);
             var projectName = Path.GetFileNameWithoutExtension(_options.TestProject);
+            var projectNameFromTestContext = string.Format(Path.GetFileNameWithoutExtension(_context.TestProject.Name), 0);
+
+            var app = $"{projectDirectory}/{string.Format(_context.OutDir, 0)}{projectName}.exe";
+
+            if (!File.Exists(app))
+            {
+                app = $"{projectDirectory}/{string.Format(_context.OutDir, 0)}{projectNameFromTestContext}.exe";
+            }
+
+            if (!File.Exists(app))
+            {
+                throw new MuTestFailingTestException($"Unable to find google tests at path {app}");
+            }
 
             await testExecutor.ExecuteTests(
-                $"{projectDirectory}/{string.Format(_context.OutDir, 0)}{projectName}.exe",
+                app,
                 $"{Path.GetFileNameWithoutExtension(_context.TestContexts.First().TestClass.Name)}.*");
 
             if (testExecutor.LastTestExecutionStatus != Constants.TestExecutionStatus.Success)

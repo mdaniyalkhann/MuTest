@@ -80,7 +80,11 @@ namespace MuTest.Cpp.CLI.Mutants
                 "void",
                 "using",
                 "catch",
-                "namespace"
+                "namespace",
+                "typedef",
+                "static",
+                "static",
+                "class"
             };
 
             using (var reader = new StreamReader(sourceFile))

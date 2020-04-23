@@ -280,8 +280,16 @@ namespace MuTest.Cpp.CLI.Core
             var projectDirectory = Path.GetDirectoryName(_cpp.TestProject);
             var projectName = Path.GetFileNameWithoutExtension(_cpp.TestProject);
 
+            var projectNameFromTestContext = string.Format(Path.GetFileNameWithoutExtension(_context.TestProject.Name), index);
+            var app = $"{projectDirectory}/{string.Format(_context.OutDir, index)}{projectName}.exe";
+
+            if (!File.Exists(app))
+            {
+                app = $"{projectDirectory}/{string.Format(_context.OutDir, index)}{projectNameFromTestContext}.exe";
+            }
+
             await testExecutor.ExecuteTests(
-                $"{projectDirectory}/{string.Format(_context.OutDir, index)}{projectName}.exe",
+                app,
                 $"{Path.GetFileNameWithoutExtension(_context.TestContexts[index].TestClass.Name)}.*");
 
             testExecutor.OutputDataReceived -= OutputDataReceived;

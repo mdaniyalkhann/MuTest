@@ -12,7 +12,7 @@ namespace MuTest.Cpp.CLI.Options
         private const string ErrorMessage = "The value for one of your settings is not correct. Try correcting or removing them.";
         private const string JsonExtension = ".json";
         private const string HtmlExtension = ".html";
-        private const int DefaultConcurrentTestRunners = 4;
+        private const int DefaultConcurrentTestRunners = 5;
         private const double DefaultThreshold = 1.0;
 
         [JsonProperty("test-solution")]
@@ -65,7 +65,12 @@ namespace MuTest.Cpp.CLI.Options
             ValidateRequiredParameters();
             ValidateTestProject();
             ValidateTestSolution();
-            ValidateSourceHeader();
+
+            if (!InIsolation)
+            {
+                ValidateSourceHeader();
+            }
+            
             ConcurrentTestRunners = ValidateConcurrentTestRunners();
             SetOutputPath();
         }
