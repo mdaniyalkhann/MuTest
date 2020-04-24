@@ -71,24 +71,29 @@ namespace MuTest.Cpp.CLI
                     await ExecuteBuild();
                     await ExecuteTests();
 
-                    _chalk.Default("\nRunning Mutation...\n");
+                    _chalk.Default("\nRunning Mutation Analysis...\n");
 
 
                     _cppClass.Mutants.AddRange(
                         CppMutantOrchestrator.GetDefaultMutants(_options.SourceClass));
 
-                    MutantsExecutor = new CppMutantExecutor(_cppClass, _context, VsTestConsoleSettings)
-                    {
-                        EnableDiagnostics = _options.EnableDiagnostics,
-                        KilledThreshold = _options.KilledThreshold,
-                        SurvivedThreshold = _options.SurvivedThreshold,
-                        NumberOfMutantsExecutingInParallel = _options.ConcurrentTestRunners
-                    };
+                    _chalk.Default($"\nNumber of Mutants: {_cppClass.Mutants.Count}\n");
 
-                    _totalMutants = _cppClass.Mutants.Count;
-                    _mutantProgress = 0;
-                    MutantsExecutor.MutantExecuted += MutantAnalyzerOnMutantExecuted;
-                    await MutantsExecutor.ExecuteMutants();
+                    if (_cppClass.Mutants.Any())
+                    {
+                        MutantsExecutor = new CppMutantExecutor(_cppClass, _context, VsTestConsoleSettings)
+                        {
+                            EnableDiagnostics = _options.EnableDiagnostics,
+                            KilledThreshold = _options.KilledThreshold,
+                            SurvivedThreshold = _options.SurvivedThreshold,
+                            NumberOfMutantsExecutingInParallel = _options.ConcurrentTestRunners
+                        };
+
+                        _totalMutants = _cppClass.Mutants.Count;
+                        _mutantProgress = 0;
+                        MutantsExecutor.MutantExecuted += MutantAnalyzerOnMutantExecuted;
+                        await MutantsExecutor.ExecuteMutants();
+                    }
 
                 }
             }
