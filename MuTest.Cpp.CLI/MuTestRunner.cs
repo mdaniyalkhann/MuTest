@@ -13,6 +13,8 @@ using MuTest.Cpp.CLI.Core;
 using MuTest.Cpp.CLI.Model;
 using MuTest.Cpp.CLI.Mutants;
 using MuTest.Cpp.CLI.Options;
+using Newtonsoft.Json;
+using static MuTest.Core.Common.Constants;
 
 namespace MuTest.Cpp.CLI
 {
@@ -93,6 +95,7 @@ namespace MuTest.Cpp.CLI
                         _mutantProgress = 0;
                         MutantsExecutor.MutantExecuted += MutantAnalyzerOnMutantExecuted;
                         await MutantsExecutor.ExecuteMutants();
+                        GenerateReports();
                     }
 
                 }
@@ -244,6 +247,91 @@ namespace MuTest.Cpp.CLI
             }
 
             testExecutor.OutputDataReceived -= OutputData;
+        }
+
+        private void GenerateReports()
+        {
+            var consoleBuilder = new StringBuilder();
+            if (_cppClass != null)
+            {
+                MutantsExecutor.PrintMutatorSummary(consoleBuilder, _cppClass.Mutants);
+                MutantsExecutor.PrintClassSummary(_cppClass, consoleBuilder);
+                consoleBuilder.AppendLine("<fieldset style=\"margin-bottom:10; margin-top:10;\">");
+                consoleBuilder.AppendLine("Execution Time: ".PrintImportantWithLegend());
+                consoleBuilder.Append($"{_stopwatch.Elapsed}".PrintWithPreTagWithMarginImportant());
+                consoleBuilder.AppendLine("</fieldset>");
+
+                _chalk.Default($"{Environment.NewLine}{consoleBuilder.ToString().ConvertToPlainText()}{Environment.NewLine}");
+
+                _cppClass.ExecutionTime = _stopwatch.ElapsedMilliseconds;
+                var builder = new StringBuilder(HtmlTemplate);
+                builder.Append(MutantsExecutor?.LastExecutionOutput.PrintImportant() ?? string.Empty);
+                MutantsExecutor?.PrintMutatorSummary(builder, _cppClass.Mutants);
+                MutantsExecutor?.PrintClassSummary(_cppClass, builder);
+                builder.AppendLine("<fieldset style=\"margin-bottom:10; margin-top:10;\">");
+                builder.AppendLine("Execution Time: ".PrintImportantWithLegend());
+                builder.Append($"{_stopwatch.Elapsed}".PrintWithPreTagWithMarginImportant());
+                builder.AppendLine("</fieldset>");
+
+                var fileName = Path.GetFileNameWithoutExtension(_cppClass.SourceClass)?.Replace(".", "_");
+                CreateHtmlReport(builder, fileName);
+                CreateJsonReport(fileName,
+                    new JsonOptions
+                    {
+                        Options = _options,
+                        Result = _cppClass
+                    });
+            }
+        }
+
+        private void CreateJsonReport<T>(string fileName, T output)
+        {
+            if (!string.IsNullOrWhiteSpace(_options.JsonOutputPath))
+            {
+                var outputPath = _options.JsonOutputPath.Replace(SourceClassPlaceholder, fileName);
+                var file = new FileInfo(outputPath);
+                if (file.Exists)
+                {
+                    file.Delete();
+                }
+
+                var directoryName = Path.GetDirectoryName(file.FullName);
+                if (!string.IsNullOrWhiteSpace(directoryName) &&
+                    !Directory.Exists(directoryName))
+                {
+                    Directory.CreateDirectory(directoryName);
+                }
+
+                file.Create().Close();
+                File.WriteAllText(outputPath, JsonConvert.SerializeObject(output, Formatting.Indented));
+
+                _chalk.Green($"\nYour json report has been generated at: \n {file.FullName} \n");
+            }
+        }
+
+        private void CreateHtmlReport(StringBuilder builder, string fileName)
+        {
+            if (!string.IsNullOrWhiteSpace(_options.HtmlOutputPath))
+            {
+                var outputPath = _options.HtmlOutputPath.Replace(SourceClassPlaceholder, fileName);
+                var file = new FileInfo(outputPath);
+                if (file.Exists)
+                {
+                    file.Delete();
+                }
+
+                var directoryName = Path.GetDirectoryName(file.FullName);
+                if (!string.IsNullOrWhiteSpace(directoryName) &&
+                    !Directory.Exists(directoryName))
+                {
+                    Directory.CreateDirectory(directoryName);
+                }
+
+                file.Create().Close();
+                File.WriteAllText(outputPath, builder.ToString());
+
+                _chalk.Green($"\nYour html report has been generated at: \n {file.FullName} \nYou can open it in your browser of choice. \n");
+            }
         }
     }
 }

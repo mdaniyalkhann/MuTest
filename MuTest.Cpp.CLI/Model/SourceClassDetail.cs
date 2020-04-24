@@ -57,13 +57,13 @@ namespace MuTest.Cpp.CLI.Model
         [JsonIgnore]
         public IList<CppMutant> SkippedMutants => Mutants.Where(x => x.ResultStatus == MutantStatus.Skipped).ToList();
 
-        [JsonProperty("configuration")]
+        [JsonIgnore]
         public string Configuration { get; set; }
 
-        [JsonProperty("platform")]
+        [JsonIgnore]
         public string Platform { get; set; }
 
-        [JsonProperty("test-solution")]
+        [JsonIgnore]
         public string TestSolution { get; set; }
 
         public void CalculateMutationScore()
