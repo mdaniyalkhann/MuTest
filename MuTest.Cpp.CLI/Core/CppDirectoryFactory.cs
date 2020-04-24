@@ -110,7 +110,14 @@ namespace MuTest.Cpp.CLI.Core
                     testCode.UpdateCode(newTestClassLocation);
                     testContext.TestClass = new FileInfo(newTestClassLocation);
 
-                    AddNameSpaceWithSourceReference(newTestClassLocation, testContext, index);
+                    if (!testCode.Contains(testContext.SourceClass.Name))
+                    {
+                        AddNameSpaceWithSourceReference(newTestClassLocation, testContext, index);
+                    }
+                    else
+                    {
+                        newTestClassLocation.AddNameSpace(index);
+                    }
 
                     var relativeTestCodePath = cppClass.TestClass.RelativePath(projectDirectory);
                     var relativeNewTestCodePath = newTestClassLocation.RelativePath(projectDirectory);

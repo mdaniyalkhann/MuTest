@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using MuTest.Core.Mutators;
@@ -79,30 +78,15 @@ namespace MuTest.Cpp.CLI.Mutators
                                 {
                                     if (replacement == "RL")
                                     {
-                                        if (line.Line.StartsWith("case"))
-                                        {
-                                            replacement = " - ";
-                                            return replacement;
-                                        }
-
                                         if (line.Line.Length > patternLength &&
                                             char.IsNumber(line.Line[patternLength]))
                                         {
-                                            replacement = " - ";
-                                            return replacement;
+                                            return " + 1 + ";
                                         }
 
-                                        if (line.Line.EndsWith("));"))
-                                        {
-                                            return "));";
-                                        }
-
-                                        if (line.Line.EndsWith(");"))
-                                        {
-                                            return " );";
-                                        }
-
-                                        return " ; ";
+                                        return line.StringLines.Any()
+                                            ? " + \"mutest\" + "
+                                            : " - ";
                                     }
 
                                     return replacement;
@@ -111,13 +95,6 @@ namespace MuTest.Cpp.CLI.Mutators
                                 return match.Value;
                             })
                         };
-
-
-                        if (replacement == "RL")
-                        {
-                            mutation.ReplacementNode = mutation.ReplacementNode.Substring(0, patternLength);
-                        }
-
 
                         mutation.DisplayName = $"Line Number: {line.LineNumber} - Type: {MutatorType} - {mutation.OriginalNode} replace with {mutation.ReplacementNode}";
 
