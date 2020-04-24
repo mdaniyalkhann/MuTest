@@ -231,7 +231,7 @@ namespace MuTest.Cpp.CLI
 
             await testExecutor.ExecuteTests(
                 app,
-                $"{Path.GetFileNameWithoutExtension(_context.TestContexts.First().TestClass.Name)}.*");
+                $"{Path.GetFileNameWithoutExtension(_context.TestContexts.First().TestClass.Name)}*");
 
             if (testExecutor.LastTestExecutionStatus != Constants.TestExecutionStatus.Success)
             {

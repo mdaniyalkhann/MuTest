@@ -290,7 +290,7 @@ namespace MuTest.Cpp.CLI.Core
 
             await testExecutor.ExecuteTests(
                 app,
-                $"{Path.GetFileNameWithoutExtension(_context.TestContexts[index].TestClass.Name)}.*");
+                $"{Path.GetFileNameWithoutExtension(_context.TestContexts[index].TestClass.Name)}*");
 
             testExecutor.OutputDataReceived -= OutputDataReceived;
             if (EnableDiagnostics && testExecutor.LastTestExecutionStatus == Constants.TestExecutionStatus.Timeout)
