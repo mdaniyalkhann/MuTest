@@ -61,6 +61,9 @@ namespace MuTest.Cpp.CLI.Model
         public string Configuration { get; set; }
 
         [JsonIgnore]
+        public string Target { get; set; }
+
+        [JsonIgnore]
         public string Platform { get; set; }
 
         [JsonIgnore]

@@ -59,6 +59,7 @@ namespace MuTest.Cpp.CLI
                     Platform = _options.Platform,
                     TestClass = _options.TestClass,
                     TestProject = _options.TestProject,
+                    Target = _options.Target,
                     SourceHeader = _options.SourceHeader,
                     TestSolution = _options.TestSolution
                 };
@@ -164,7 +165,7 @@ namespace MuTest.Cpp.CLI
             var testCodeBuild = new CppBuildExecutor(
                 VsTestConsoleSettings,
                 string.Format(_context.TestSolution.FullName, 0),
-                Path.GetFileNameWithoutExtension(_options.TestProject))
+                _cppClass.Target)
             {
                 Configuration = _options.Configuration,
                 EnableLogging = _options.EnableDiagnostics,
@@ -182,7 +183,7 @@ namespace MuTest.Cpp.CLI
 
             testCodeBuild.OutputDataReceived -= OutputData;
 
-            if (testCodeBuild.LastBuildStatus == Constants.BuildExecutionStatus.Failed)
+            if (testCodeBuild.LastBuildStatus == BuildExecutionStatus.Failed)
             {
                 _chalk.Yellow("\nBuild Failed...Preparing new solution files\n");
                 _directoryFactory.DeleteTestFiles(_context);
@@ -191,7 +192,7 @@ namespace MuTest.Cpp.CLI
                 testCodeBuild = new CppBuildExecutor(
                     VsTestConsoleSettings,
                     string.Format(_context.TestSolution.FullName, 0),
-                    Path.GetFileNameWithoutExtension(_options.TestProject))
+                    _cppClass.Target)
                 {
                     Configuration = _options.Configuration,
                     EnableLogging = _options.EnableDiagnostics,

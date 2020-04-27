@@ -75,7 +75,7 @@ namespace MuTest.Cpp.CLI.Core
                 var buildExecutor = new CppBuildExecutor(
                     _settings,
                     _context.TestSolution.FullName,
-                    Path.GetFileNameWithoutExtension(_cpp.TestProject))
+                    _cpp.Target)
                 {
                     EnableLogging = false,
                     Configuration = _cpp.Configuration,
@@ -229,7 +229,7 @@ namespace MuTest.Cpp.CLI.Core
                 var buildExecutor = new CppBuildExecutor(
                     _settings,
                     string.Format(_context.TestSolution.FullName, index),
-                    Path.GetFileNameWithoutExtension(_cpp.TestProject))
+                    _cpp.Target)
                 {
                     EnableLogging = false,
                     Configuration = _cpp.Configuration,

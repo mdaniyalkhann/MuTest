@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
+using Microsoft.Build.Construction;
 using MuTest.Core.Utility;
 
 namespace MuTest.Cpp.CLI.Utility
@@ -46,15 +47,15 @@ namespace MuTest.Cpp.CLI.Utility
             return null;
         }
 
-        public static FileInfo FindCppSolutionFile(this FileInfo file)
+        public static FileInfo FindCppSolutionFile(this FileInfo file, string testProject)
         {
-            var projectFile = file.DirectoryName.FindCppSolutionFile();
+            var projectFile = file.DirectoryName.FindCppSolutionFile(testProject);
             if (projectFile == null)
             {
                 var parentDirectory = file.Directory?.Parent;
                 while (parentDirectory != null)
                 {
-                    projectFile = parentDirectory.FullName.FindCppSolutionFile();
+                    projectFile = parentDirectory.FullName.FindCppSolutionFile(testProject);
                     if (projectFile != null)
                     {
                         break;
@@ -89,7 +90,7 @@ namespace MuTest.Cpp.CLI.Utility
             {
                 var lineIndex = 0;
                 string line;
-                while ((line = reader.ReadLine())!= null)
+                while ((line = reader.ReadLine()) != null)
                 {
                     lineIndex++;
                     if (lineNumber == lineIndex)
@@ -182,7 +183,7 @@ namespace MuTest.Cpp.CLI.Utility
                 {
                     if (line.Trim().StartsWith("#") ||
                         line.Trim().StartsWith("//") ||
-                        String.IsNullOrWhiteSpace(line) || 
+                        String.IsNullOrWhiteSpace(line) ||
                         namespaceAdded)
                     {
                         fileLines.Add(line);
@@ -260,18 +261,39 @@ namespace MuTest.Cpp.CLI.Utility
             itemGroup.AppendChild(element);
         }
 
-        private static FileInfo FindCppSolutionFile(this string path)
+        private static FileInfo FindCppSolutionFile(this string path, string testProject)
         {
             if (Directory.Exists(path))
             {
-                return new DirectoryInfo(path).EnumerateFiles("*.sln", SearchOption.TopDirectoryOnly)
-                    .FirstOrDefault(x => x.Name.EndsWith(".sln", StringComparison.InvariantCulture) &&
-                                         !x.Name.StartsWith("f.") &&
-                                         !x.Name.StartsWith("TemporaryGeneratedFile_") &&
-                                         !x.Name.StartsWith("AssemblyInfo"));
+                var solutions = new DirectoryInfo(path).EnumerateFiles("*.sln", SearchOption.TopDirectoryOnly)
+                    .Where(x => x.Name.EndsWith(".sln", StringComparison.InvariantCulture) &&
+                                !x.Name.StartsWith("f.") &&
+                                !x.Name.StartsWith("TemporaryGeneratedFile_") &&
+                                !x.Name.StartsWith("AssemblyInfo"));
+
+                return (from solution in solutions
+                    let projects = solution.FullName.GetProjects()
+                    where projects.Where(project => project?.AbsolutePath != null)
+                        .Any(project => Path.GetFileName(project.AbsolutePath).Equals(Path.GetFileName(testProject), StringComparison.InvariantCultureIgnoreCase))
+                    select solution).FirstOrDefault();
             }
 
             return null;
+        }
+
+        public static IEnumerable<ProjectInSolution> GetProjects(this string solutionFile)
+        {
+            if (string.IsNullOrWhiteSpace(solutionFile) || !File.Exists(solutionFile))
+            {
+                return new List<ProjectInSolution>();
+            }
+
+            var sol = new FileInfo(solutionFile);
+            var projects = SolutionFile.Parse(sol.FullName)
+                .ProjectsInOrder
+                .Where(x => x.ProjectType == SolutionProjectType.KnownToBeMSBuildFormat ||
+                            x.ProjectType == SolutionProjectType.SolutionFolder).ToList();
+            return projects;
         }
     }
 }

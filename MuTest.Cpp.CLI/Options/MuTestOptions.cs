@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using MuTest.Core.Common;
 using MuTest.Core.Exceptions;
 using MuTest.Cpp.CLI.Utility;
@@ -29,6 +31,9 @@ namespace MuTest.Cpp.CLI.Options
 
         [JsonProperty("test-project")]
         public string TestProject { get; set; }
+
+        [JsonProperty("target")]
+        public string Target { get; set; }
 
         [JsonProperty("test-class")]
         public string TestClass { get; set; }
@@ -70,7 +75,7 @@ namespace MuTest.Cpp.CLI.Options
             {
                 ValidateSourceHeader();
             }
-            
+
             ConcurrentTestRunners = ValidateConcurrentTestRunners();
             SetOutputPath();
         }
@@ -127,13 +132,47 @@ namespace MuTest.Cpp.CLI.Options
 
         private void ValidateTestSolution()
         {
-            if (string.IsNullOrWhiteSpace(TestSolution))
+            if (string.IsNullOrWhiteSpace(TestSolution) || !File.Exists(TestSolution))
             {
-                var testSolution = new FileInfo(TestProject).FindCppSolutionFile();
+                var testSolution = new FileInfo(TestProject).FindCppSolutionFile(TestProject);
                 if (testSolution != null)
                 {
                     TestSolution = testSolution.FullName;
                 }
+            }
+
+            if (!string.IsNullOrWhiteSpace(TestSolution))
+            {
+                var testSolution = new FileInfo(TestSolution);
+                var projects = testSolution.FullName.GetProjects().ToList();
+                var project = projects.First(x => x.AbsolutePath != null &&
+                                              Path.GetFileName(x.AbsolutePath).Equals(Path.GetFileName(TestProject), StringComparison.InvariantCultureIgnoreCase));
+
+                var parentFolders = new List<string>();
+                var parentGuid = project.ParentProjectGuid;
+
+                while (parentGuid != null)
+                {
+                    var parentProject = projects.FirstOrDefault(x => x.ProjectGuid == parentGuid);
+                    if (parentProject == null)
+                    {
+                        break;
+                    }
+
+                    parentFolders.Add(parentProject.ProjectName);
+                    parentGuid = parentProject.ParentProjectGuid;
+                }
+
+                var target = string.Empty;
+                for (var index = parentFolders.Count - 1; index >= 0 ; index--)
+                {
+                    target = string.Join("\\", target, parentFolders[index]);
+                }
+
+                target = $"{target.Trim('\\')}\\{project.ProjectName}".Trim('\\');
+                Target = target;
+
+                return;
             }
 
             if (!File.Exists(TestSolution))
