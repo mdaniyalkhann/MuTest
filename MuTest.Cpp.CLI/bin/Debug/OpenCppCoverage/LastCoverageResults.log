@@ -1,0 +1,41 @@
+[2020-03-27 20:53:47] [info] Start Program:
+Path:"C:\\Users\\deser\\Desktop\\HUTTest\\x64\\Debug\\avolin-pivotal-platform-pss.exe"
+Arguments:
+Working directory: not set.
+Modules: Selected: * Excluded: 
+Sources: Selected: C:\Users\deser\Desktop\HUTTest\HUTTest Excluded: 
+Log Level: Normal
+Cover Children: 0
+Aggregate by file: 1
+Continue after C++ exception: 0
+Optimized build support: 0
+Export: html 
+Input coverage: 
+Unified diff: 
+Excluded line regular expressions: 
+Substitute pdb source paths: 
+
+[2020-03-27 20:53:47] [info] Module: C:\Users\deser\Desktop\HUTTest\x64\Debug\avolin-pivotal-platform-pss.exe is selected because it matches selected pattern: *
+[2020-03-27 20:53:47] [info] Module: C:\Windows\System32\ntdll.dll is selected because it matches selected pattern: *
+[2020-03-27 20:53:47] [info] Module: C:\Windows\System32\kernel32.dll is selected because it matches selected pattern: *
+[2020-03-27 20:53:47] [info] Module: C:\Windows\System32\KernelBase.dll is selected because it matches selected pattern: *
+[2020-03-27 20:53:47] [info] Module: C:\Windows\System32\user32.dll is selected because it matches selected pattern: *
+[2020-03-27 20:53:47] [info] Module: C:\Windows\System32\win32u.dll is selected because it matches selected pattern: *
+[2020-03-27 20:53:47] [info] Module: C:\Windows\System32\gdi32.dll is selected because it matches selected pattern: *
+[2020-03-27 20:53:47] [info] Module: C:\Windows\System32\gdi32full.dll is selected because it matches selected pattern: *
+[2020-03-27 20:53:47] [info] Module: C:\Windows\System32\msvcp_win.dll is selected because it matches selected pattern: *
+[2020-03-27 20:53:47] [info] Module: C:\Windows\System32\ucrtbase.dll is selected because it matches selected pattern: *
+[2020-03-27 20:53:47] [info] Module: C:\Windows\System32\oleaut32.dll is selected because it matches selected pattern: *
+[2020-03-27 20:53:47] [info] Module: C:\Windows\System32\combase.dll is selected because it matches selected pattern: *
+[2020-03-27 20:53:48] [info] Module: C:\Windows\System32\rpcrt4.dll is selected because it matches selected pattern: *
+[2020-03-27 20:53:48] [info] Module: C:\Windows\System32\bcryptprimitives.dll is selected because it matches selected pattern: *
+[2020-03-27 20:53:48] [info] Module: C:\Windows\System32\imm32.dll is selected because it matches selected pattern: *
+[2020-03-27 20:53:48] [info] Module: C:\Windows\System32\mapi32.dll is selected because it matches selected pattern: *
+[2020-03-27 20:53:48] [info] Module: C:\Windows\System32\msvcrt.dll is selected because it matches selected pattern: *
+[2020-03-27 20:53:48] [info] Module: C:\Windows\System32\ole32.dll is selected because it matches selected pattern: *
+[2020-03-27 20:53:48] [info] Module: C:\Windows\System32\advapi32.dll is selected because it matches selected pattern: *
+[2020-03-27 20:53:48] [info] Module: C:\Windows\System32\sechost.dll is selected because it matches selected pattern: *
+[2020-03-27 20:53:48] [info] Module: C:\Windows\System32\kernel.appcore.dll is selected because it matches selected pattern: *
+[2020-03-27 20:53:48] [info] ----------------------------------------------------
+[2020-03-27 20:53:48] [info] Coverage generated in Folder D:\Repos\Tools\OpenCppCoverage\CoverageReport-2020-03-27-20h53m48s
+[2020-03-27 20:53:48] [info] ----------------------------------------------------
