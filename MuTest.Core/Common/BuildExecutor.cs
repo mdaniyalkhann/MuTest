@@ -15,7 +15,7 @@ namespace MuTest.Core.Common
 {
     public class BuildExecutor : IBuildExecutor
     {
-        private readonly VSTestConsoleSettings _consoleSettings;
+        private readonly MuTestSettings _settings;
         private readonly string _project;
 
         public event EventHandler<EventArgs> BuildStarted;
@@ -34,7 +34,7 @@ namespace MuTest.Core.Common
 
         public bool QuietWithSymbols { get; set; }
 
-        public BuildExecutor(VSTestConsoleSettings settings, string project)
+        public BuildExecutor(MuTestSettings settings, string project)
         {
             if (string.IsNullOrWhiteSpace(project))
             {
@@ -42,13 +42,13 @@ namespace MuTest.Core.Common
             }
 
             _project = project;
-            _consoleSettings = settings ?? throw new ArgumentNullException(nameof(settings));
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         }
 
         public async Task ExecuteBuildInDebugModeWithoutDependencies()
         {
             var projectBuilder = new StringBuilder($@"""{_project}""")
-                .Append(_consoleSettings.MSBuildDependenciesOption);
+                .Append(_settings.MSBuildDependenciesOption);
 
             await Build(projectBuilder);
         }
@@ -61,7 +61,7 @@ namespace MuTest.Core.Common
         public async Task ExecuteBuildInReleaseModeWithDependencies()
         {
             var projectBuilder = new StringBuilder($@"""{_project}""")
-                .Append(_consoleSettings.MSBuildConfigurationOption);
+                .Append(_settings.MSBuildConfigurationOption);
 
             await Build(projectBuilder);
         }
@@ -69,8 +69,8 @@ namespace MuTest.Core.Common
         public async Task ExecuteBuildInReleaseModeWithoutDependencies()
         {
             var projectBuilder = new StringBuilder($@"""{_project}""")
-                .Append(_consoleSettings.MSBuildConfigurationOption)
-                .Append(_consoleSettings.MSBuildDependenciesOption);
+                .Append(_settings.MSBuildConfigurationOption)
+                .Append(_settings.MSBuildDependenciesOption);
 
             await Build(projectBuilder);
         }
@@ -94,30 +94,30 @@ namespace MuTest.Core.Common
         {
             OnBuildStarted(EventArgs.Empty);
             projectBuilder
-                .Append(_consoleSettings.PostBuildEvents)
-                .Append(_consoleSettings.PreBuildEvents)
-                .Append(_consoleSettings.MSBuildCustomOption);
+                .Append(_settings.PostBuildEvents)
+                .Append(_settings.PreBuildEvents)
+                .Append(_settings.MSBuildCustomOption);
 
             if (EnableLogging)
             {
-                var buildLogFilePath = $@"""{_consoleSettings.MSBuildLogDirectory}build_{DateTime.Now:yyyyMdhhmmss}.log""";
-                projectBuilder.Append(_consoleSettings.MSBuildLogger)
+                var buildLogFilePath = $@"""{_settings.MSBuildLogDirectory}build_{DateTime.Now:yyyyMdhhmmss}.log""";
+                projectBuilder.Append(_settings.MSBuildLogger)
                     .Append(buildLogFilePath)
                     .Append(";")
                     .Append(VerbosityOption)
-                    .Append(_consoleSettings.MSBuildVerbosity);
+                    .Append(_settings.MSBuildVerbosity);
             }
             else if (QuietWithSymbols)
             {
                 projectBuilder
                     .Append(VerbosityOption)
-                    .Append(_consoleSettings.QuietBuildWithSymbols);
+                    .Append(_settings.QuietBuildWithSymbols);
             }
             else
             {
                 projectBuilder
                     .Append(VerbosityOption)
-                    .Append(_consoleSettings.QuietBuild);
+                    .Append(_settings.QuietBuild);
             }
 
             if (!string.IsNullOrWhiteSpace(OutputPath))
@@ -135,7 +135,7 @@ namespace MuTest.Core.Common
                 try
                 {
 
-                    var processInfo = new ProcessStartInfo(_consoleSettings.MSBuildPath)
+                    var processInfo = new ProcessStartInfo(_settings.MSBuildPath)
                     {
                         Arguments = $" {projectBuilder}",
                         UseShellExecute = false,

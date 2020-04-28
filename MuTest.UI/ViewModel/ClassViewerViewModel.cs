@@ -66,7 +66,7 @@ namespace Dashboard.ViewModel
         [ServiceProperty(Key = "MessageBoxService")]
         protected virtual IMessageBoxService MessageBoxService => null;
 
-        public static readonly VSTestConsoleSettings VSTestConsoleSettings = VSTestConsoleSettingsSection.GetSettings();
+        public static readonly MuTestSettings MuTestSettings = MuTestSettingsSection.GetSettings();
 
         [ServiceProperty(SearchMode = ServiceSearchMode.PreferParents)]
         protected virtual IDocumentManagerService DocumentManagerService => null;
@@ -98,9 +98,9 @@ namespace Dashboard.ViewModel
             ChkCompareChildren = ControlViewModel.CreateWithChecked();
             ChkParameterizedAsserts = ControlViewModel.CreateWithChecked();
 
-            _testCodeBuild = new BuildExecutor(VSTestConsoleSettings, _source.TestClaz.ClassProject);
+            _testCodeBuild = new BuildExecutor(MuTestSettings, _source.TestClaz.ClassProject);
             _outputLogger = new CommandPromptOutputLogger();
-            _testExecutor = new TestExecutor(VSTestConsoleSettings, source.TestClaz.ClassLibrary);
+            _testExecutor = new TestExecutor(MuTestSettings, source.TestClaz.ClassLibrary);
             _methodAnalyzer = new MethodAnalyzer();
             InitItemSources();
         }
@@ -213,7 +213,7 @@ namespace Dashboard.ViewModel
                 _testExecutor.EnableLogging = true;
                 _testExecutor.OutputDataReceived += OutputData;
                 _testExecutor.X64TargetPlatform = ChkTargetPlatformX64.IsChecked;
-                _testExecutor.FullyQualifiedName = selectedMethods.Count > Convert.ToInt32(VSTestConsoleSettings.UseClassFilterTestsThreshold) ||
+                _testExecutor.FullyQualifiedName = selectedMethods.Count > Convert.ToInt32(MuTestSettings.UseClassFilterTestsThreshold) ||
                                                    _source.TestClaz.BaseClass != null
                     ? _source.TestClaz.Claz.FullName()
                     : string.Empty;
@@ -248,7 +248,7 @@ namespace Dashboard.ViewModel
         public async Task BtnInspectCodeClick()
         {
             IsSplashScreenShown = true;
-            var duplicateFinder = new DuplicateCodeFinder(VSTestConsoleSettings, _source.TestClaz.FilePath)
+            var duplicateFinder = new DuplicateCodeFinder(MuTestSettings, _source.TestClaz.FilePath)
             {
                 IncludePartialClasses = _source.TestClaz.PartialClasses.Count > 1,
                 DiscardCost = DiscardCost
@@ -365,13 +365,13 @@ namespace Dashboard.ViewModel
                     return;
                 }
 
-                if (!Directory.Exists(VSTestConsoleSettings.DynamicAssertsAssemblyPath))
+                if (!Directory.Exists(MuTestSettings.DynamicAssertsAssemblyPath))
                 {
                     MessageBoxService.Show("Dynamic Asserts Assembly Path Not Found!");
                     return;
                 }
 
-                if (_source.TestClaz.DoNetCoreProject && !Directory.Exists(VSTestConsoleSettings.DynamicAssertsCoreAssemblyPath))
+                if (_source.TestClaz.DoNetCoreProject && !Directory.Exists(MuTestSettings.DynamicAssertsCoreAssemblyPath))
                 {
                     MessageBoxService.Show("Dynamic Asserts Core Assembly Path Not Found!");
                     return;
@@ -445,11 +445,11 @@ namespace Dashboard.ViewModel
                     testFile = factory.GetSourceCodeFile(0, setupLibPath?.FilePath);
                     if (!_source.DoNetCoreProject)
                     {
-                        VSTestConsoleSettings.DynamicAssertsAssemblyPath.DirectoryCopy(libraryPathName);
+                        MuTestSettings.DynamicAssertsAssemblyPath.DirectoryCopy(libraryPathName);
                     }
                     else
                     {
-                        VSTestConsoleSettings.DynamicAssertsCoreAssemblyPath.DirectoryCopy(libraryPathName);
+                        MuTestSettings.DynamicAssertsCoreAssemblyPath.DirectoryCopy(libraryPathName);
                     }
 
                     var setupLocation = _source.TestClaz.Claz.DescendantNodes<MethodDeclarationSyntax>().FirstOrDefault().LineNumber();
@@ -506,7 +506,7 @@ namespace Dashboard.ViewModel
 
                     void BuildOutputData(object sender, string args) => _buildLog.CommandPromptOutput += args.PrintWithPreTag();
 
-                    var build = new BuildExecutor(VSTestConsoleSettings, project.FullName)
+                    var build = new BuildExecutor(MuTestSettings, project.FullName)
                     {
                         OutputPath = libraryPathName,
                         IntermediateOutputPath = $@"{libraryPathName}\obj\"
@@ -536,11 +536,11 @@ namespace Dashboard.ViewModel
                         testDocument.Show();
 
                         void OutputData(object sender, string args) => log.CommandPromptOutput += args.Encode().PrintWithPreTag();
-                        var testExecutor = new TestExecutor(VSTestConsoleSettings, $"{libraryPathName}\\{Path.GetFileName(_source.TestClaz.ClassLibrary)}");
+                        var testExecutor = new TestExecutor(MuTestSettings, $"{libraryPathName}\\{Path.GetFileName(_source.TestClaz.ClassLibrary)}");
                         testExecutor.OutputDataReceived += OutputData;
                         testExecutor.EnableCustomOptions = false;
                         testExecutor.EnableLogging = false;
-                        testExecutor.FullyQualifiedName = selectedMethods.Count > Convert.ToInt32(VSTestConsoleSettings.UseClassFilterTestsThreshold) ||
+                        testExecutor.FullyQualifiedName = selectedMethods.Count > Convert.ToInt32(MuTestSettings.UseClassFilterTestsThreshold) ||
                                                           ChkUseClassFilter.IsChecked
                             ? _source.TestClaz.Claz.FullName()
                             : string.Empty;
@@ -553,7 +553,7 @@ namespace Dashboard.ViewModel
                             testDocument.Close();
                             testFile.FullName.WriteLines(originalLines);
 
-                            var outputFile = $"{VSTestConsoleSettings.DynamicAssertsOutputPath}{id}";
+                            var outputFile = $"{MuTestSettings.DynamicAssertsOutputPath}{id}";
                             var asserts = new List<AssertMethod>();
                             if (Directory.Exists(outputFile) &&
                                 Directory.GetFiles(outputFile).Any())
@@ -1216,8 +1216,8 @@ namespace Dashboard.ViewModel
 
             try
             {
-                var assertsFile = asserts.GenerateFile(VSTestConsoleSettings.TestsResultDirectory, _source.Claz.ClassName(), _source.Claz.NameSpace());
-                Process.Start(VSTestConsoleSettings.DefaultEditor, string.Format(VSTestConsoleSettings.DefaultEditorOptions, assertsFile));
+                var assertsFile = asserts.GenerateFile(MuTestSettings.TestsResultDirectory, _source.Claz.ClassName(), _source.Claz.NameSpace());
+                Process.Start(MuTestSettings.DefaultEditor, string.Format(MuTestSettings.DefaultEditorOptions, assertsFile));
             }
             catch (Exception e)
             {
@@ -1230,8 +1230,8 @@ namespace Dashboard.ViewModel
         {
             try
             {
-                Process.Start(VSTestConsoleSettings.DefaultEditor, string.Format(VSTestConsoleSettings.DefaultEditorOptions, _source.FilePath));
-                Process.Start(VSTestConsoleSettings.DefaultEditor, string.Format(VSTestConsoleSettings.DefaultEditorOptions, _source.TestClaz.FilePath));
+                Process.Start(MuTestSettings.DefaultEditor, string.Format(MuTestSettings.DefaultEditorOptions, _source.FilePath));
+                Process.Start(MuTestSettings.DefaultEditor, string.Format(MuTestSettings.DefaultEditorOptions, _source.TestClaz.FilePath));
             }
             catch (Exception exp)
             {

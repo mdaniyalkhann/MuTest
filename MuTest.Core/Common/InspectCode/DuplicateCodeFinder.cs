@@ -13,7 +13,7 @@ namespace MuTest.Core.Common.InspectCode
     public class DuplicateCodeFinder
     {
         private const string DuplicateFinderTemplate = "DuplicateFinderTemplate.xsl";
-        private readonly VSTestConsoleSettings _consoleSettings;
+        private readonly MuTestSettings _settings;
         private readonly string _classLocation;
 
         public event EventHandler<DataReceivedEventArgs> OutputDataReceived;
@@ -24,7 +24,7 @@ namespace MuTest.Core.Common.InspectCode
 
         public bool IncludePartialClasses { get; set; }
 
-        public DuplicateCodeFinder(VSTestConsoleSettings settings, string classLocation)
+        public DuplicateCodeFinder(MuTestSettings settings, string classLocation)
         {
             if (string.IsNullOrWhiteSpace(classLocation))
             {
@@ -32,7 +32,7 @@ namespace MuTest.Core.Common.InspectCode
             }
 
             _classLocation = classLocation;
-            _consoleSettings = settings ?? throw new ArgumentNullException(nameof(settings));
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         }
 
         private void ProcessOnOutputDataReceived(object sender, DataReceivedEventArgs args)
@@ -49,7 +49,7 @@ namespace MuTest.Core.Common.InspectCode
         {
             try
             {
-                if (!File.Exists(_consoleSettings.DuplicateFinderToolPath))
+                if (!File.Exists(_settings.DuplicateFinderToolPath))
                 {
                     return;
                 }
@@ -81,13 +81,13 @@ namespace MuTest.Core.Common.InspectCode
                 }
 
 
-                var outputFilePath = $"{_consoleSettings.TestsResultDirectory}{fileNameWithoutExtension}_{DateTime.Now:yyyyMdhhmmss}.xml";
+                var outputFilePath = $"{_settings.TestsResultDirectory}{fileNameWithoutExtension}_{DateTime.Now:yyyyMdhhmmss}.xml";
                 var arguments = new StringBuilder($" \"{Path.GetDirectoryName(_classLocation)}\\{classWildCard}\"")
                     .Append($" -o=\"{outputFilePath}\"")
                     .Append($" --discard-cost={DiscardCost}")
                     .Append(" --show-text");
 
-                var processInfo = new ProcessStartInfo(_consoleSettings.DuplicateFinderToolPath)
+                var processInfo = new ProcessStartInfo(_settings.DuplicateFinderToolPath)
                 {
                     Arguments = $" {arguments}",
                     UseShellExecute = false,

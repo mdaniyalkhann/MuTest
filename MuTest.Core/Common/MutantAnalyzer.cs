@@ -18,7 +18,7 @@ namespace MuTest.Core.Common
     public class MutantAnalyzer : IMutantAnalyzer
     {
         private readonly IChalk _chalk;
-        private readonly VSTestConsoleSettings _settings;
+        private readonly MuTestSettings _settings;
         private readonly int _useClassFilterTestsThreshold;
         private static readonly object _sync = new object();
 
@@ -72,7 +72,7 @@ namespace MuTest.Core.Common
 
         public char ProgressIndicator { get; set; } = '*';
 
-        public MutantAnalyzer(IChalk chalk, VSTestConsoleSettings settings)
+        public MutantAnalyzer(IChalk chalk, MuTestSettings settings)
         {
             _chalk = chalk ?? throw new ArgumentNullException(nameof(chalk));
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));

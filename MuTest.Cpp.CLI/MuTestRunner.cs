@@ -20,7 +20,7 @@ namespace MuTest.Cpp.CLI
 {
     public class MuTestRunner : IMuTestRunner
     {
-        public static readonly VSTestConsoleSettings VsTestConsoleSettings = VSTestConsoleSettingsSection.GetSettings();
+        public static readonly MuTestSettings MuTestSettings = MuTestSettingsSection.GetSettings();
 
         private readonly IChalk _chalk;
         private readonly ICppDirectoryFactory _directoryFactory;
@@ -84,7 +84,7 @@ namespace MuTest.Cpp.CLI
 
                     if (_cppClass.Mutants.Any())
                     {
-                        MutantsExecutor = new CppMutantExecutor(_cppClass, _context, VsTestConsoleSettings)
+                        MutantsExecutor = new CppMutantExecutor(_cppClass, _context, MuTestSettings)
                         {
                             EnableDiagnostics = _options.EnableDiagnostics,
                             KilledThreshold = _options.KilledThreshold,
@@ -163,7 +163,7 @@ namespace MuTest.Cpp.CLI
             var log = new StringBuilder();
             void OutputData(object sender, string args) => log.AppendLine(args);
             var testCodeBuild = new CppBuildExecutor(
-                VsTestConsoleSettings,
+                MuTestSettings,
                 string.Format(_context.TestSolution.FullName, 0),
                 _cppClass.Target)
             {
@@ -190,7 +190,7 @@ namespace MuTest.Cpp.CLI
                 _context = _directoryFactory.PrepareSolutionFiles(_cppClass);
 
                 testCodeBuild = new CppBuildExecutor(
-                    VsTestConsoleSettings,
+                    MuTestSettings,
                     string.Format(_context.TestSolution.FullName, 0),
                     _cppClass.Target)
                 {

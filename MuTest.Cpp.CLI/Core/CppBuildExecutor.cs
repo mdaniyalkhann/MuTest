@@ -9,7 +9,7 @@ namespace MuTest.Cpp.CLI.Core
 {
     public class CppBuildExecutor
     {
-        private readonly VSTestConsoleSettings _consoleSettings;
+        private readonly MuTestSettings _settings;
         private readonly string _solution;
         private readonly string _project;
 
@@ -35,7 +35,7 @@ namespace MuTest.Cpp.CLI.Core
 
         public bool QuietWithSymbols { get; set; }
 
-        public CppBuildExecutor(VSTestConsoleSettings settings, string solution, string project)
+        public CppBuildExecutor(MuTestSettings settings, string solution, string project)
         {
             if (string.IsNullOrWhiteSpace(project))
             {
@@ -48,7 +48,7 @@ namespace MuTest.Cpp.CLI.Core
             }
 
             _project = project;
-            _consoleSettings = settings ?? throw new ArgumentNullException(nameof(settings));
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _solution = solution;
         }
 
@@ -56,7 +56,7 @@ namespace MuTest.Cpp.CLI.Core
         {
             var projectBuilder = new StringBuilder($@"""{_solution}""")
                 .Append($" -t:\"{_project}\"")
-                .Append(_consoleSettings.MSBuildDependenciesOption);
+                .Append(_settings.MSBuildDependenciesOption);
 
             await Build(projectBuilder);
         }
@@ -86,30 +86,30 @@ namespace MuTest.Cpp.CLI.Core
         {
             OnBuildStarted(EventArgs.Empty);
             projectBuilder
-                .Append(_consoleSettings.PostBuildEvents)
-                .Append(_consoleSettings.PreBuildEvents)
-                .Append(_consoleSettings.MSBuildCustomOption);
+                .Append(_settings.PostBuildEvents)
+                .Append(_settings.PreBuildEvents)
+                .Append(_settings.MSBuildCustomOption);
 
             if (EnableLogging)
             {
-                var buildLogFilePath = $@"""{_consoleSettings.MSBuildLogDirectory}build_{DateTime.Now:yyyyMdhhmmss}.log""";
-                projectBuilder.Append(_consoleSettings.MSBuildLogger)
+                var buildLogFilePath = $@"""{_settings.MSBuildLogDirectory}build_{DateTime.Now:yyyyMdhhmmss}.log""";
+                projectBuilder.Append(_settings.MSBuildLogger)
                     .Append(buildLogFilePath)
                     .Append(";")
                     .Append(VerbosityOption)
-                    .Append(_consoleSettings.MSBuildVerbosity);
+                    .Append(_settings.MSBuildVerbosity);
             }
             else if (QuietWithSymbols)
             {
                 projectBuilder
                     .Append(VerbosityOption)
-                    .Append(_consoleSettings.QuietBuildWithSymbols);
+                    .Append(_settings.QuietBuildWithSymbols);
             }
             else
             {
                 projectBuilder
                     .Append(VerbosityOption)
-                    .Append(_consoleSettings.QuietBuild);
+                    .Append(_settings.QuietBuild);
             }
 
             if (!string.IsNullOrWhiteSpace(OutputPath))
@@ -145,7 +145,7 @@ namespace MuTest.Cpp.CLI.Core
 
             try
             {
-                var processInfo = new ProcessStartInfo(_consoleSettings.MSBuildPath)
+                var processInfo = new ProcessStartInfo(_settings.MSBuildPath)
                 {
                     Arguments = $" {projectBuilder}",
                     UseShellExecute = false,

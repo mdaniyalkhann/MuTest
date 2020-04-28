@@ -27,7 +27,7 @@ namespace MuTest.Core.Common
         private const string FailedDuringExecution = "Failed ";
         private const string ErrorDuringExecution = "  X ";
 
-        private readonly VSTestConsoleSettings _settings;
+        private readonly MuTestSettings _settings;
         private readonly string _testClassLibrary;
 
         public string BaseAddress { get; set; }
@@ -54,7 +54,7 @@ namespace MuTest.Core.Common
 
         public event EventHandler<string> OutputDataReceived;
 
-        public TestExecutor(VSTestConsoleSettings settings, string testClassLibrary)
+        public TestExecutor(MuTestSettings settings, string testClassLibrary)
         {
             if (string.IsNullOrWhiteSpace(testClassLibrary))
             {

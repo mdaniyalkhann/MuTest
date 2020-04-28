@@ -2,7 +2,7 @@
 
 namespace MuTest.Core.Common.Settings
 {
-    public class VSTestConsoleSettings : ConfigurationElement
+    public class MuTestSettings : ConfigurationElement
     {
         [ConfigurationProperty(nameof(VSTestConsolePath), IsRequired = true)]
         public string VSTestConsolePath

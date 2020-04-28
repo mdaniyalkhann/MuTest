@@ -28,7 +28,7 @@ namespace Dashboard.ViewModel
     [POCOViewModel]
     public class MutantViewerViewModel
     {
-        private static readonly VSTestConsoleSettings Settings = VSTestConsoleSettingsSection.GetSettings();
+        private static readonly MuTestSettings Settings = MuTestSettingsSection.GetSettings();
 
         public virtual bool IsSplashScreenShown { get; set; }
 

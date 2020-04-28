@@ -30,7 +30,7 @@ namespace MuTest.Core.Common
 
         private readonly SourceClassDetail _source;
         private readonly ITestDirectoryFactory _directoryFactory;
-        private readonly VSTestConsoleSettings _settings;
+        private readonly MuTestSettings _settings;
 
         private string _testDiagnostics;
 
@@ -43,7 +43,7 @@ namespace MuTest.Core.Common
             MutantExecuted?.Invoke(this, args);
         }
 
-        public MutantExecutor(SourceClassDetail source, VSTestConsoleSettings settings)
+        public MutantExecutor(SourceClassDetail source, MuTestSettings settings)
         {
             _source = source ?? throw new ArgumentNullException(nameof(source));
             _directoryFactory = new TestDirectoryFactory(_source);

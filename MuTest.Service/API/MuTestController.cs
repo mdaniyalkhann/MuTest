@@ -9,7 +9,7 @@ namespace MuTest.Service.API
 {
     public class MuTestController : ApiController
     {
-        private static readonly VSTestConsoleSettings Settings = VSTestConsoleSettingsSection.GetSettings();
+        private static readonly MuTestSettings Settings = MuTestSettingsSection.GetSettings();
 
         public MuTestController()
         {

@@ -27,7 +27,7 @@ namespace MuTest.Cpp.CLI.Core
 
         private readonly CppClass _cpp;
         private readonly CppBuildContext _context;
-        private readonly VSTestConsoleSettings _settings;
+        private readonly MuTestSettings _settings;
 
         private string _testDiagnostics;
 
@@ -40,7 +40,7 @@ namespace MuTest.Cpp.CLI.Core
             MutantExecuted?.Invoke(this, args);
         }
 
-        public CppMutantExecutor(CppClass cpp, CppBuildContext context, VSTestConsoleSettings settings)
+        public CppMutantExecutor(CppClass cpp, CppBuildContext context, MuTestSettings settings)
         {
             _cpp = cpp ?? throw new ArgumentNullException(nameof(cpp));
             _context = context ?? throw new ArgumentNullException(nameof(context));

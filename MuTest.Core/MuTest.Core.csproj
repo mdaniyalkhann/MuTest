@@ -162,8 +162,8 @@
     <Compile Include="Common\MutantEventArgs.cs" />
     <Compile Include="Common\MutantExecutor.cs" />
     <Compile Include="Common\MutantInitializer.cs" />
-    <Compile Include="Common\Settings\VSTestConsoleSettings.cs" />
-    <Compile Include="Common\Settings\VSTestConsoleSettingsSection.cs" />
+    <Compile Include="Common\Settings\MuTestSettings.cs" />
+    <Compile Include="Common\Settings\MuTestSettingsSection.cs" />
     <Compile Include="Common\StaticAnalyzers\AssertsAnalyzer.cs" />
     <Compile Include="Common\StaticAnalyzers\ComplexityAnalyzer.cs" />
     <Compile Include="Common\StaticAnalyzers\LineOfCodeAnalyzer.cs" />

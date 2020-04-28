@@ -9,7 +9,7 @@ namespace MuTest.Service
 {
     public partial class MuTestService : ServiceBase
     {
-        private static readonly VSTestConsoleSettings Settings = VSTestConsoleSettingsSection.GetSettings();
+        private static readonly MuTestSettings Settings = MuTestSettingsSection.GetSettings();
         public static string BaseAddress { get; private set; }
         private IDisposable _server;
 

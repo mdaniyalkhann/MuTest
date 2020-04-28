@@ -10,10 +10,10 @@ namespace MuTest.Service.Service
 {
     internal class BuildService
     {
-        private readonly VSTestConsoleSettings _settings;
+        private readonly MuTestSettings _settings;
         private StringBuilder _buildOutput;
 
-        public BuildService(VSTestConsoleSettings settings)
+        public BuildService(MuTestSettings settings)
         {
             _settings = settings;
         }

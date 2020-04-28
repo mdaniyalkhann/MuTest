@@ -11,7 +11,7 @@ namespace MuTest.Service.Service
 {
     internal class TestService
     {
-        private readonly VSTestConsoleSettings _settings;
+        private readonly MuTestSettings _settings;
         private StringBuilder _testOutput;
         private TestResult _testResult;
         private const string FailedDuringExecution = "Failed ";
@@ -20,7 +20,7 @@ namespace MuTest.Service.Service
 
         public bool KillProcessOnTestFail { get; set; }
 
-        public TestService(VSTestConsoleSettings settings)
+        public TestService(MuTestSettings settings)
         {
             _settings = settings;
         }

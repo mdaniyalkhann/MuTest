@@ -20,7 +20,7 @@ namespace MuTest.Console
     public class MuTestRunner : IMuTestRunner
     {
         private const string ProjectSummary = "Project_Summary";
-        public static readonly VSTestConsoleSettings VsTestConsoleSettings = VSTestConsoleSettingsSection.GetSettings();
+        public static readonly MuTestSettings MuTestSettings = MuTestSettingsSection.GetSettings();
 
         public IMutantExecutor MutantExecutor { get; private set; }
 
@@ -79,7 +79,7 @@ namespace MuTest.Console
                 TestProject = _options.TestProjectParameter
             };
 
-            var mutantAnalyzer = new MutantAnalyzer(_chalk, VsTestConsoleSettings)
+            var mutantAnalyzer = new MutantAnalyzer(_chalk, MuTestSettings)
             {
                 ProcessWholeProject = _options.ProcessWholeProject,
                 BuildInReleaseMode = _options.BuildInReleaseModeParameter,
@@ -217,9 +217,9 @@ namespace MuTest.Console
             _chalk.Default("Building Test Project...");
             var log = new StringBuilder();
             void OutputData(object sender, string args) => log.AppendLine(args);
-            var testCodeBuild = new BuildExecutor(VsTestConsoleSettings, _options.TestProjectParameter)
+            var testCodeBuild = new BuildExecutor(MuTestSettings, _options.TestProjectParameter)
             {
-                BaseAddress = VsTestConsoleSettings.ServiceAddress,
+                BaseAddress = MuTestSettings.ServiceAddress,
                 EnableLogging = _options.EnableDiagnostics,
                 QuietWithSymbols = true
             };
