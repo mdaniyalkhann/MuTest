@@ -206,5 +206,13 @@ namespace MuTest.Core.Common.Settings
             get => (string)this[nameof(ServiceAddress)];
             set => value = (string)this[nameof(ServiceAddress)];
         }
+
+
+        [ConfigurationProperty(nameof(OpenCppCoveragePath), DefaultValue = @"OpenCppCoverage\OpenCppCoverage.exe", IsRequired = false)]
+        public string OpenCppCoveragePath
+        {
+            get => (string)this[nameof(OpenCppCoveragePath)];
+            set => value = (string)this[nameof(OpenCppCoveragePath)];
+        }
     }
 }

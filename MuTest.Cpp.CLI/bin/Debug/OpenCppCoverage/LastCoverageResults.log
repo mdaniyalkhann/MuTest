@@ -1,41 +1,45 @@
-[2020-03-27 20:53:47] [info] Start Program:
-Path:"C:\\Users\\deser\\Desktop\\HUTTest\\x64\\Debug\\avolin-pivotal-platform-pss.exe"
-Arguments:
+[2020-04-28 23:31:15] [info] Start Program:
+Path:"D:\\Repos\\Tools\\C++\\MovieManager\\MovieDataDetcherTests\\mutest_out_dir\\MovieDataFetcherTests.exe"
+Arguments:--gtest_filter=MovieAnalyzerTests_mutest_test_0* 
 Working directory: not set.
 Modules: Selected: * Excluded: 
-Sources: Selected: C:\Users\deser\Desktop\HUTTest\HUTTest Excluded: 
+Sources: Selected: D:\Repos\Tools\C++\MovieManager\MovieDataFetcher Excluded: 
 Log Level: Normal
 Cover Children: 0
 Aggregate by file: 1
 Continue after C++ exception: 0
 Optimized build support: 0
-Export: html 
+Export: cobertura C:\Dashboard\TestResults\report_2020428112831.xml 
 Input coverage: 
 Unified diff: 
 Excluded line regular expressions: 
 Substitute pdb source paths: 
 
-[2020-03-27 20:53:47] [info] Module: C:\Users\deser\Desktop\HUTTest\x64\Debug\avolin-pivotal-platform-pss.exe is selected because it matches selected pattern: *
-[2020-03-27 20:53:47] [info] Module: C:\Windows\System32\ntdll.dll is selected because it matches selected pattern: *
-[2020-03-27 20:53:47] [info] Module: C:\Windows\System32\kernel32.dll is selected because it matches selected pattern: *
-[2020-03-27 20:53:47] [info] Module: C:\Windows\System32\KernelBase.dll is selected because it matches selected pattern: *
-[2020-03-27 20:53:47] [info] Module: C:\Windows\System32\user32.dll is selected because it matches selected pattern: *
-[2020-03-27 20:53:47] [info] Module: C:\Windows\System32\win32u.dll is selected because it matches selected pattern: *
-[2020-03-27 20:53:47] [info] Module: C:\Windows\System32\gdi32.dll is selected because it matches selected pattern: *
-[2020-03-27 20:53:47] [info] Module: C:\Windows\System32\gdi32full.dll is selected because it matches selected pattern: *
-[2020-03-27 20:53:47] [info] Module: C:\Windows\System32\msvcp_win.dll is selected because it matches selected pattern: *
-[2020-03-27 20:53:47] [info] Module: C:\Windows\System32\ucrtbase.dll is selected because it matches selected pattern: *
-[2020-03-27 20:53:47] [info] Module: C:\Windows\System32\oleaut32.dll is selected because it matches selected pattern: *
-[2020-03-27 20:53:47] [info] Module: C:\Windows\System32\combase.dll is selected because it matches selected pattern: *
-[2020-03-27 20:53:48] [info] Module: C:\Windows\System32\rpcrt4.dll is selected because it matches selected pattern: *
-[2020-03-27 20:53:48] [info] Module: C:\Windows\System32\bcryptprimitives.dll is selected because it matches selected pattern: *
-[2020-03-27 20:53:48] [info] Module: C:\Windows\System32\imm32.dll is selected because it matches selected pattern: *
-[2020-03-27 20:53:48] [info] Module: C:\Windows\System32\mapi32.dll is selected because it matches selected pattern: *
-[2020-03-27 20:53:48] [info] Module: C:\Windows\System32\msvcrt.dll is selected because it matches selected pattern: *
-[2020-03-27 20:53:48] [info] Module: C:\Windows\System32\ole32.dll is selected because it matches selected pattern: *
-[2020-03-27 20:53:48] [info] Module: C:\Windows\System32\advapi32.dll is selected because it matches selected pattern: *
-[2020-03-27 20:53:48] [info] Module: C:\Windows\System32\sechost.dll is selected because it matches selected pattern: *
-[2020-03-27 20:53:48] [info] Module: C:\Windows\System32\kernel.appcore.dll is selected because it matches selected pattern: *
-[2020-03-27 20:53:48] [info] ----------------------------------------------------
-[2020-03-27 20:53:48] [info] Coverage generated in Folder D:\Repos\Tools\OpenCppCoverage\CoverageReport-2020-03-27-20h53m48s
-[2020-03-27 20:53:48] [info] ----------------------------------------------------
+[2020-04-28 23:31:15] [info] Module: D:\Repos\Tools\C++\MovieManager\MovieDataDetcherTests\mutest_out_dir\MovieDataFetcherTests.exe is selected because it matches selected pattern: *
+[2020-04-28 23:31:15] [info] Module: C:\Windows\System32\ntdll.dll is selected because it matches selected pattern: *
+[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\ntdll.dll is selected because it matches selected pattern: *
+[2020-04-28 23:31:15] [info] Module: C:\Windows\System32\wow64.dll is selected because it matches selected pattern: *
+[2020-04-28 23:31:15] [info] Module: C:\Windows\System32\wow64win.dll is selected because it matches selected pattern: *
+[2020-04-28 23:31:15] [info] Module: C:\Windows\System32\wow64cpu.dll is selected because it matches selected pattern: *
+[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\kernel32.dll is selected because it matches selected pattern: *
+[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\KernelBase.dll is selected because it matches selected pattern: *
+[2020-04-28 23:31:15] [info] Module: D:\Repos\Tools\C++\MovieManager\MovieDataDetcherTests\mutest_out_dir\libcurl.dll is selected because it matches selected pattern: *
+[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\ws2_32.dll is selected because it matches selected pattern: *
+[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\rpcrt4.dll is selected because it matches selected pattern: *
+[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\sspicli.dll is selected because it matches selected pattern: *
+[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\cryptbase.dll is selected because it matches selected pattern: *
+[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\bcryptprimitives.dll is selected because it matches selected pattern: *
+[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\sechost.dll is selected because it matches selected pattern: *
+[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\Wldap32.dll is selected because it matches selected pattern: *
+[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\ucrtbase.dll is selected because it matches selected pattern: *
+[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\advapi32.dll is selected because it matches selected pattern: *
+[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\msvcrt.dll is selected because it matches selected pattern: *
+[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\normaliz.dll is selected because it matches selected pattern: *
+[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\crypt32.dll is selected because it matches selected pattern: *
+[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\msasn1.dll is selected because it matches selected pattern: *
+[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\vcruntime140.dll is selected because it matches selected pattern: *
+[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\kernel.appcore.dll is selected because it matches selected pattern: *
+[2020-04-28 23:31:15] [info] ----------------------------------------------------
+[2020-04-28 23:31:15] [info] Cobertura report generated: C:\Dashboard\TestResults\report_2020428112831.xml
+[2020-04-28 23:31:15] [info] ----------------------------------------------------
+[2020-04-28 23:31:15] [error] Your program stop with error code: 1

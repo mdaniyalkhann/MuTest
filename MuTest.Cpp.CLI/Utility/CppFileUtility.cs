@@ -70,17 +70,17 @@ namespace MuTest.Cpp.CLI.Utility
 
         public static void ReplaceLine(this string originalFile, int lineNumber, string newLine, string destinationFolder)
         {
-            if (String.IsNullOrWhiteSpace(originalFile))
+            if (string.IsNullOrWhiteSpace(originalFile))
             {
                 throw new ArgumentNullException(nameof(originalFile));
             }
 
-            if (String.IsNullOrWhiteSpace(newLine))
+            if (string.IsNullOrWhiteSpace(newLine))
             {
                 throw new ArgumentNullException(nameof(newLine));
             }
 
-            if (String.IsNullOrWhiteSpace(destinationFolder))
+            if (string.IsNullOrWhiteSpace(destinationFolder))
             {
                 throw new ArgumentNullException(nameof(destinationFolder));
             }
@@ -183,7 +183,7 @@ namespace MuTest.Cpp.CLI.Utility
                 {
                     if (line.Trim().StartsWith("#") ||
                         line.Trim().StartsWith("//") ||
-                        String.IsNullOrWhiteSpace(line) ||
+                        string.IsNullOrWhiteSpace(line) ||
                         namespaceAdded)
                     {
                         fileLines.Add(line);

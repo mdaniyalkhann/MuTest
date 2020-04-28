@@ -99,6 +99,7 @@ namespace MuTest.Cpp.CLI.Core
                         sourceCode.UpdateCode(newSourceClassLocation);
                         new FileInfo(cppClass.SourceHeader).CopyTo(newHeaderClassLocation, true);
 
+                        context.NamespaceAdded = true;
                         newHeaderClassLocation.AddNameSpace(index);
                         newSourceClassLocation.AddNameSpace(index);
                     }

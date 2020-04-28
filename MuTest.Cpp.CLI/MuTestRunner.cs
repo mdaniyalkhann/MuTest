@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using MuTest.Core.Common;
 using MuTest.Core.Common.Settings;
 using MuTest.Core.Exceptions;
+using MuTest.Core.Model;
 using MuTest.Core.Mutants;
 using MuTest.Core.Testing;
 using MuTest.Cpp.CLI.Core;
@@ -80,6 +81,17 @@ namespace MuTest.Cpp.CLI
                     _cppClass.Mutants.AddRange(
                         CppMutantOrchestrator.GetDefaultMutants(_options.SourceClass));
 
+                    if (_cppClass.CoveredLineNumbers.Any())
+                    {
+                        foreach (var mutant in _cppClass.Mutants)
+                        {
+                            if (_cppClass.CoveredLineNumbers.All(x => x != mutant.Mutation.LineNumber))
+                            {
+                                mutant.ResultStatus = MutantStatus.NotCovered;
+                            }
+                        }
+                    }
+
                     _chalk.Default($"\nNumber of Mutants: {_cppClass.Mutants.Count}\n");
 
                     if (_cppClass.Mutants.Any())
@@ -92,7 +104,7 @@ namespace MuTest.Cpp.CLI
                             NumberOfMutantsExecutingInParallel = _options.ConcurrentTestRunners
                         };
 
-                        _totalMutants = _cppClass.Mutants.Count;
+                        _totalMutants = _cppClass.NotRunMutants.Count;
                         _mutantProgress = 0;
                         MutantsExecutor.MutantExecuted += MutantAnalyzerOnMutantExecuted;
                         await MutantsExecutor.ExecuteMutants();
@@ -226,7 +238,7 @@ namespace MuTest.Cpp.CLI
             var projectName = Path.GetFileNameWithoutExtension(_options.TestProject);
             var projectNameFromTestContext = string.Format(Path.GetFileNameWithoutExtension(_context.TestProject.Name), 0);
 
-            var app = $"{projectDirectory}/{string.Format(_context.OutDir, 0)}{projectName}.exe";
+            var app = $"{projectDirectory}\\{string.Format(_context.OutDir.TrimEnd('/'), 0)}\\{projectName}.exe";
 
             if (!File.Exists(app))
             {
@@ -238,13 +250,57 @@ namespace MuTest.Cpp.CLI
                 throw new MuTestFailingTestException($"Unable to find google tests at path {app}");
             }
 
-            await testExecutor.ExecuteTests(
-                app,
-                $"{Path.GetFileNameWithoutExtension(_context.TestContexts.First().TestClass.Name)}*");
+            var cppTestContext = _context.TestContexts.First();
+            var filter = $"{Path.GetFileNameWithoutExtension(cppTestContext.TestClass.Name)}*";
+            await testExecutor.ExecuteTests(app, filter);
 
             if (testExecutor.LastTestExecutionStatus != Constants.TestExecutionStatus.Success)
             {
                 throw new MuTestFailingTestException(log.ToString());
+            }
+
+            _chalk.Default("\nCalculating Code Coverage...\n");
+            var coverageExecutor = new OpenCppCoverageExecutor(MuTestSettings.OpenCppCoveragePath, MuTestSettings.TestsResultDirectory);
+
+            await coverageExecutor
+                .GenerateCoverage(
+                    cppTestContext.SourceClass.DirectoryName, app, filter);
+
+            if (coverageExecutor.CoverageReport != null)
+            {
+                foreach (var package in coverageExecutor.CoverageReport.Packages.Package)
+                {
+                    foreach (var packageClass in package.Classes.Class)
+                    {
+                        if (cppTestContext.SourceClass.FullName.EndsWith(packageClass.Filename, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            var coveredLines = (uint)packageClass.Lines.Line.Count(x => x.Hits > 0);
+                            var totalLines = (uint)packageClass.Lines.Line.Count;
+
+                            if (totalLines == 0)
+                            {
+                                totalLines = 1;
+                            }
+
+                            _chalk.Yellow($"\nCode Coverage for Class {Path.GetFileName(_cppClass.SourceClass)} is {decimal.Divide(coveredLines, totalLines):P} ({coveredLines}/{totalLines})\n");
+                            _cppClass.Coverage = Coverage.Create(coveredLines, totalLines - coveredLines, 0, 0);
+
+                            var factor = _context.UseMultipleSolutions || !_context.NamespaceAdded
+                                ? 0u
+                                : 3u;
+
+                            foreach (var line in packageClass.Lines.Line)
+                            {
+                                if (line.Hits > 0)
+                                {
+                                    _cppClass.CoveredLineNumbers.Add(Convert.ToUInt32(line.Number) - factor);
+                                }
+                            }
+
+                            break;
+                        }
+                    }
+                }
             }
 
             testExecutor.OutputDataReceived -= OutputData;

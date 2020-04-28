@@ -17,11 +17,20 @@ namespace MuTest.Cpp.CLI.Options
         private const int DefaultConcurrentTestRunners = 5;
         private const double DefaultThreshold = 1.0;
 
+        [JsonProperty("source-class")]
+        public string SourceClass { get; set; }
+
+        [JsonProperty("source-header")]
+        public string SourceHeader { get; set; }
+
+        [JsonProperty("test-class")]
+        public string TestClass { get; set; }
+
         [JsonProperty("test-solution")]
         public string TestSolution { get; set; }
 
-        [JsonProperty("source-class")]
-        public string SourceClass { get; set; }
+        [JsonProperty("test-project")]
+        public string TestProject { get; set; }
 
         [JsonProperty("configuration")]
         public string Configuration { get; set; }
@@ -29,14 +38,14 @@ namespace MuTest.Cpp.CLI.Options
         [JsonProperty("platform")]
         public string Platform { get; set; }
 
-        [JsonProperty("test-project")]
-        public string TestProject { get; set; }
-
         [JsonProperty("target")]
         public string Target { get; set; }
 
-        [JsonProperty("test-class")]
-        public string TestClass { get; set; }
+        [JsonProperty("in-isolation")]
+        public bool InIsolation { get; set; }
+
+        [JsonProperty("enable-diagnostics")]
+        public bool EnableDiagnostics { get; set; }
 
         [JsonProperty("concurrent-test-runners")]
         public int ConcurrentTestRunners { get; set; } = DefaultConcurrentTestRunners;
@@ -52,15 +61,6 @@ namespace MuTest.Cpp.CLI.Options
 
         [JsonProperty("json-output")]
         public string JsonOutputPath { get; private set; }
-
-        [JsonProperty("enable-diagnostics")]
-        public bool EnableDiagnostics { get; set; }
-
-        [JsonProperty("source-header")]
-        public string SourceHeader { get; set; }
-
-        [JsonProperty("in-isolation")]
-        public bool InIsolation { get; set; }
 
         [JsonIgnore]
         public string OutputPath { get; set; }

@@ -162,7 +162,7 @@ namespace MuTest.Cpp.CLI.Core
                 await Task.WhenAll(testTasks);
             }
 
-            PrintMutationReport(mutationProcessLog, mutants);
+            PrintMutationReport(mutationProcessLog, _cpp.Mutants);
         }
 
         private void SetBuildLog(CppBuildExecutor buildExecutor)
@@ -355,7 +355,7 @@ namespace MuTest.Cpp.CLI.Core
             mutationProcessLog.AppendLine("ClassWise Summary".PrintImportantWithLegend());
             mutationProcessLog.Append(cppClass.MutationScore.ToString().PrintWithPreTagWithMarginImportant(color: Constants.Colors.BlueViolet));
             mutationProcessLog.Append(
-                $"Coverage: Mutation({cppClass.MutationScore.Mutation})"
+                $"Coverage: Mutation({cppClass.MutationScore.Mutation}) Line({cppClass.LinesCovered}{cppClass.LineCoverage})"
                     .PrintWithPreTagWithMarginImportant(color: Constants.Colors.Blue));
             mutationProcessLog.AppendLine("</fieldset>");
         }
