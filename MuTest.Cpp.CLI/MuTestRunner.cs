@@ -217,7 +217,7 @@ namespace MuTest.Cpp.CLI
                 };
 
                 await testCodeBuild.ExecuteBuild();
-                if (testCodeBuild.LastBuildStatus == Constants.BuildExecutionStatus.Failed)
+                if (testCodeBuild.LastBuildStatus == BuildExecutionStatus.Failed)
                 {
                     throw new MuTestFailingBuildException(log.ToString());
                 }
@@ -254,7 +254,7 @@ namespace MuTest.Cpp.CLI
             var filter = $"{Path.GetFileNameWithoutExtension(cppTestContext.TestClass.Name)}*";
             await testExecutor.ExecuteTests(app, filter);
 
-            if (testExecutor.LastTestExecutionStatus != Constants.TestExecutionStatus.Success)
+            if (testExecutor.LastTestExecutionStatus != TestExecutionStatus.Success)
             {
                 throw new MuTestFailingTestException(log.ToString());
             }

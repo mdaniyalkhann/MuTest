@@ -78,7 +78,9 @@ namespace MuTest.Cpp.CLI.Core
                     if (LastTestExecutionStatus != TestExecutionStatus.Failed && 
                         LastTestExecutionStatus != TestExecutionStatus.Timeout)
                     {
-                        LastTestExecutionStatus = TestStatusList[_currentProcess.ExitCode];
+                        LastTestExecutionStatus = TestStatusList.ContainsKey(_currentProcess.ExitCode)
+                            ? TestStatusList[_currentProcess.ExitCode]
+                            : TestExecutionStatus.Timeout;
                     }
 
                     _currentProcess.OutputDataReceived -= CurrentProcessOnOutputDataReceived;
