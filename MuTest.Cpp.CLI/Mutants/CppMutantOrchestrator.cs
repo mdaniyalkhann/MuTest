@@ -111,7 +111,7 @@ namespace MuTest.Cpp.CLI.Mutants
 
                     if (line.EndsWith("*/"))
                     {
-                        insideCommentedCode = true;
+                        insideCommentedCode = false;
                         continue;
                     }
 
