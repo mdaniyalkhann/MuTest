@@ -37,7 +37,6 @@ namespace MuTest.Cpp.CLI.Mutants
 
             var orchestrator = new CppMutantOrchestrator(new List<IMutator>
             {
-                new AssignmentStatementMutator(),
                 new ArithmeticMutator(),
                 new EqualityMutator(),
                 new LogicalMutator()
