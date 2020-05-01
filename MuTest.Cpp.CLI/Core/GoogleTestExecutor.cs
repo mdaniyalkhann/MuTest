@@ -13,6 +13,7 @@ namespace MuTest.Cpp.CLI.Core
         private Process _currentProcess;
         private Timer _timer;
         private const string TestCaseFilter = " --gtest_filter=";
+        private const string ShuffleTests = " --gtest_shuffle";
         private const string FailedDuringExecution = "[  FAILED  ]";
 
         public bool KillProcessOnTestFail { get; set; } = false;
@@ -41,7 +42,7 @@ namespace MuTest.Cpp.CLI.Core
 
             LastTestExecutionStatus = TestExecutionStatus.Success;
             TestResult = null;
-            var methodBuilder = new StringBuilder();
+            var methodBuilder = new StringBuilder(ShuffleTests);
 
             if (!string.IsNullOrWhiteSpace(filter))
             {
