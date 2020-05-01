@@ -40,6 +40,7 @@ namespace MuTest.Cpp.CLI
             var survivedThreshold = CreateOption(app, CliOptions.SurvivedThreshold);
             var killedThreshold = CreateOption(app, CliOptions.KilledThreshold);
             var inIsolation = CreateOption(app, CliOptions.InIsolation);
+            var disableBuildOptimization = CreateOption(app, CliOptions.DisableBuildOptimization);
             var diagnostic = CreateOption(app, CliOptions.EnableDiagnostics);
             var outputPath = CreateOption(app, CliOptions.OutputPath);
             var configuration = CreateOption(app, CliOptions.BuildConfiguration);
@@ -63,7 +64,8 @@ namespace MuTest.Cpp.CLI
                     Platform = platform,
                     SurvivedThreshold = survivedThreshold,
                     KilledThreshold = killedThreshold,
-                    InIsolation = inIsolation
+                    InIsolation = inIsolation,
+                    DisableBuildOptimization = disableBuildOptimization
                 }.Build();
 
                 await RunMuTest(options);

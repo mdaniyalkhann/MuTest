@@ -109,5 +109,14 @@ namespace MuTest.Cpp.CLI
             DefaultValue = DefaultOptions.InIsolation,
             ValueType = CommandOptionType.NoValue
         };
+
+        public static readonly CliOption<bool> DisableBuildOptimization = new CliOption<bool>
+        {
+            ArgumentName = "--disable-build-optimization",
+            ArgumentShortName = "-do",
+            ArgumentDescription = "Disable project build optimization.",
+            DefaultValue = DefaultOptions.DisableBuildOptimization,
+            ValueType = CommandOptionType.NoValue
+        };
     }
 }

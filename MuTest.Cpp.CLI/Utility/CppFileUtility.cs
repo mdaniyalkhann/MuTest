@@ -251,6 +251,92 @@ namespace MuTest.Cpp.CLI.Utility
             }
         }
 
+        public static void OptimizeTestProject(this string newProjectLocation)
+        {
+            const string warningLevel = "/Project/ItemDefinitionGroup/ClCompile/WarningLevel";
+            const string useDebugLibraries = "/Project/PropertyGroup/UseDebugLibraries";
+            const string wholeProgramOptimization = "/Project/PropertyGroup/WholeProgramOptimization";
+            const string linkIncremental = "/Project/PropertyGroup/LinkIncremental";
+            const string generateManifest = "GenerateManifest";
+            const string debugInformationFormat = "DebugInformationFormat";
+            const string supportJustMyCode = "SupportJustMyCode";
+            const string multiProcessorCompilation = "MultiProcessorCompilation";
+            const string errorReporting = "ErrorReporting";
+            const string none = "None";
+            const string turnOffAllwarnings = "TurnOffAllWarnings";
+            const string optimization = "/Project/ItemDefinitionGroup/ClCompile/Optimization";
+            const string trueValue = "true";
+            const string disabled = "Disabled";
+            const string generateDebugInformation = "/Project/ItemDefinitionGroup/Link/GenerateDebugInformation";
+            const string linkErrorReporting = "LinkErrorReporting";
+            const string noErrorReport = "NoErrorReport";
+
+            var project = new FileInfo(newProjectLocation);
+            if (project.Exists)
+            {
+                var projectXml = project.GetProjectDocument();
+                projectXml.SetInnerTextMultipleNodes(useDebugLibraries);
+                projectXml.SetInnerTextMultipleNodes(wholeProgramOptimization);
+                projectXml.SetInnerTextMultipleNodes(linkIncremental);
+                projectXml.SetInnerTextMultipleNodes(generateDebugInformation);
+
+                projectXml.AddNewXmlNode(linkIncremental, generateManifest);
+
+                projectXml.SetInnerTextMultipleNodes(warningLevel, turnOffAllwarnings);
+                projectXml.AddNewXmlNode(warningLevel, debugInformationFormat, none);
+                projectXml.AddNewXmlNode(warningLevel, supportJustMyCode);
+                projectXml.AddNewXmlNode(warningLevel, multiProcessorCompilation, trueValue);
+                projectXml.AddNewXmlNode(warningLevel, errorReporting, none);
+                projectXml.AddNewXmlNode(generateDebugInformation, linkErrorReporting, noErrorReport);
+
+                projectXml.SetInnerTextMultipleNodes(optimization, disabled);
+
+                var newPathFile = new FileInfo(newProjectLocation);
+                if (newPathFile.Exists)
+                {
+                    newPathFile.Delete();
+                }
+
+                projectXml.Save(newPathFile.FullName);
+            }
+        }
+
+        private static void SetInnerTextMultipleNodes(this XmlNode projectXml, string xmlPath, string text = "false")
+        {
+            var nodes = projectXml.SelectNodes(xmlPath);
+            if (nodes != null)
+            {
+                foreach (XmlNode node in nodes)
+                {
+                    node.InnerText = text;
+                }
+            }
+        }
+
+        private static void AddNewXmlNode(this XmlDocument projectXml, string xmlPath, string element, string text = "false")
+        {
+            var nodes = projectXml.SelectNodes(xmlPath);
+            if (nodes != null)
+            {
+                foreach (XmlNode node in nodes)
+                {
+                    var xmlElement = projectXml.CreateElement(element);
+                    xmlElement.InnerText = text;
+                    var childNodes = node.ParentNode?.SelectNodes(element);
+                    if (childNodes == null || childNodes.Count == 0)
+                    {
+                        node.ParentNode?.AppendChild(xmlElement);
+                        continue;
+                    }
+
+                    foreach (XmlNode child in childNodes)
+                    {
+                        child.InnerText = text;
+                    }
+                }
+            }
+        }
+
         private static void AddClCompileNode(this string newClassName, XmlDocument projectXml, XmlNode itemGroup)
         {
             var includeAttribute = projectXml.CreateAttribute("Include");
@@ -272,10 +358,10 @@ namespace MuTest.Cpp.CLI.Utility
                                 !x.Name.StartsWith("AssemblyInfo"));
 
                 return (from solution in solutions
-                    let projects = solution.FullName.GetProjects()
-                    where projects.Where(project => project?.AbsolutePath != null)
-                        .Any(project => Path.GetFileName(project.AbsolutePath).Equals(Path.GetFileName(testProject), StringComparison.InvariantCultureIgnoreCase))
-                    select solution).FirstOrDefault();
+                        let projects = solution.FullName.GetProjects()
+                        where projects.Where(project => project?.AbsolutePath != null)
+                            .Any(project => Path.GetFileName(project.AbsolutePath).Equals(Path.GetFileName(testProject), StringComparison.InvariantCultureIgnoreCase))
+                        select solution).FirstOrDefault();
             }
 
             return null;

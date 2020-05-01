@@ -62,6 +62,9 @@ namespace MuTest.Cpp.CLI.Options
         [JsonProperty("json-output")]
         public string JsonOutputPath { get; private set; }
 
+        [JsonProperty("disable-build-optimization")]
+        public bool DisableBuildOptimization { get; set; }
+
         [JsonIgnore]
         public string OutputPath { get; set; }
 

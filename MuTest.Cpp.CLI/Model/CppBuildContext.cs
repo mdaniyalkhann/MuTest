@@ -22,5 +22,7 @@ namespace MuTest.Cpp.CLI.Model
         public bool UseMultipleSolutions { get; set; }
 
         public bool NamespaceAdded { get; set; }
+
+        public bool EnableBuildOptimization { get; set; }
     }
 }

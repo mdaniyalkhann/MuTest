@@ -104,6 +104,11 @@ namespace MuTest.Cpp.CLI.Core
                         destinationFile.AddNameSpace(testContext.Index);
                     }
 
+                    if (_context.EnableBuildOptimization)
+                    {
+                        _context.TestProject.FullName.OptimizeTestProject();
+                    }
+
                     await buildExecutor.ExecuteBuild();
                     SetBuildLog(buildExecutor);
                 }
@@ -160,6 +165,7 @@ namespace MuTest.Cpp.CLI.Core
                 }
 
                 await Task.WhenAll(testTasks);
+                _context.EnableBuildOptimization = false;
             }
 
             PrintMutationReport(mutationProcessLog, _cpp.Mutants);
@@ -239,6 +245,11 @@ namespace MuTest.Cpp.CLI.Core
                     OutputPath = string.Format(_context.OutputPath, index),
                     IntermediateOutputPath = string.Format(_context.IntermediateOutputPath, index)
                 };
+
+                if (_context.EnableBuildOptimization)
+                {
+                    string.Format(_context.TestProject.FullName, index).OptimizeTestProject();
+                }
 
                 await buildExecutor.ExecuteBuild();
                 SetBuildLog(buildExecutor);

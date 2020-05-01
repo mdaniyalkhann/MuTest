@@ -75,6 +75,11 @@ namespace MuTest.Cpp.CLI
                     await ExecuteBuild();
                     await ExecuteTests();
 
+                    if (!_options.DisableBuildOptimization)
+                    {
+                        _context.EnableBuildOptimization = true;
+                    }
+
                     _chalk.Default("\nRunning Mutation Analysis...\n");
 
 
