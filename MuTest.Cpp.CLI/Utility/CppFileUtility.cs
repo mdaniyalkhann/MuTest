@@ -254,7 +254,6 @@ namespace MuTest.Cpp.CLI.Utility
         public static void OptimizeTestProject(this string newProjectLocation)
         {
             const string warningLevel = "/Project/ItemDefinitionGroup/ClCompile/WarningLevel";
-            const string useDebugLibraries = "/Project/PropertyGroup/UseDebugLibraries";
             const string wholeProgramOptimization = "/Project/PropertyGroup/WholeProgramOptimization";
             const string linkIncremental = "/Project/PropertyGroup/LinkIncremental";
             const string generateManifest = "GenerateManifest";
@@ -275,7 +274,6 @@ namespace MuTest.Cpp.CLI.Utility
             if (project.Exists)
             {
                 var projectXml = project.GetProjectDocument();
-                projectXml.SetInnerTextMultipleNodes(useDebugLibraries);
                 projectXml.SetInnerTextMultipleNodes(wholeProgramOptimization);
                 projectXml.SetInnerTextMultipleNodes(linkIncremental);
                 projectXml.SetInnerTextMultipleNodes(generateDebugInformation);
