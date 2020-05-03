@@ -109,8 +109,12 @@ namespace MuTest.Cpp.CLI.Core
                         _context.TestProject.FullName.OptimizeTestProject();
                     }
 
+                    var buildLog = new StringBuilder();
+                    void BuildOutputDataReceived(object sender, string args) => buildLog.Append(args.PrintWithPreTag());
+                    buildExecutor.OutputDataReceived += BuildOutputDataReceived;
                     await buildExecutor.ExecuteBuild();
-                    SetBuildLog(buildExecutor);
+                    SetBuildLog(buildExecutor, buildLog.ToString());
+                    buildExecutor.OutputDataReceived -= BuildOutputDataReceived;
                 }
 
                 directoryIndex = -1;
@@ -171,24 +175,13 @@ namespace MuTest.Cpp.CLI.Core
             PrintMutationReport(mutationProcessLog, _cpp.Mutants);
         }
 
-        private void SetBuildLog(CppBuildExecutor buildExecutor)
+        private void SetBuildLog(CppBuildExecutor buildExecutor, string log)
         {
-            var log = new StringBuilder();
             _buildDiagnostics = string.Empty;
-            void OutputDataReceived(object sender, string args) => log.Append(args.PrintWithPreTag());
 
-            if (buildExecutor.LastBuildStatus == Constants.BuildExecutionStatus.Failed)
+            if (buildExecutor.LastBuildStatus == Constants.BuildExecutionStatus.Failed && EnableDiagnostics)
             {
-                if (EnableDiagnostics)
-                {
-                    log.AppendLine("<fieldset style=\"margin-bottom:10\">");
-                    buildExecutor.OutputDataReceived += OutputDataReceived;
-
-                    log.AppendLine("</fieldset>");
-                    _buildDiagnostics = log.ToString();
-                }
-
-                buildExecutor.OutputDataReceived -= OutputDataReceived;
+                _buildDiagnostics = log;
             }
         }
 
@@ -251,8 +244,12 @@ namespace MuTest.Cpp.CLI.Core
                     string.Format(_context.TestProject.FullName, index).OptimizeTestProject();
                 }
 
+                var buildLog = new StringBuilder();
+                void BuildOutputDataReceived(object sender, string args) => buildLog.Append(args.PrintWithPreTag());
+                buildExecutor.OutputDataReceived += BuildOutputDataReceived;
                 await buildExecutor.ExecuteBuild();
-                SetBuildLog(buildExecutor);
+                SetBuildLog(buildExecutor, buildLog.ToString());
+                buildExecutor.OutputDataReceived -= BuildOutputDataReceived;
 
                 if (buildExecutor.LastBuildStatus == Constants.BuildExecutionStatus.Failed)
                 {
