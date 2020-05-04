@@ -200,7 +200,7 @@ namespace MuTest.Cpp.CLI
 
             testCodeBuild.OutputDataReceived -= OutputData;
 
-            if (testCodeBuild.LastBuildStatus == BuildExecutionStatus.Failed)
+            if (testCodeBuild.LastBuildStatus == BuildExecutionStatus.Failed && !_options.InIsolation)
             {
                 _chalk.Yellow("\nBuild Failed...Preparing new solution files\n");
                 _directoryFactory.DeleteTestFiles(_context);
@@ -222,10 +222,11 @@ namespace MuTest.Cpp.CLI
                 };
 
                 await testCodeBuild.ExecuteBuild();
-                if (testCodeBuild.LastBuildStatus == BuildExecutionStatus.Failed)
-                {
-                    throw new MuTestFailingBuildException(log.ToString());
-                }
+            }
+
+            if (testCodeBuild.LastBuildStatus == BuildExecutionStatus.Failed)
+            {
+                throw new MuTestFailingBuildException(log.ToString());
             }
 
             _chalk.Green("\nBuild Succeeded!");
