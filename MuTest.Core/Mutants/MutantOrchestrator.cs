@@ -85,8 +85,14 @@ namespace MuTest.Core.Mutants
             {
                 if (currentNode is ExpressionStatementSyntax syntax)
                 {
+                    if (expressionSyntax is AssignmentExpressionSyntax)
+                    {
+                        return MutateWithIfStatements(expressionSyntax.Parent);
+                    }
+
                     if (GetExpressionSyntax(expressionSyntax) is var subExpressionSyntax && subExpressionSyntax != null)
                     {
+
                         return currentNode.ReplaceNode(expressionSyntax, Mutate(expressionSyntax));
                     }
 

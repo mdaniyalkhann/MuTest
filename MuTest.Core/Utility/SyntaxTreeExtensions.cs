@@ -341,7 +341,9 @@ namespace MuTest.Core.Utility
         public static bool IsAStringExpression(this ExpressionSyntax node)
         {
             return node.Kind() == SyntaxKind.StringLiteralExpression ||
-                   node.Kind() == SyntaxKind.InterpolatedStringExpression;
+                   node.ChildNodes().Any(x=> x.Kind() == SyntaxKind.StringLiteralExpression) ||
+                   node.Kind() == SyntaxKind.InterpolatedStringExpression ||
+                   node.ChildNodes().Any(x => x.Kind() == SyntaxKind.InterpolatedStringExpression);
         }
 
         public static bool ValidTestMethod(this SyntaxNode testMethod, string sourceClass, string sourceMethodName, ClassDeclarationSyntax testClass)

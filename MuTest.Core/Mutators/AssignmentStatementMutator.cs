@@ -26,13 +26,13 @@ namespace MuTest.Core.Mutators
             var assignmentKind = node.Kind();
             if (KindsToMutate.TryGetValue(assignmentKind, out var targetAssignmentKind))
             {
+                var replacementNode = SyntaxFactory.AssignmentExpression(targetAssignmentKind, node.Left, node.Right);
                 if (node.Kind() == SyntaxKind.AddAssignmentExpression
                     && (node.Left.IsAStringExpression() || node.Right.IsAStringExpression()))
                 {
-                    yield break;
+                    replacementNode = SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, node.Left, node.Right);
                 }
 
-                var replacementNode = SyntaxFactory.AssignmentExpression(targetAssignmentKind, node.Left, node.Right);
                 yield return new Mutation
                 {
                     OriginalNode = node,
