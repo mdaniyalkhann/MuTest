@@ -269,6 +269,7 @@ namespace MuTest.Cpp.CLI.Utility
             const string generateDebugInformation = "/Project/ItemDefinitionGroup/Link/GenerateDebugInformation";
             const string linkErrorReporting = "LinkErrorReporting";
             const string noErrorReport = "NoErrorReport";
+            const string minimalRebuild = "MinimalRebuild";
 
             var project = new FileInfo(newProjectLocation);
             if (project.Exists)
@@ -285,6 +286,7 @@ namespace MuTest.Cpp.CLI.Utility
                 projectXml.AddNewXmlNode(warningLevel, supportJustMyCode);
                 projectXml.AddNewXmlNode(warningLevel, multiProcessorCompilation, trueValue);
                 projectXml.AddNewXmlNode(warningLevel, errorReporting, none);
+                projectXml.AddNewXmlNode(warningLevel, minimalRebuild);
                 projectXml.AddNewXmlNode(generateDebugInformation, linkErrorReporting, noErrorReport);
 
                 projectXml.SetInnerTextMultipleNodes(optimization, disabled);
