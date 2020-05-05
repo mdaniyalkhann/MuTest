@@ -35,6 +35,8 @@ namespace MuTest.Cpp.CLI.Core
 
         public bool QuietWithSymbols { get; set; }
 
+        public bool Rebuild { get; set; }
+
         public CppBuildExecutor(MuTestSettings settings, string solution, string project)
         {
             if (string.IsNullOrWhiteSpace(project))
@@ -52,19 +54,18 @@ namespace MuTest.Cpp.CLI.Core
             _solution = solution;
         }
 
-        public async Task ExecuteBuildWithoutDependencies()
-        {
-            var projectBuilder = new StringBuilder($@"""{_solution}""")
-                .Append($" -t:\"{_project}\"")
-                .Append(_settings.MSBuildDependenciesOption);
-
-            await Build(projectBuilder);
-        }
-
         public async Task ExecuteBuild()
         {
-            await Build(new StringBuilder($@"""{_solution}""")
-                .Append($" -t:\"{_project}\""));
+            var projectBuilder = new StringBuilder($@"""{_solution}""")
+                .Append($" -t:\"{_project}\"");
+
+            if (Rebuild)
+            {
+                projectBuilder.Append(":Rebuild");
+            }
+
+            await Build(projectBuilder);
+         
         }
 
         protected virtual void OnBuildStarted(EventArgs args)

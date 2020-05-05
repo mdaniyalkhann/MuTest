@@ -159,7 +159,7 @@ namespace MuTest.Cpp.CLI.Core
                         }
 
                         var current = directoryIndex;
-                        testTasks.Add(Task.Run(() => ExecuteTests(mutant, current)));
+                        testTasks.Add(Task.Run(() => BuildAndExecuteTests(mutant, current)));
                     }
                     catch (Exception e)
                     {
@@ -221,7 +221,7 @@ namespace MuTest.Cpp.CLI.Core
             LastExecutionOutput = mutationProcessLog.ToString();
         }
 
-        private async Task ExecuteTests(CppMutant mutant, int index)
+        private async Task BuildAndExecuteTests(CppMutant mutant, int index)
         {
             if (_context.UseMultipleSolutions)
             {
@@ -248,6 +248,16 @@ namespace MuTest.Cpp.CLI.Core
                 void BuildOutputDataReceived(object sender, string args) => buildLog.Append(args.PrintWithPreTag());
                 buildExecutor.OutputDataReceived += BuildOutputDataReceived;
                 await buildExecutor.ExecuteBuild();
+
+                if (buildExecutor.LastBuildStatus == Constants.BuildExecutionStatus.Failed)
+                {
+                    buildLog.Clear();
+                    buildExecutor.Rebuild = true;
+
+                    await buildExecutor.ExecuteBuild();
+                    buildExecutor.Rebuild = false;
+                }
+
                 SetBuildLog(buildExecutor, buildLog.ToString());
                 buildExecutor.OutputDataReceived -= BuildOutputDataReceived;
 
