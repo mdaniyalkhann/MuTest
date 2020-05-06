@@ -16,6 +16,7 @@ namespace MuTest.Cpp.CLI.Core
         private const string TestCaseFilter = " --gtest_filter=";
         private const string ShuffleTests = " --gtest_shuffle";
         private const string FailedDuringExecution = "[  FAILED  ]";
+        private static readonly object Sync = new object();
 
         public bool KillProcessOnTestFail { get; set; } = false;
 
@@ -116,15 +117,18 @@ namespace MuTest.Cpp.CLI.Core
 
         private void ChildProcessTimerOnElapsed(object sender, ElapsedEventArgs e)
         {
-            if (_currentProcess != null)
+            lock (Sync)
             {
-                foreach (ProcessThread thread in _currentProcess.Threads)
+                if (_currentProcess != null)
                 {
-                    if (thread.ThreadState == ThreadState.Wait
-                        && thread.WaitReason == ThreadWaitReason.UserRequest)
+                    foreach (ProcessThread thread in _currentProcess.Threads)
                     {
-                        LastTestExecutionStatus = TestExecutionStatus.Failed;
-                        KillProcess(_currentProcess);
+                        if (thread.ThreadState == ThreadState.Wait
+                            && thread.WaitReason == ThreadWaitReason.UserRequest)
+                        {
+                            LastTestExecutionStatus = TestExecutionStatus.Failed;
+                            KillProcess(_currentProcess);
+                        }
                     }
                 }
             }
