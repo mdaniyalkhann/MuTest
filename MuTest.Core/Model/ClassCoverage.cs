@@ -29,7 +29,7 @@ namespace MuTest.Core.Model
         public override string ToString()
         {
             var excluded = Excluded
-                ? " [Model, DTO or Entity]"
+                ? " [Auto Generated, Model, DTO or Entity]"
                 : string.Empty;
 
             var zeroMutantsSurvived = ZeroSurvivedMutants
