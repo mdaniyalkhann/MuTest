@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MuTest.Core.Mutants;
@@ -29,6 +30,14 @@ namespace MuTest.Core.Mutators
                               x.Expression.ToString().EndsWith("Contains")))
                 {
                     replacementValue = "test-mutest-empty-string";
+                }
+
+                if (node.Parent != null && 
+                    node.Parent.IsKind(SyntaxKind.CaseSwitchLabel) ||
+                    node.Parent?.Parent != null && 
+                    node.Parent.Parent.IsKind(SyntaxKind.CaseSwitchLabel))
+                {
+                    replacementValue = "mutest_case";
                 }
 
                 var replacementNode = SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(replacementValue));
