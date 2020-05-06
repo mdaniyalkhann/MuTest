@@ -12,6 +12,7 @@ namespace MuTest.Cpp.CLI.Core
     {
         private Process _currentProcess;
         private Timer _timer;
+        private Timer _timerChildProcesses;
         private const string TestCaseFilter = " --gtest_filter=";
         private const string ShuffleTests = " --gtest_shuffle";
         private const string FailedDuringExecution = "[  FAILED  ]";
@@ -37,7 +38,14 @@ namespace MuTest.Cpp.CLI.Core
         {
             _timer = new Timer
             {
-                Interval = TestTimeout
+                Interval = TestTimeout,
+                AutoReset = false
+            };
+
+            _timerChildProcesses = new Timer
+            {
+                Interval = 1000,
+                AutoReset = false
             };
 
             LastTestExecutionStatus = TestExecutionStatus.Success;
@@ -50,13 +58,20 @@ namespace MuTest.Cpp.CLI.Core
                     .Append($"\"{filter}\"");
             }
 
+            if (KillProcessOnTestFail)
+            {
+                methodBuilder.Append(" --gtest_catch_exceptions=0");
+            }
+
             var processInfo = new ProcessStartInfo(app)
             {
                 Arguments = methodBuilder.ToString(),
                 UseShellExecute = false,
+                ErrorDialog = false,
                 CreateNoWindow = true,
                 RedirectStandardOutput = true,
-                RedirectStandardError = true
+                RedirectStandardError = true,
+                WindowStyle = ProcessWindowStyle.Hidden
             };
 
             await Task.Run(() =>
@@ -67,22 +82,31 @@ namespace MuTest.Cpp.CLI.Core
                     EnableRaisingEvents = true
                 })
                 {
-                    _timer.Elapsed += TimerOnElapsed;
-                    _timer.Enabled = true;
                     _currentProcess.OutputDataReceived += CurrentProcessOnOutputDataReceived;
                     _currentProcess.ErrorDataReceived += CurrentProcessOnOutputDataReceived;
                     _currentProcess.Start();
                     _currentProcess.BeginOutputReadLine();
                     _currentProcess.BeginErrorReadLine();
+                    if (EnableTestTimeout)
+                    {
+                        _timer.Elapsed += TimerOnElapsed;
+                        _timer.Enabled = true;
+
+                        _timerChildProcesses.Elapsed += ChildProcessTimerOnElapsed;
+                        _timerChildProcesses.Enabled = true;
+                    }
                     _currentProcess.WaitForExit();
 
-                    if (LastTestExecutionStatus != TestExecutionStatus.Failed && 
+                    if (LastTestExecutionStatus != TestExecutionStatus.Failed &&
                         LastTestExecutionStatus != TestExecutionStatus.Timeout)
                     {
                         LastTestExecutionStatus = TestStatusList.ContainsKey(_currentProcess.ExitCode)
                             ? TestStatusList[_currentProcess.ExitCode]
-                            : TestExecutionStatus.Timeout;
+                            : _currentProcess.ExitCode < 0
+                                ? TestExecutionStatus.Failed
+                                : TestExecutionStatus.Timeout;
                     }
+
 
                     _currentProcess.OutputDataReceived -= CurrentProcessOnOutputDataReceived;
                     _currentProcess.ErrorDataReceived -= CurrentProcessOnOutputDataReceived;
@@ -90,15 +114,26 @@ namespace MuTest.Cpp.CLI.Core
             });
         }
 
+        private void ChildProcessTimerOnElapsed(object sender, ElapsedEventArgs e)
+        {
+            if (_currentProcess != null)
+            {
+                foreach (ProcessThread thread in _currentProcess.Threads)
+                {
+                    if (thread.ThreadState == ThreadState.Wait
+                        && thread.WaitReason == ThreadWaitReason.UserRequest)
+                    {
+                        LastTestExecutionStatus = TestExecutionStatus.Failed;
+                        KillProcess(_currentProcess);
+                    }
+                }
+            }
+        }
+
         private void TimerOnElapsed(object sender, ElapsedEventArgs e)
         {
             LastTestExecutionStatus = TestExecutionStatus.Timeout;
-
-            if (_currentProcess != null && !_currentProcess.HasExited)
-            {
-                _currentProcess.Kill();
-            }
-
+            KillProcess(_currentProcess);
             _timer.Dispose();
         }
 
@@ -106,11 +141,14 @@ namespace MuTest.Cpp.CLI.Core
         {
             if (EnableTestTimeout)
             {
+                _timer.Stop();
+                _timer.Enabled = false;
                 _timer.Elapsed -= TimerOnElapsed;
-                _timer?.Dispose();
+                _timer.Close();
                 _timer = new Timer(TestTimeout)
                 {
-                    Enabled = true
+                    Enabled = true,
+                    AutoReset = false
                 };
                 _timer.Elapsed += TimerOnElapsed;
             }
@@ -121,12 +159,15 @@ namespace MuTest.Cpp.CLI.Core
                 args.Data.StartsWith(FailedDuringExecution))
             {
                 LastTestExecutionStatus = TestExecutionStatus.Failed;
+                KillProcess((Process)sender);
+            }
+        }
 
-                var process = (Process)sender;
-                if (process != null && !process.HasExited)
-                {
-                    process.Kill();
-                }
+        private static void KillProcess(Process process)
+        {
+            if (process != null && !process.HasExited)
+            {
+                process.Kill();
             }
         }
     }
