@@ -21,7 +21,7 @@ namespace MuTest.Cpp.CLI.Core
 
         public bool KillProcessOnTestFail { get; set; } = false;
 
-        public double TestTimeout { get; set; } = 10000;
+        public double TestTimeout { get; set; } = 15000;
 
         public bool EnableTestTimeout { get; set; }
 
