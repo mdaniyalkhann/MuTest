@@ -21,7 +21,7 @@ namespace MuTest.Cpp.CLI.Core
 
         public bool KillProcessOnTestFail { get; set; } = false;
 
-        public double TestTimeout { get; set; } = 40000;
+        public double TestTimeout { get; set; } = 10000;
 
         public bool EnableTestTimeout { get; set; }
 
@@ -138,6 +138,7 @@ namespace MuTest.Cpp.CLI.Core
         private void TimerOnElapsed(object sender, ElapsedEventArgs e)
         {
             LastTestExecutionStatus = TestExecutionStatus.Timeout;
+            ChildProcessTimerOnElapsed(sender, e);
             KillProcess(_currentProcess);
             _timer.Dispose();
         }
