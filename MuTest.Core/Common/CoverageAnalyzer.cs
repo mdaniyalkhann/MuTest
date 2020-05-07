@@ -167,6 +167,8 @@ namespace MuTest.Core.Common
                                             x.ClassName.StartsWith($"{className}.{GenericMethodStart}") ||
                                             x.ClassName.StartsWith($"{className}{GenericMethodStart}")).ToList();
 
+                            coverages = coverages.Where(x => x.NamespaceTableRow.NamespaceKeyName == claz.NamespaceKeyName).ToList();
+
                             if (coverages.Any())
                             {
                                 var methods = codeCoverage.Method.Where(x => x.ClassKeyName == claz.ClassKeyName).ToList();
