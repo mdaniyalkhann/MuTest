@@ -16,7 +16,8 @@ namespace MuTest.Cpp.CLI.Core
         private const string TestCaseFilter = " --gtest_filter=";
         private const string ShuffleTests = " --gtest_shuffle";
         private const string FailedDuringExecution = "[  FAILED  ]";
-        private static readonly object Sync = new object();
+        private static readonly object TimerLock = new object();
+        private static readonly object OutputDataReceivedLock = new object();
 
         public bool KillProcessOnTestFail { get; set; } = false;
 
@@ -117,7 +118,7 @@ namespace MuTest.Cpp.CLI.Core
 
         private void ChildProcessTimerOnElapsed(object sender, ElapsedEventArgs e)
         {
-            lock (Sync)
+            lock (TimerLock)
             {
                 if (_currentProcess != null)
                 {
@@ -143,27 +144,30 @@ namespace MuTest.Cpp.CLI.Core
 
         private void CurrentProcessOnOutputDataReceived(object sender, DataReceivedEventArgs args)
         {
-            if (EnableTestTimeout)
+            lock (OutputDataReceivedLock)
             {
-                _timer.Stop();
-                _timer.Enabled = false;
-                _timer.Elapsed -= TimerOnElapsed;
-                _timer.Close();
-                _timer = new Timer(TestTimeout)
+                if (EnableTestTimeout)
                 {
-                    Enabled = true,
-                    AutoReset = false
-                };
-                _timer.Elapsed += TimerOnElapsed;
-            }
+                    _timer.Stop();
+                    _timer.Enabled = false;
+                    _timer.Elapsed -= TimerOnElapsed;
+                    _timer.Close();
+                    _timer = new Timer(TestTimeout)
+                    {
+                        Enabled = true,
+                        AutoReset = false
+                    };
+                    _timer.Elapsed += TimerOnElapsed;
+                }
 
-            OnThresholdReached(args);
+                OnThresholdReached(args);
 
-            if (KillProcessOnTestFail && args.Data != null &&
-                args.Data.StartsWith(FailedDuringExecution))
-            {
-                LastTestExecutionStatus = TestExecutionStatus.Failed;
-                KillProcess((Process)sender);
+                if (KillProcessOnTestFail && args.Data != null &&
+                    args.Data.StartsWith(FailedDuringExecution))
+                {
+                    LastTestExecutionStatus = TestExecutionStatus.Failed;
+                    KillProcess((Process) sender);
+                }
             }
         }
 
