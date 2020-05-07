@@ -117,6 +117,7 @@ namespace MuTest.Cpp.CLI.Mutants
                     if (!insideCommentedCode)
                     {
                         StringLine strLine = null;
+                        CommentLine commentLine = null;
                         var codeLine = new CodeLine
                         {
                             Line = line,
@@ -146,6 +147,41 @@ namespace MuTest.Cpp.CLI.Mutants
                                 {
                                     strLine.End = index;
                                     codeLine.StringLines.Add(strLine);
+                                }
+                            }
+                        }
+
+                        for (var index = 0; index < line.Length; index++)
+                        {
+                            var character = line[index];
+                            if (character == '/' && 
+                                index + 1 < line.Length && 
+                                (line[index + 1] == '/' || line[index + 1] == '*') &&
+                                commentLine == null)
+                            {
+                                commentLine = new CommentLine
+                                {
+                                    Start = index
+                                };
+
+                                if (line[index + 1] == '/')
+                                {
+                                    commentLine.End = line.Length;
+                                    codeLine.CommentLines.Add(commentLine);
+                                    break;
+                                }
+
+                                continue;
+                            }
+
+                            if (character == '*' &&
+                                index + 1 < line.Length &&
+                                line[index + 1] == '/')
+                            {
+                                if (commentLine != null)
+                                {
+                                    commentLine.End = index;
+                                    codeLine.CommentLines.Add(commentLine);
                                 }
                             }
                         }

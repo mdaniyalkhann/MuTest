@@ -49,6 +49,11 @@ namespace MuTest.Cpp.CLI.Mutators
                         continue;
                     }
 
+                    if (line.CommentLines.Any(x => match.Index > x.Start && match.Index < x.End))
+                    {
+                        continue;
+                    }
+
                     if (pattern == "!" &&
                         line.Line.Length > match.Index + 2 &&
                         line.Line[match.Index + 1] == '=')

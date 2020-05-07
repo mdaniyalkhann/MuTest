@@ -117,6 +117,7 @@
     <Compile Include="IMuTestRunner.cs" />
     <Compile Include="Model\CoberturaCoverageReport.cs" />
     <Compile Include="Model\CodeLine.cs" />
+    <Compile Include="Model\CommentLine.cs" />
     <Compile Include="Model\CppBuildContext.cs" />
     <Compile Include="Model\CppTestContext.cs" />
     <Compile Include="Model\SourceClassDetail.cs" />

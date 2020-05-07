@@ -9,5 +9,7 @@ namespace MuTest.Cpp.CLI.Model
         public int LineNumber { get; set; }
 
         public List<StringLine> StringLines { get; } = new List<StringLine>();
+
+        public List<CommentLine> CommentLines { get; } = new List<CommentLine>();
     }
 }
