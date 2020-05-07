@@ -96,7 +96,7 @@ namespace MuTest.Cpp.CLI.Mutators
                             })
                         };
 
-                        mutation.DisplayName = $"Line Number: {line.LineNumber} - Type: {MutatorType} - {mutation.OriginalNode} replace with {mutation.ReplacementNode}";
+                        mutation.DisplayName = $"Type: {MutatorType} - {mutation.OriginalNode} replace with {mutation.ReplacementNode}";
 
                         mutants.Add(new CppMutant
                         {
