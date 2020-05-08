@@ -154,8 +154,14 @@ namespace MuTest.Cpp.CLI.Mutants
                         for (var index = 0; index < line.Length; index++)
                         {
                             var character = line[index];
-                            if (character == '/' && 
-                                index + 1 < line.Length && 
+
+                            if (codeLine.StringLines.Any(x => index > x.Start && index < x.End))
+                            {
+                                continue;
+                            }
+
+                            if (character == '/' &&
+                                index + 1 < line.Length &&
                                 (line[index + 1] == '/' || line[index + 1] == '*') &&
                                 commentLine == null)
                             {
