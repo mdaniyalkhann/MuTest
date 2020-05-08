@@ -60,11 +60,6 @@ namespace MuTest.Cpp.CLI.Core
                     .Append($"\"{filter}\"");
             }
 
-            if (KillProcessOnTestFail)
-            {
-                methodBuilder.Append(" --gtest_catch_exceptions=0");
-            }
-
             var processInfo = new ProcessStartInfo(app)
             {
                 Arguments = methodBuilder.ToString(),
