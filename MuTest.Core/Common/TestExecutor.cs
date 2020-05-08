@@ -26,6 +26,7 @@ namespace MuTest.Core.Common
         private const string TestCaseFilter = " /TestCaseFilter:";
         private const string FailedDuringExecution = "Failed ";
         private const string ErrorDuringExecution = "  X ";
+        private static readonly object OutputDataReceivedLock = new object();
 
         private readonly MuTestSettings _settings;
         private readonly string _testClassLibrary;
@@ -235,39 +236,42 @@ namespace MuTest.Core.Common
 
         private void ProcessOnOutputDataReceived(object sender, DataReceivedEventArgs args)
         {
-            if (args.Data != null && args.Data.EndsWith(CoverageExtension))
+            lock (OutputDataReceivedLock)
             {
-                var coverageFile = args.Data.Trim();
-                if (File.Exists(coverageFile))
+                if (args.Data != null && args.Data.EndsWith(CoverageExtension))
                 {
-                    using (CoverageInfo info = CoverageInfo.CreateFromFile(
-                        coverageFile,
-                        new[]
-                        {
-                            Path.GetDirectoryName(_testClassLibrary)
-                        },
-                        new[]
-                        {
-                            Path.GetDirectoryName(_testClassLibrary)
-                        }))
+                    var coverageFile = args.Data.Trim();
+                    if (File.Exists(coverageFile))
                     {
-                        CodeCoverage = info.BuildDataSet();
+                        using (CoverageInfo info = CoverageInfo.CreateFromFile(
+                            coverageFile,
+                            new[]
+                            {
+                                Path.GetDirectoryName(_testClassLibrary)
+                            },
+                            new[]
+                            {
+                                Path.GetDirectoryName(_testClassLibrary)
+                            }))
+                        {
+                            CodeCoverage = info.BuildDataSet();
+                        }
                     }
                 }
-            }
 
-            OnThresholdReached(args);
+                OnThresholdReached(args);
 
-            if (KillProcessOnTestFail && args.Data != null &&
-                (args.Data.StartsWith(FailedDuringExecution) ||
-                 args.Data.StartsWith(ErrorDuringExecution)))
-            {
-                LastTestExecutionStatus = TestExecutionStatus.Failed;
-
-                var process = (Process)sender;
-                if (process != null && !process.HasExited)
+                if (KillProcessOnTestFail && args.Data != null &&
+                    (args.Data.StartsWith(FailedDuringExecution) ||
+                     args.Data.StartsWith(ErrorDuringExecution)))
                 {
-                    process.Kill();
+                    LastTestExecutionStatus = TestExecutionStatus.Failed;
+
+                    var process = (Process) sender;
+                    if (process != null && !process.HasExited)
+                    {
+                        process.Kill();
+                    }
                 }
             }
         }
