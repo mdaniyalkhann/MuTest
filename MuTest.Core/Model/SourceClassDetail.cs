@@ -32,6 +32,9 @@ namespace MuTest.Core.Model
         [JsonIgnore]
         public TestClassDetail TestClaz { get; set; }
 
+        [JsonProperty("number-of-tests")]
+        public int NumberOfTests { get; set; }
+
         [JsonProperty("test-execution-times")]
         public List<TestExecutionTime> TestExecutionTimes { get; } = new List<TestExecutionTime>();
 

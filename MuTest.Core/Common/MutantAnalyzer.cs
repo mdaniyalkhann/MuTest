@@ -236,11 +236,12 @@ namespace MuTest.Core.Common
                     ? source.TestClaz.Claz.FullName()
                     : string.Empty,
                 EnableCustomOptions = true,
-                EnableLogging = false
+                EnableLogging = true
             };
             testExecutor.OutputDataReceived += OutputData;
 
             await testExecutor.ExecuteTests(source.TestClaz.MethodDetails.ToList());
+            source.NumberOfTests = Convert.ToInt32(testExecutor.TestResult?.ResultSummary?.Counters?.Total);
 
             if (testExecutor.LastTestExecutionStatus != Constants.TestExecutionStatus.Success)
             {
