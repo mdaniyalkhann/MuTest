@@ -95,7 +95,6 @@ namespace MuTest.Console
                 RegEx = _options.RegEx,
                 Specific = _options.Specific,
                 SurvivedThreshold = _options.SurvivedThreshold,
-                TestClass = _options.TestClassParameter,
                 TestProject = _options.TestProjectParameter,
                 TestProjectLibrary = _options.TestProjectLibraryParameter,
                 UseClassFilter = _options.UseClassFilter,
@@ -105,6 +104,7 @@ namespace MuTest.Console
 
             foreach (var targetClass in _options.MultipleTargetClasses)
             {
+                mutantAnalyzer.TestClass = targetClass.TestClassPath;
                 mutantAnalyzer.UseExternalCodeCoverage = false;
                 mutantAnalyzer.MutantExecutor = null;
                 var sourceClass = targetClass.ClassPath;
