@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Xml.Serialization;
 using Microsoft.VisualStudio.Coverage.Analysis;
 using MuTest.Core.Common.Settings;
@@ -16,6 +17,7 @@ using MuTest.Core.Model.Service;
 using MuTest.Core.Utility;
 using Newtonsoft.Json;
 using static MuTest.Core.Common.Constants;
+using Timer = System.Timers.Timer;
 
 namespace MuTest.Core.Common
 {
@@ -27,6 +29,7 @@ namespace MuTest.Core.Common
         private const string FailedDuringExecution = "Failed ";
         private const string ErrorDuringExecution = "  X ";
         private static readonly object OutputDataReceivedLock = new object();
+        private static readonly object TestTimeoutLock = new object();
 
         private readonly MuTestSettings _settings;
         private readonly string _testClassLibrary;
@@ -45,11 +48,15 @@ namespace MuTest.Core.Common
 
         public bool EnableLogging { get; set; } = true;
 
+        public bool EnableTimeout { get; set; }
+
         public TestExecutionStatus LastTestExecutionStatus { get; private set; }
 
         public string FullyQualifiedName { get; set; }
 
         private DateTime _currentDateTime;
+        private Timer _timer;
+        private Process _currentProcess;
 
         public TestRun TestResult { get; private set; }
 
@@ -78,159 +85,207 @@ namespace MuTest.Core.Common
                 throw new ArgumentNullException(nameof(selectedMethods));
             }
 
-            _currentDateTime = DateTime.Now;
-            LastTestExecutionStatus = TestExecutionStatus.Success;
-            TestResult = null;
-            var testResultFile = $@"""{_settings.TestsResultDirectory}report_{_currentDateTime:yyyyMdhhmmss}.trx""";
-            var methodBuilder = new StringBuilder(_settings.Blame);
-
-            if (EnableCustomOptions)
+            try
             {
-                methodBuilder.Append(_settings.Options);
-            }
+                EnableTimeout = EnableTimeout && string.IsNullOrWhiteSpace(BaseAddress);
 
-            if (EnableParallelTestExecution)
-            {
-                methodBuilder.Append(_settings.ParallelTestExecution);
-            }
-
-            if (X64TargetPlatform)
-            {
-                methodBuilder.Append(" /Platform:x64");
-            }
-
-            methodBuilder
-                .Append(_settings.SettingsOption)
-                .Append($@"""{_settings.RunSettingsPath}""");
-
-            if (EnableLogging)
-            {
-                methodBuilder.Append(_settings.LoggerOption.Replace("{0}", testResultFile));
-            }
-
-            if (string.IsNullOrWhiteSpace(FullyQualifiedName))
-            {
-                var methodDetails = selectedMethods.ToList();
-                methodBuilder.Append(_settings.TestsOption);
-                foreach (var method in methodDetails)
+                if (EnableTimeout)
                 {
-                    methodBuilder
-                        .Append($"{method.Method.Class().ClassName()}.{method.Method.MethodName()}")
-                        .Append(CommaSeparator);
+                    _timer = new Timer(_settings.TestTimeout)
+                    {
+                        AutoReset = false
+                    };
                 }
-            }
-            else
-            {
-                methodBuilder.Append(TestCaseFilter)
-                    .Append("\"")
-                    .Append("FullyQualifiedName~")
-                    .Append(FullyQualifiedName)
-                    .Append("\"");
-            }
 
-            methodBuilder.Append($@" ""{_testClassLibrary}""");
+                _currentDateTime = DateTime.Now;
+                LastTestExecutionStatus = TestExecutionStatus.Success;
+                TestResult = null;
+                var testResultFile = $@"""{_settings.TestsResultDirectory}report_{_currentDateTime:yyyyMdhhmmss}.trx""";
+                var methodBuilder = new StringBuilder(_settings.Blame);
 
-            if (string.IsNullOrWhiteSpace(BaseAddress))
-            {
-                var processInfo = new ProcessStartInfo(_settings.VSTestConsolePath)
+                if (EnableCustomOptions)
                 {
-                    Arguments = methodBuilder.ToString(),
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true
-                };
+                    methodBuilder.Append(_settings.Options);
+                }
 
-                await Task.Run(() =>
+                if (EnableParallelTestExecution)
                 {
-                    using (var process = new Process
-                    {
-                        StartInfo = processInfo,
-                        EnableRaisingEvents = true
-                    })
-                    {
-                        process.OutputDataReceived += ProcessOnOutputDataReceived;
-                        process.ErrorDataReceived += ProcessOnOutputDataReceived;
-                        process.Start();
-                        process.BeginOutputReadLine();
-                        process.BeginErrorReadLine();
-                        process.WaitForExit();
+                    methodBuilder.Append(_settings.ParallelTestExecution);
+                }
 
-                        if (LastTestExecutionStatus != TestExecutionStatus.Failed)
-                        {
-                            LastTestExecutionStatus = TestStatusList[process.ExitCode];
-                        }
+                if (X64TargetPlatform)
+                {
+                    methodBuilder.Append(" /Platform:x64");
+                }
 
-                        process.OutputDataReceived -= ProcessOnOutputDataReceived;
-                        process.ErrorDataReceived -= ProcessOnOutputDataReceived;
-                    }
-                });
+                methodBuilder
+                    .Append(_settings.SettingsOption)
+                    .Append($@"""{_settings.RunSettingsPath}""");
 
                 if (EnableLogging)
                 {
-                    GetTestResults(testResultFile);
+                    methodBuilder.Append(_settings.LoggerOption.Replace("{0}", testResultFile));
                 }
-            }
-            else
-            {
-                try
+
+                if (string.IsNullOrWhiteSpace(FullyQualifiedName))
                 {
-                    using (var client = new HttpClient())
+                    var methodDetails = selectedMethods.ToList();
+                    methodBuilder.Append(_settings.TestsOption);
+                    foreach (var method in methodDetails)
                     {
-                        client.DefaultRequestHeaders.Accept.Add(
-                            new MediaTypeWithQualityHeaderValue("application/json"));
-                        var content = new FormUrlEncodedContent(new[]
-                        {
-                            new KeyValuePair<string, string>(nameof(TestInput.Arguments), methodBuilder.ToString()),
-                            new KeyValuePair<string, string>(nameof(TestInput.KillProcessOnTestFail), KillProcessOnTestFail.ToString())
-                        });
-
-                        client.Timeout = Timeout.InfiniteTimeSpan;
-                        var response = await client.PostAsync($"{BaseAddress}api//mutest/test", content);
-                        if (response.IsSuccessStatusCode)
-                        {
-                            OutputDataReceived?.Invoke(this, $"MuTest Test Service is executing tests at {BaseAddress}\n");
-                            var responseData = await response.Content.ReadAsStringAsync();
-                            var result = JsonConvert.DeserializeObject<TestResult>(responseData);
-                            OutputDataReceived?.Invoke(this, result.TestOutput);
-                            LastTestExecutionStatus = result.Status;
-
-                            if (!string.IsNullOrWhiteSpace(result.CoveragePath) && File.Exists(result.CoveragePath))
-                            {
-                                using (CoverageInfo info = CoverageInfo.CreateFromFile(
-                                    result.CoveragePath,
-                                    new[]
-                                    {
-                                        Path.GetDirectoryName(_testClassLibrary)
-                                    },
-                                    new[]
-                                    {
-                                        Path.GetDirectoryName(_testClassLibrary)
-                                    }))
-                                {
-                                    CodeCoverage = info.BuildDataSet();
-                                }
-                            }
-                        }
-                        else
-                        {
-                            LastTestExecutionStatus = TestExecutionStatus.Timeout;
-                            Trace.TraceError("MuTest Test Service not Found at {0}", BaseAddress);
-                            OutputDataReceived?.Invoke(this, $"MuTest Test Service is not running at {BaseAddress}\n");
-                        }
+                        methodBuilder
+                            .Append($"{method.Method.Class().ClassName()}.{method.Method.MethodName()}")
+                            .Append(CommaSeparator);
                     }
+                }
+                else
+                {
+                    methodBuilder.Append(TestCaseFilter)
+                        .Append("\"")
+                        .Append("FullyQualifiedName~")
+                        .Append(FullyQualifiedName)
+                        .Append("\"");
+                }
+
+                methodBuilder.Append($@" ""{_testClassLibrary}""");
+
+                if (string.IsNullOrWhiteSpace(BaseAddress))
+                {
+                    var processInfo = new ProcessStartInfo(_settings.VSTestConsolePath)
+                    {
+                        Arguments = methodBuilder.ToString(),
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true
+                    };
+
+                    await Task.Run(() =>
+                    {
+                        using (_currentProcess = new Process
+                        {
+                            StartInfo = processInfo,
+                            EnableRaisingEvents = true
+                        })
+                        {
+                            _currentProcess.OutputDataReceived += ProcessOnOutputDataReceived;
+                            _currentProcess.ErrorDataReceived += ProcessOnOutputDataReceived;
+                            _currentProcess.Start();
+                            _currentProcess.BeginOutputReadLine();
+                            _currentProcess.BeginErrorReadLine();
+
+                            if (EnableTimeout)
+                            {
+                                _timer.Elapsed += TimerOnElapsed;
+                                _timer.Enabled = true;
+                            }
+
+                            _currentProcess.WaitForExit();
+
+                            if (LastTestExecutionStatus != TestExecutionStatus.Failed &&
+                                LastTestExecutionStatus != TestExecutionStatus.Timeout)
+                            {
+                                LastTestExecutionStatus = TestStatusList[_currentProcess.ExitCode];
+                            }
+
+                            _currentProcess.OutputDataReceived -= ProcessOnOutputDataReceived;
+                            _currentProcess.ErrorDataReceived -= ProcessOnOutputDataReceived;
+                        }
+                    });
 
                     if (EnableLogging)
                     {
                         GetTestResults(testResultFile);
                     }
                 }
-                catch (Exception exp)
+                else
                 {
-                    Trace.TraceError("MuTest Test Service not Found at {0}. Unable to Test Product {1}", BaseAddress, exp);
-                    OutputDataReceived?.Invoke(this, $"MuTest Test Service is not running at {BaseAddress}\n");
-                    LastTestExecutionStatus = TestExecutionStatus.Failed;
+                    try
+                    {
+                        using (var client = new HttpClient())
+                        {
+                            client.DefaultRequestHeaders.Accept.Add(
+                                new MediaTypeWithQualityHeaderValue("application/json"));
+                            var content = new FormUrlEncodedContent(new[]
+                            {
+                                new KeyValuePair<string, string>(nameof(TestInput.Arguments), methodBuilder.ToString()),
+                                new KeyValuePair<string, string>(nameof(TestInput.KillProcessOnTestFail), KillProcessOnTestFail.ToString())
+                            });
+
+                            client.Timeout = Timeout.InfiniteTimeSpan;
+                            var response = await client.PostAsync($"{BaseAddress}api//mutest/test", content);
+                            if (response.IsSuccessStatusCode)
+                            {
+                                OutputDataReceived?.Invoke(this, $"MuTest Test Service is executing tests at {BaseAddress}\n");
+                                var responseData = await response.Content.ReadAsStringAsync();
+                                var result = JsonConvert.DeserializeObject<TestResult>(responseData);
+                                OutputDataReceived?.Invoke(this, result.TestOutput);
+                                LastTestExecutionStatus = result.Status;
+
+                                if (!string.IsNullOrWhiteSpace(result.CoveragePath) && File.Exists(result.CoveragePath))
+                                {
+                                    using (CoverageInfo info = CoverageInfo.CreateFromFile(
+                                        result.CoveragePath,
+                                        new[]
+                                        {
+                                            Path.GetDirectoryName(_testClassLibrary)
+                                        },
+                                        new[]
+                                        {
+                                            Path.GetDirectoryName(_testClassLibrary)
+                                        }))
+                                    {
+                                        CodeCoverage = info.BuildDataSet();
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                LastTestExecutionStatus = TestExecutionStatus.Timeout;
+                                Trace.TraceError("MuTest Test Service not Found at {0}", BaseAddress);
+                                OutputDataReceived?.Invoke(this, $"MuTest Test Service is not running at {BaseAddress}\n");
+                            }
+                        }
+
+                        if (EnableLogging)
+                        {
+                            GetTestResults(testResultFile);
+                        }
+                    }
+                    catch (Exception exp)
+                    {
+                        Trace.TraceError("MuTest Test Service not Found at {0}. Unable to Test Product {1}", BaseAddress, exp);
+                        OutputDataReceived?.Invoke(this, $"MuTest Test Service is not running at {BaseAddress}\n");
+                        LastTestExecutionStatus = TestExecutionStatus.Timeout;
+                    }
                 }
+            }
+            catch(Exception e)
+            {
+                Trace.TraceError("{0} - {1}", e.Message, e);
+                throw;
+            }
+            finally
+            {
+                _timer?.Dispose();
+            }
+        }
+
+        private void TimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
+        {
+            lock (TestTimeoutLock)
+            {
+                LastTestExecutionStatus = TestExecutionStatus.Timeout;
+                KillProcess(_currentProcess);
+                _timer.Dispose();
+            }
+        }
+
+        private static void KillProcess(Process process)
+        {
+            if (process != null && !process.HasExited)
+            {
+                process.Kill();
             }
         }
 
@@ -238,6 +293,21 @@ namespace MuTest.Core.Common
         {
             lock (OutputDataReceivedLock)
             {
+                if (EnableTimeout)
+                {
+                    _timer.Stop();
+                    _timer.Enabled = false;
+                    _timer.Elapsed -= TimerOnElapsed;
+                    _timer.Close();
+                    _timer = new Timer(_settings.TestTimeout)
+                    {
+                        Enabled = true,
+                        AutoReset = false
+                    };
+
+                    _timer.Elapsed += TimerOnElapsed;
+                }
+
                 if (args.Data != null && args.Data.EndsWith(CoverageExtension))
                 {
                     var coverageFile = args.Data.Trim();
@@ -267,11 +337,8 @@ namespace MuTest.Core.Common
                 {
                     LastTestExecutionStatus = TestExecutionStatus.Failed;
 
-                    var process = (Process) sender;
-                    if (process != null && !process.HasExited)
-                    {
-                        process.Kill();
-                    }
+                    var process = (Process)sender;
+                    KillProcess(process);
                 }
             }
         }

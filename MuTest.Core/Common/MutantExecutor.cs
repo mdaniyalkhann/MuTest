@@ -261,6 +261,7 @@ namespace MuTest.Core.Common
                 EnableParallelTestExecution = true,
                 X64TargetPlatform = _source.X64TargetPlatform,
                 BaseAddress = BaseAddress,
+                EnableTimeout = _settings.EnableTestTimeout,
                 FullyQualifiedName = UseClassFilter
                     ? _source.TestClaz.Claz.FullName()
                     : string.Empty

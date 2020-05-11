@@ -127,9 +127,9 @@ namespace Dashboard.ViewModel
             ChkExecuteAllTests = ControlViewModel.Create();
             ChkEnableDiagnostic = ControlViewModel.Create();
             ChkEnableCodeCoverage = ControlViewModel.CreateWithChecked();
-            ChkAnalyzeExternalCoverage = ControlViewModel.CreateWithChecked();
+            ChkAnalyzeExternalCoverage = ControlViewModel.Create();
             ChkOptimizeTestProject = ControlViewModel.CreateWithChecked();
-            ChkUseClassFilter = ControlViewModel.Create();
+            ChkUseClassFilter = ControlViewModel.CreateWithChecked();
             ChkRealTimeAnalysis = ControlViewModel.Create();
             _testDiagnosticDocumentViewModel = _outputLogger.GetLogFromOutput("Test Diagnostics Window", string.Empty);
             _buildDiagnosticDocumentViewModel = _outputLogger.GetLogFromOutput("Build Diagnostics Window", string.Empty);

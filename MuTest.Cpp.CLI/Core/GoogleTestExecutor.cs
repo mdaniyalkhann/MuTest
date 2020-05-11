@@ -16,6 +16,7 @@ namespace MuTest.Cpp.CLI.Core
         private const string ShuffleTests = " --gtest_shuffle";
         private const string FailedDuringExecution = "[  FAILED  ]";
         private static readonly object OutputDataReceivedLock = new object();
+        private static readonly object TestTimeoutLock = new object();
 
         public bool KillProcessOnTestFail { get; set; } = false;
 
@@ -36,76 +37,94 @@ namespace MuTest.Cpp.CLI.Core
 
         public async Task ExecuteTests(string app, string filter)
         {
-            _timer = new Timer
+            try
             {
-                Interval = TestTimeout,
-                AutoReset = false
-            };
-
-            LastTestExecutionStatus = TestExecutionStatus.Success;
-            TestResult = null;
-            var methodBuilder = new StringBuilder(ShuffleTests);
-
-            if (!string.IsNullOrWhiteSpace(filter))
-            {
-                methodBuilder.Append($" {TestCaseFilter}")
-                    .Append($"\"{filter}\"");
-            }
-
-            var processInfo = new ProcessStartInfo(app)
-            {
-                Arguments = methodBuilder.ToString(),
-                UseShellExecute = false,
-                ErrorDialog = false,
-                CreateNoWindow = true,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                WindowStyle = ProcessWindowStyle.Hidden
-            };
-
-            await Task.Run(() =>
-            {
-                using (_currentProcess = new Process
+                if (EnableTestTimeout)
                 {
-                    StartInfo = processInfo,
-                    EnableRaisingEvents = true
-                })
-                {
-                    _currentProcess.OutputDataReceived += CurrentProcessOnOutputDataReceived;
-                    _currentProcess.ErrorDataReceived += CurrentProcessOnOutputDataReceived;
-                    _currentProcess.Start();
-                    _currentProcess.BeginOutputReadLine();
-                    _currentProcess.BeginErrorReadLine();
-                    if (EnableTestTimeout)
+                    _timer = new Timer
                     {
-                        _timer.Elapsed += TimerOnElapsed;
-                        _timer.Enabled = true;
-                    }
-
-                    _currentProcess.WaitForExit();
-
-                    if (LastTestExecutionStatus != TestExecutionStatus.Failed &&
-                        LastTestExecutionStatus != TestExecutionStatus.Timeout)
-                    {
-                        LastTestExecutionStatus = TestStatusList.ContainsKey(_currentProcess.ExitCode)
-                            ? TestStatusList[_currentProcess.ExitCode]
-                            : _currentProcess.ExitCode < 0
-                                ? TestExecutionStatus.Failed
-                                : TestExecutionStatus.Timeout;
-                    }
-
-
-                    _currentProcess.OutputDataReceived -= CurrentProcessOnOutputDataReceived;
-                    _currentProcess.ErrorDataReceived -= CurrentProcessOnOutputDataReceived;
+                        Interval = TestTimeout,
+                        AutoReset = false
+                    };
                 }
-            });
+
+                LastTestExecutionStatus = TestExecutionStatus.Success;
+                TestResult = null;
+                var methodBuilder = new StringBuilder(ShuffleTests);
+
+                if (!string.IsNullOrWhiteSpace(filter))
+                {
+                    methodBuilder.Append($" {TestCaseFilter}")
+                        .Append($"\"{filter}\"");
+                }
+
+                var processInfo = new ProcessStartInfo(app)
+                {
+                    Arguments = methodBuilder.ToString(),
+                    UseShellExecute = false,
+                    ErrorDialog = false,
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    WindowStyle = ProcessWindowStyle.Hidden
+                };
+
+                await Task.Run(() =>
+                {
+                    using (_currentProcess = new Process
+                    {
+                        StartInfo = processInfo,
+                        EnableRaisingEvents = true
+                    })
+                    {
+                        _currentProcess.OutputDataReceived += CurrentProcessOnOutputDataReceived;
+                        _currentProcess.ErrorDataReceived += CurrentProcessOnOutputDataReceived;
+                        _currentProcess.Start();
+                        _currentProcess.BeginOutputReadLine();
+                        _currentProcess.BeginErrorReadLine();
+                        if (EnableTestTimeout)
+                        {
+                            _timer.Elapsed += TimerOnElapsed;
+                            _timer.Enabled = true;
+                        }
+
+                        _currentProcess.WaitForExit();
+
+                        if (LastTestExecutionStatus != TestExecutionStatus.Failed &&
+                            LastTestExecutionStatus != TestExecutionStatus.Timeout)
+                        {
+                            LastTestExecutionStatus = TestStatusList.ContainsKey(_currentProcess.ExitCode)
+                                ? TestStatusList[_currentProcess.ExitCode]
+                                : _currentProcess.ExitCode < 0
+                                    ? TestExecutionStatus.Failed
+                                    : TestExecutionStatus.Timeout;
+                        }
+
+
+                        _currentProcess.OutputDataReceived -= CurrentProcessOnOutputDataReceived;
+                        _currentProcess.ErrorDataReceived -= CurrentProcessOnOutputDataReceived;
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                Trace.TraceError("{0} - {1}", e.Message, e);
+                throw;
+            }
+            finally
+            {
+                _timer?.Dispose();
+            }
         }
 
         private void TimerOnElapsed(object sender, ElapsedEventArgs e)
         {
-            LastTestExecutionStatus = TestExecutionStatus.Timeout;
-            KillProcess(_currentProcess);
-            _timer.Dispose();
+            lock (TestTimeoutLock)
+            {
+                LastTestExecutionStatus = TestExecutionStatus.Timeout;
+                KillProcess(_currentProcess);
+                _timer.Dispose();
+            }
         }
 
         private void CurrentProcessOnOutputDataReceived(object sender, DataReceivedEventArgs args)
