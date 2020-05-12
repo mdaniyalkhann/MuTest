@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using MuTest.Core.Common;
 using MuTest.Core.Exceptions;
 using MuTest.Cpp.CLI.Utility;
@@ -68,6 +69,9 @@ namespace MuTest.Cpp.CLI.Options
         [JsonIgnore]
         public string OutputPath { get; set; }
 
+        [JsonProperty("specific-lines-range")]
+        public string SpecificLines { get; set; }
+
         public void ValidateOptions()
         {
             ValidateRequiredParameters();
@@ -81,6 +85,26 @@ namespace MuTest.Cpp.CLI.Options
 
             ConcurrentTestRunners = ValidateConcurrentTestRunners();
             SetOutputPath();
+            VerifySpecificLines();
+        }
+
+        private void VerifySpecificLines()
+        {
+            if (!string.IsNullOrWhiteSpace(SpecificLines))
+            {
+                const char separator = ':';
+                var range = SpecificLines.Split(separator);
+                if (range.Length == 2)
+                {
+                    var minValid = uint.TryParse(range[0], out var minimum);
+                    var maxValid = uint.TryParse(range[1], out var maximum);
+
+                    if (!minValid || !maxValid || maximum < minimum)
+                    {
+                        throw new MuTestInputException(ErrorMessage, $"Invalid Specific Line Range {CliOptions.SpecificLineRange.ArgumentDescription}");
+                    }
+                }
+            }
         }
 
         private void ValidateSourceHeader()

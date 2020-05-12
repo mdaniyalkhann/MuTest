@@ -84,7 +84,7 @@ namespace MuTest.Cpp.CLI
 
 
                     _cppClass.Mutants.AddRange(
-                        CppMutantOrchestrator.GetDefaultMutants(_options.SourceClass));
+                        CppMutantOrchestrator.GetDefaultMutants(_options.SourceClass, _options.SpecificLines));
 
                     if (_cppClass.CoveredLineNumbers.Any())
                     {

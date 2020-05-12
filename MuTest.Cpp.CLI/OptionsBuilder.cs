@@ -38,6 +38,8 @@ namespace MuTest.Cpp.CLI
 
         public CommandOption DisableBuildOptimization { get; set; }
 
+        public CommandOption SpecificLines { get; set; }
+
         public MuTestOptions Build()
         {
             var muTestOptions = new MuTestOptions
@@ -55,7 +57,8 @@ namespace MuTest.Cpp.CLI
                 DisableBuildOptimization = GetOption(DisableBuildOptimization.Value(), CliOptions.DisableBuildOptimization),
                 OutputPath = GetOption(OutputPath.Value(), CliOptions.OutputPath),
                 Configuration = GetOption(Configuration.Value(), CliOptions.BuildConfiguration),
-                Platform = GetOption(Platform.Value(), CliOptions.Platform)
+                Platform = GetOption(Platform.Value(), CliOptions.Platform),
+                SpecificLines = GetOption(SpecificLines.Value(), CliOptions.SpecificLineRange)
             };
 
             muTestOptions.ValidateOptions();

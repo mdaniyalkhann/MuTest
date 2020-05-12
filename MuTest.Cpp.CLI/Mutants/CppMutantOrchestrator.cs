@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -13,7 +14,9 @@ namespace MuTest.Cpp.CLI.Mutants
 
         private IList<IMutator> Mutators { get; }
 
-        public CppMutantOrchestrator(IList<IMutator> mutators = null)
+        public string SpecificLines { get; private set; }
+
+        public CppMutantOrchestrator(IList<IMutator> mutators = null, string specificLines = "")
         {
             Mutators = mutators ?? new List<IMutator>
             {
@@ -25,10 +28,12 @@ namespace MuTest.Cpp.CLI.Mutants
                 new PrePostfixUnaryMutator()
             };
 
+            SpecificLines = specificLines;
+
             Mutants = new Collection<CppMutant>();
         }
 
-        public static IEnumerable<CppMutant> GetDefaultMutants(string sourceFile)
+        public static IEnumerable<CppMutant> GetDefaultMutants(string sourceFile, string specificLines = "")
         {
             if (sourceFile == null)
             {
@@ -40,7 +45,10 @@ namespace MuTest.Cpp.CLI.Mutants
                 new ArithmeticMutator(),
                 new EqualityMutator(),
                 new LogicalMutator()
-            });
+            })
+            {
+                SpecificLines = specificLines
+            };
 
             orchestrator.Mutate(sourceFile);
 
@@ -88,13 +96,31 @@ namespace MuTest.Cpp.CLI.Mutants
 
             using (var reader = new StreamReader(sourceFile))
             {
+                const char separator = ':';
                 var lineNumber = 0;
                 string line;
                 var insideCommentedCode = false;
+                var id = 0;
+
+                int minimum = -1;
+                int maximum = int.MaxValue;
+                if (!string.IsNullOrWhiteSpace(SpecificLines))
+                {
+                    var range = SpecificLines.Split(separator);
+                    minimum = Convert.ToInt32(range[0]);
+                    maximum = Convert.ToInt32(range[1]);
+                }
+
                 while ((line = reader.ReadLine()) != null)
                 {
                     lineNumber++;
                     line = line.Trim();
+
+                    if (lineNumber < minimum ||
+                        lineNumber > maximum)
+                    {
+                        continue;
+                    }
 
                     if (string.IsNullOrWhiteSpace(line) ||
                         skipList.Any(x => line.StartsWith(x)) ||
@@ -195,9 +221,9 @@ namespace MuTest.Cpp.CLI.Mutants
                         foreach (var mutator in Mutators)
                         {
                             var cppMutants = mutator.Mutate(codeLine).ToList();
-
                             foreach (var mutant in cppMutants)
                             {
+                                mutant.Id = id++;
                                 Mutants.Add(mutant);
                             }
                         }

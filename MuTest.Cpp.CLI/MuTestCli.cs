@@ -31,6 +31,7 @@ namespace MuTest.Cpp.CLI
 
             var testSolution = CreateOption(app, CliOptions.TestSolution);
             var sourceClass = CreateOption(app, CliOptions.SourceClass);
+            var specificLines = CreateOption(app, CliOptions.SpecificLineRange);
             var sourceHeader = CreateOption(app, CliOptions.SourceHeader);
 
             var testProject = CreateOption(app, CliOptions.TestProject);
@@ -65,6 +66,7 @@ namespace MuTest.Cpp.CLI
                     SurvivedThreshold = survivedThreshold,
                     KilledThreshold = killedThreshold,
                     InIsolation = inIsolation,
+                    SpecificLines = specificLines,
                     DisableBuildOptimization = disableBuildOptimization
                 }.Build();
 
