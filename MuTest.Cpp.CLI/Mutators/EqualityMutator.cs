@@ -11,10 +11,10 @@ namespace MuTest.Cpp.CLI.Mutators
             {
                 [" == "] = new List<string> { " != " },
                 [" != "] = new List<string> { " == " },
-                [" < "] = new List<string> { " > ", " <= " },
-                [" > "] = new List<string> { " < ", " >= " },
-                [" <= "] = new List<string> { " > ", " < " },
-                [" >= "] = new List<string> { " < ", " > " }
+                [" < "] = new List<string> { " > " },
+                [" > "] = new List<string> { " < " },
+                [" <= "] = new List<string> { " > " },
+                [" >= "] = new List<string> { " < " }
             };
         }
 
