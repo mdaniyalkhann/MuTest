@@ -225,114 +225,126 @@ namespace MuTest.Cpp.CLI.Core
 
         private async Task BuildAndExecuteTests(CppMutant mutant, int index)
         {
-            if (_context.UseMultipleSolutions)
+            try
             {
-                var buildExecutor = new CppBuildExecutor(
-                    _settings,
-                    string.Format(_context.TestSolution.FullName, index),
-                    _cpp.Target)
+                if (_context.UseMultipleSolutions)
                 {
-                    EnableLogging = false,
-                    Configuration = _cpp.Configuration,
-                    Platform = _cpp.Platform,
-                    IntDir = string.Format(_context.IntDir, index),
-                    OutDir = string.Format(_context.OutDir, index),
-                    OutputPath = string.Format(_context.OutputPath, index),
-                    IntermediateOutputPath = string.Format(_context.IntermediateOutputPath, index)
+                    var buildExecutor = new CppBuildExecutor(
+                        _settings,
+                        string.Format(_context.TestSolution.FullName, index),
+                        _cpp.Target)
+                    {
+                        EnableLogging = false,
+                        Configuration = _cpp.Configuration,
+                        Platform = _cpp.Platform,
+                        IntDir = string.Format(_context.IntDir, index),
+                        OutDir = string.Format(_context.OutDir, index),
+                        OutputPath = string.Format(_context.OutputPath, index),
+                        IntermediateOutputPath = string.Format(_context.IntermediateOutputPath, index)
+                    };
+
+                    if (_context.EnableBuildOptimization)
+                    {
+                        string.Format(_context.TestProject.FullName, index).OptimizeTestProject();
+                    }
+
+                    var buildLog = new StringBuilder();
+                    void BuildOutputDataReceived(object sender, string args) => buildLog.Append(args.PrintWithPreTag());
+                    buildExecutor.OutputDataReceived += BuildOutputDataReceived;
+                    await buildExecutor.ExecuteBuild();
+
+                    if (buildExecutor.LastBuildStatus == Constants.BuildExecutionStatus.Failed)
+                    {
+                        buildLog.Clear();
+                        buildExecutor.Rebuild = true;
+
+                        await buildExecutor.ExecuteBuild();
+                        buildExecutor.Rebuild = false;
+                    }
+
+                    lock (_buildAndExecuteTestLock)
+                    {
+                        SetBuildLog(buildExecutor, buildLog.ToString());
+                        buildExecutor.OutputDataReceived -= BuildOutputDataReceived;
+                    }
+
+                    if (buildExecutor.LastBuildStatus == Constants.BuildExecutionStatus.Failed)
+                    {
+                        mutant.ResultStatus = MutantStatus.BuildError;
+                        OnMutantExecuted(new CppMutantEventArgs
+                        {
+                            Mutant = mutant,
+                            TestLog = _testDiagnostics,
+                            BuildLog = _buildDiagnostics
+                        });
+
+                        return;
+                    }
+                }
+
+                var testExecutor = new GoogleTestExecutor
+                {
+                    KillProcessOnTestFail = true,
+                    EnableTestTimeout = true,
+                    TestTimeout = _settings.TestTimeout
                 };
 
-                if (_context.EnableBuildOptimization)
+                var log = new StringBuilder();
+                void OutputDataReceived(object sender, string args) => log.Append(args.PrintWithPreTag());
+                if (EnableDiagnostics)
                 {
-                    string.Format(_context.TestProject.FullName, index).OptimizeTestProject();
+                    log.AppendLine("<fieldset style=\"margin-bottom:10\">");
+                    var lineNumber = mutant.Mutation.LineNumber;
+                    log.Append(
+                        $"Line: {lineNumber.ToString().PrintImportant(color: Constants.Colors.Blue)} - {mutant.Mutation.DisplayName.Encode()}"
+                            .PrintWithDateTime()
+                            .PrintWithPreTag());
+                    testExecutor.OutputDataReceived += OutputDataReceived;
                 }
 
-                var buildLog = new StringBuilder();
-                void BuildOutputDataReceived(object sender, string args) => buildLog.Append(args.PrintWithPreTag());
-                buildExecutor.OutputDataReceived += BuildOutputDataReceived;
-                await buildExecutor.ExecuteBuild();
+                var projectDirectory = Path.GetDirectoryName(_cpp.TestProject);
+                var projectName = Path.GetFileNameWithoutExtension(_cpp.TestProject);
 
-                if (buildExecutor.LastBuildStatus == Constants.BuildExecutionStatus.Failed)
+                var projectNameFromTestContext = string.Format(Path.GetFileNameWithoutExtension(_context.TestProject.Name), index);
+                var app = $"{projectDirectory}/{string.Format(_context.OutDir, index)}{projectName}.exe";
+
+                if (!File.Exists(app))
                 {
-                    buildLog.Clear();
-                    buildExecutor.Rebuild = true;
-
-                    await buildExecutor.ExecuteBuild();
-                    buildExecutor.Rebuild = false;
+                    app = $"{projectDirectory}/{string.Format(_context.OutDir, index)}{projectNameFromTestContext}.exe";
                 }
 
-                lock (_buildAndExecuteTestLock)
+                await testExecutor.ExecuteTests(
+                    app,
+                    $"{Path.GetFileNameWithoutExtension(_context.TestContexts[index].TestClass.Name)}*");
+
+                testExecutor.OutputDataReceived -= OutputDataReceived;
+                if (EnableDiagnostics && testExecutor.LastTestExecutionStatus == Constants.TestExecutionStatus.Timeout)
                 {
-                    SetBuildLog(buildExecutor, buildLog.ToString());
-                    buildExecutor.OutputDataReceived -= BuildOutputDataReceived;
+                    log.AppendLine("</fieldset>");
+                    _testDiagnostics = log.ToString();
                 }
 
-                if (buildExecutor.LastBuildStatus == Constants.BuildExecutionStatus.Failed)
+                mutant.ResultStatus = testExecutor.LastTestExecutionStatus == Constants.TestExecutionStatus.Success
+                    ? MutantStatus.Survived
+                    : testExecutor.LastTestExecutionStatus == Constants.TestExecutionStatus.Timeout
+                        ? MutantStatus.Timeout
+                        : MutantStatus.Killed;
+                OnMutantExecuted(new CppMutantEventArgs
                 {
-                    mutant.ResultStatus = MutantStatus.BuildError;
-                    OnMutantExecuted(new CppMutantEventArgs
-                    {
-                        Mutant = mutant,
-                        TestLog = _testDiagnostics,
-                        BuildLog = _buildDiagnostics
-                    });
-
-                    return;
-                }
+                    Mutant = mutant,
+                    BuildLog = _buildDiagnostics,
+                    TestLog = _testDiagnostics
+                });
             }
-
-            var testExecutor = new GoogleTestExecutor
+            catch (Exception e)
             {
-                KillProcessOnTestFail = true,
-                EnableTestTimeout = true,
-                TestTimeout = _settings.TestTimeout
-            };
-
-            var log = new StringBuilder();
-            void OutputDataReceived(object sender, string args) => log.Append(args.PrintWithPreTag());
-            if (EnableDiagnostics)
-            {
-                log.AppendLine("<fieldset style=\"margin-bottom:10\">");
-                var lineNumber = mutant.Mutation.LineNumber;
-                log.Append(
-                    $"Line: {lineNumber.ToString().PrintImportant(color: Constants.Colors.Blue)} - {mutant.Mutation.DisplayName.Encode()}"
-                        .PrintWithDateTime()
-                        .PrintWithPreTag());
-                testExecutor.OutputDataReceived += OutputDataReceived;
+                mutant.ResultStatus = MutantStatus.BuildError;
+                OnMutantExecuted(new CppMutantEventArgs
+                {
+                    Mutant = mutant,
+                    BuildLog = e.ToString(),
+                });
             }
-
-            var projectDirectory = Path.GetDirectoryName(_cpp.TestProject);
-            var projectName = Path.GetFileNameWithoutExtension(_cpp.TestProject);
-
-            var projectNameFromTestContext = string.Format(Path.GetFileNameWithoutExtension(_context.TestProject.Name), index);
-            var app = $"{projectDirectory}/{string.Format(_context.OutDir, index)}{projectName}.exe";
-
-            if (!File.Exists(app))
-            {
-                app = $"{projectDirectory}/{string.Format(_context.OutDir, index)}{projectNameFromTestContext}.exe";
-            }
-
-            await testExecutor.ExecuteTests(
-                app,
-                $"{Path.GetFileNameWithoutExtension(_context.TestContexts[index].TestClass.Name)}*");
-
-            testExecutor.OutputDataReceived -= OutputDataReceived;
-            if (EnableDiagnostics && testExecutor.LastTestExecutionStatus == Constants.TestExecutionStatus.Timeout)
-            {
-                log.AppendLine("</fieldset>");
-                _testDiagnostics = log.ToString();
-            }
-
-            mutant.ResultStatus = testExecutor.LastTestExecutionStatus == Constants.TestExecutionStatus.Success
-                ? MutantStatus.Survived
-                : testExecutor.LastTestExecutionStatus == Constants.TestExecutionStatus.Timeout
-                    ? MutantStatus.Timeout
-                    : MutantStatus.Killed;
-            OnMutantExecuted(new CppMutantEventArgs
-            {
-                Mutant = mutant,
-                BuildLog = _buildDiagnostics,
-                TestLog = _testDiagnostics
-            });
         }
 
         public void PrintMutatorSummary(StringBuilder mutationProcessLog, IList<CppMutant> mutants)
