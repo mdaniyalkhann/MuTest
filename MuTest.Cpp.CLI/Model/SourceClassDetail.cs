@@ -97,6 +97,9 @@ namespace MuTest.Cpp.CLI.Model
         [JsonIgnore]
         public string TestSolution { get; set; }
 
+        [JsonIgnore]
+        public bool IncludeBuildEvents { get; set; }
+
         public void CalculateMutationScore()
         {
             MutationScore.Survived = SurvivedMutants.Count;

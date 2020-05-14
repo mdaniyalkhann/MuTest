@@ -108,7 +108,12 @@ namespace MuTest.Cpp.CLI.Core
 
                     if (_context.EnableBuildOptimization)
                     {
-                        _context.TestProject.FullName.OptimizeTestProject();
+                        if (!_cpp.IncludeBuildEvents)
+                        {
+                            _context.TestProject.FullName.RemoveBuildEvents();
+                        }
+
+                        _context.TestProject.FullName.OptimizeTestProject(); ;
                     }
 
                     var buildLog = new StringBuilder();
@@ -245,6 +250,10 @@ namespace MuTest.Cpp.CLI.Core
 
                     if (_context.EnableBuildOptimization)
                     {
+                        if (!_cpp.IncludeBuildEvents)
+                        {
+                            string.Format(_context.TestProject.FullName, index).RemoveBuildEvents();
+                        }
                         string.Format(_context.TestProject.FullName, index).OptimizeTestProject();
                     }
 

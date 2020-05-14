@@ -119,6 +119,15 @@ namespace MuTest.Cpp.CLI
             ValueType = CommandOptionType.NoValue
         };
 
+        public static readonly CliOption<bool> IncludeBuildEvents = new CliOption<bool>
+        {
+            ArgumentName = "--include-build-events",
+            ArgumentShortName = "-be",
+            ArgumentDescription = "Include project pre, prelink and post build events",
+            DefaultValue = DefaultOptions.IncludeBuildEvents,
+            ValueType = CommandOptionType.NoValue
+        };
+
         public static readonly CliOption<string> SpecificLineRange = new CliOption<string>
         {
             ArgumentName = "--specific_line_range",

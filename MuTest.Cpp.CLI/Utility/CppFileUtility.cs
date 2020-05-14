@@ -301,6 +301,30 @@ namespace MuTest.Cpp.CLI.Utility
             }
         }
 
+        public static void RemoveBuildEvents(this string newProjectLocation)
+        {
+            const string postBuildEvent = "/Project/ItemDefinitionGroup/PostBuildEvent/Command";
+            const string preLinkEvent = "/Project/ItemDefinitionGroup/PreLinkEvent/Command";
+            const string preBuildEvent = "/Project/ItemDefinitionGroup/PreBuildEvent/Command";
+          
+            var project = new FileInfo(newProjectLocation);
+            if (project.Exists)
+            {
+                var projectXml = project.GetProjectDocument();
+                projectXml.SetInnerTextMultipleNodes(postBuildEvent, string.Empty);
+                projectXml.SetInnerTextMultipleNodes(preLinkEvent, string.Empty);
+                projectXml.SetInnerTextMultipleNodes(preBuildEvent, string.Empty);
+
+                var newPathFile = new FileInfo(newProjectLocation);
+                if (newPathFile.Exists)
+                {
+                    newPathFile.Delete();
+                }
+
+                projectXml.Save(newPathFile.FullName);
+            }
+        }
+
         private static void SetInnerTextMultipleNodes(this XmlNode projectXml, string xmlPath, string text = "false")
         {
             var nodes = projectXml.SelectNodes(xmlPath);

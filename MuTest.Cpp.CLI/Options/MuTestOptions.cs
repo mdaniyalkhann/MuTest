@@ -72,6 +72,9 @@ namespace MuTest.Cpp.CLI.Options
         [JsonProperty("specific-lines-range")]
         public string SpecificLines { get; set; }
 
+        [JsonProperty("include-build-events")]
+        public bool IncludeBuildEvents { get; set; }
+
         public void ValidateOptions()
         {
             ValidateRequiredParameters();

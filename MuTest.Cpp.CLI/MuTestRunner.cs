@@ -14,6 +14,7 @@ using MuTest.Cpp.CLI.Core;
 using MuTest.Cpp.CLI.Model;
 using MuTest.Cpp.CLI.Mutants;
 using MuTest.Cpp.CLI.Options;
+using MuTest.Cpp.CLI.Utility;
 using Newtonsoft.Json;
 using static MuTest.Core.Common.Constants;
 
@@ -62,7 +63,8 @@ namespace MuTest.Cpp.CLI
                     TestProject = _options.TestProject,
                     Target = _options.Target,
                     SourceHeader = _options.SourceHeader,
-                    TestSolution = _options.TestSolution
+                    TestSolution = _options.TestSolution,
+                    IncludeBuildEvents = _options.IncludeBuildEvents
                 };
 
                 _context = !_options.InIsolation
@@ -192,6 +194,11 @@ namespace MuTest.Cpp.CLI
                 Platform = _options.Platform,
                 QuietWithSymbols = true
             };
+
+            if (!_options.IncludeBuildEvents)
+            {
+                string.Format(_context.TestProject.FullName, 0).RemoveBuildEvents();
+            }
 
             testCodeBuild.OutputDataReceived += OutputData;
 

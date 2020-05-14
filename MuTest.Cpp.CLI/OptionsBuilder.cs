@@ -40,6 +40,8 @@ namespace MuTest.Cpp.CLI
 
         public CommandOption SpecificLines { get; set; }
 
+        public CommandOption IncludeBuildEvents { get; set; }
+
         public MuTestOptions Build()
         {
             var muTestOptions = new MuTestOptions
@@ -55,6 +57,7 @@ namespace MuTest.Cpp.CLI
                 KilledThreshold = GetOption(KilledThreshold.Value(), CliOptions.KilledThreshold),
                 InIsolation = GetOption(InIsolation.Value(), CliOptions.InIsolation),
                 DisableBuildOptimization = GetOption(DisableBuildOptimization.Value(), CliOptions.DisableBuildOptimization),
+                IncludeBuildEvents = GetOption(IncludeBuildEvents.Value(), CliOptions.IncludeBuildEvents),
                 OutputPath = GetOption(OutputPath.Value(), CliOptions.OutputPath),
                 Configuration = GetOption(Configuration.Value(), CliOptions.BuildConfiguration),
                 Platform = GetOption(Platform.Value(), CliOptions.Platform),
