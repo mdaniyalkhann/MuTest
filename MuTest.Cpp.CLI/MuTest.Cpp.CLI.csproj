@@ -105,6 +105,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CLIOptions.cs" />
+    <Compile Include="Core\GoogleTestCaseLoader.cs" />
     <Compile Include="Core\CoberturaReportLoader.cs" />
     <Compile Include="Core\CppBuildExecutor.cs" />
     <Compile Include="Core\CppDirectoryFactory.cs" />
@@ -122,6 +123,8 @@
     <Compile Include="Model\CppTestContext.cs" />
     <Compile Include="Model\SourceClassDetail.cs" />
     <Compile Include="Model\StringLine.cs" />
+    <Compile Include="Model\Test.cs" />
+    <Compile Include="Model\TestCase.cs" />
     <Compile Include="Mutants\CppMutant.cs" />
     <Compile Include="Mutants\CppMutation.cs" />
     <Compile Include="Mutants\IMutantOrchestrator.cs" />

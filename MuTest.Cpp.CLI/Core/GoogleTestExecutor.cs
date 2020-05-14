@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
-using MuTest.Core.Model;
+using MuTest.Cpp.CLI.Model;
 using static MuTest.Core.Common.Constants;
 
 namespace MuTest.Cpp.CLI.Core
@@ -12,6 +13,7 @@ namespace MuTest.Cpp.CLI.Core
     {
         private Process _currentProcess;
         private Timer _timer;
+        private DateTime _currentDateTime;
         private const string TestCaseFilter = " --gtest_filter=";
         private const string ShuffleTests = " --gtest_shuffle";
         private const string FailedDuringExecution = "[  FAILED  ]";
@@ -24,9 +26,11 @@ namespace MuTest.Cpp.CLI.Core
 
         public bool EnableTestTimeout { get; set; }
 
+        public string LogDir { get; set; }
+
         public TestExecutionStatus LastTestExecutionStatus { get; private set; }
 
-        public TestRun TestResult { get; private set; }
+        public Testsuites TestResult { get; private set; }
 
         public event EventHandler<string> OutputDataReceived;
 
@@ -48,6 +52,9 @@ namespace MuTest.Cpp.CLI.Core
                     };
                 }
 
+                _currentDateTime = DateTime.Now;
+                var testResultFile = $@"""{LogDir}test_report_{_currentDateTime:yyyyMdhhmmss}.xml""";
+
                 LastTestExecutionStatus = TestExecutionStatus.Success;
                 TestResult = null;
                 var methodBuilder = new StringBuilder(ShuffleTests);
@@ -56,6 +63,16 @@ namespace MuTest.Cpp.CLI.Core
                 {
                     methodBuilder.Append($" {TestCaseFilter}")
                         .Append($"\"{filter}\"");
+                }
+
+                if (!string.IsNullOrWhiteSpace(LogDir))
+                {
+                    if (!Directory.Exists(LogDir))
+                    {
+                        Directory.CreateDirectory(LogDir);
+                    }
+
+                    methodBuilder.Append($" --gtest_output=xml:{testResultFile}");
                 }
 
                 var processInfo = new ProcessStartInfo(app)
@@ -103,8 +120,10 @@ namespace MuTest.Cpp.CLI.Core
 
                         _currentProcess.OutputDataReceived -= CurrentProcessOnOutputDataReceived;
                         _currentProcess.ErrorDataReceived -= CurrentProcessOnOutputDataReceived;
+                        GetTestResults(testResultFile);
                     }
                 });
+
             }
             catch (Exception e)
             {
@@ -124,6 +143,26 @@ namespace MuTest.Cpp.CLI.Core
                 LastTestExecutionStatus = TestExecutionStatus.Timeout;
                 KillProcess(_currentProcess);
                 _timer.Dispose();
+            }
+        }
+
+        private void GetTestResults(string testLog)
+        {
+            try
+            {
+                var testFile = testLog.Replace(@"""", string.Empty);
+                if (!File.Exists(testFile))
+                {
+                    return;
+                }
+
+                TestResult = testFile.LoadTestsFromFile();
+
+            }
+            catch (Exception exp)
+            {
+                TestResult = null;
+                Trace.TraceError("Unknown Exception Occurred On Getting Test result {0}", exp);
             }
         }
 

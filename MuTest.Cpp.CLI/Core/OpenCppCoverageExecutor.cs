@@ -46,7 +46,7 @@ namespace MuTest.Cpp.CLI.Core
 
         public async Task GenerateCoverage(string sources, string app, string filter)
         {
-            _coverageFile = $@"{_testResultsDirectory}report_{DateTime.Now:yyyyMdhhmmss}.xml";
+            _coverageFile = $@"{_testResultsDirectory}coverage_report_{DateTime.Now:yyyyMdhhmmss}.xml";
             CoverageReport = null;
             TestResult = null;
             var methodBuilder = new StringBuilder(" --sources ")

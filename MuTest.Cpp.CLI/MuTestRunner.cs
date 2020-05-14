@@ -65,7 +65,6 @@ namespace MuTest.Cpp.CLI
                     TestSolution = _options.TestSolution
                 };
 
-
                 _context = !_options.InIsolation
                     ? _directoryFactory.PrepareTestFiles(_cppClass)
                     : _directoryFactory.PrepareSolutionFiles(_cppClass);
@@ -237,7 +236,10 @@ namespace MuTest.Cpp.CLI
             _chalk.Default("\nExecuting Tests...");
             var log = new StringBuilder();
             void OutputData(object sender, string args) => log.AppendLine(args);
-            var testExecutor = new GoogleTestExecutor();
+            var testExecutor = new GoogleTestExecutor
+            {
+                LogDir = MuTestSettings.TestsResultDirectory
+            };
 
             testExecutor.OutputDataReceived += OutputData;
             var projectDirectory = Path.GetDirectoryName(_options.TestProject);
@@ -259,6 +261,24 @@ namespace MuTest.Cpp.CLI
             var cppTestContext = _context.TestContexts.First();
             var filter = $"{Path.GetFileNameWithoutExtension(cppTestContext.TestClass.Name)}*";
             await testExecutor.ExecuteTests(app, filter);
+
+            if (testExecutor.TestResult != null)
+            {
+                _cppClass.NumberOfTests = Convert.ToInt32(testExecutor.TestResult.Tests);
+                _cppClass.NumberOfDisabledTests = Convert.ToInt32(testExecutor.TestResult.Disabled);
+
+                _chalk.Default($"\n\nNumber of Tests: {_cppClass.NumberOfTests}\n");
+
+                _cppClass.Tests.AddRange(testExecutor
+                    .TestResult
+                    .Testsuite
+                    .SelectMany(x => x.Testcase)
+                    .Select(x => new Test
+                    {
+                        Name = $"{x.Classname.Replace("_mutest_test_0", string.Empty)}.{x.Name}",
+                        ExecutionTime = Convert.ToDouble(x.Time)
+                    }));
+            }
 
             if (testExecutor.LastTestExecutionStatus != TestExecutionStatus.Success)
             {

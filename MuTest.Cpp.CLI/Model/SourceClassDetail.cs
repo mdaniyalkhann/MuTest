@@ -16,11 +16,20 @@ namespace MuTest.Cpp.CLI.Model
         [JsonProperty("coverage")]
         public Coverage Coverage { get; set; }
 
-        [JsonProperty("execution-time")]
-        public long ExecutionTime { get; set; }
+        [JsonProperty("number-of-tests")]
+        public int NumberOfTests { get; set; }
+
+        [JsonProperty("number-of-disabled-tests")]
+        public int NumberOfDisabledTests { get; set; }
+
+        [JsonProperty("tests")]
+        public List<Test> Tests { get; } = new List<Test>();
 
         [JsonProperty("mutants")]
         public List<CppMutant> Mutants { get; } = new List<CppMutant>();
+
+        [JsonProperty("execution-time")]
+        public long ExecutionTime { get; set; }
 
         [JsonIgnore]
         public string SourceClass { get; set; }
