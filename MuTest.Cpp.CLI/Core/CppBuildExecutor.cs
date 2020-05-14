@@ -86,10 +86,7 @@ namespace MuTest.Cpp.CLI.Core
         private async Task Build(StringBuilder projectBuilder)
         {
             OnBuildStarted(EventArgs.Empty);
-            projectBuilder
-                .Append(_settings.PostBuildEvents)
-                .Append(_settings.PreBuildEvents)
-                .Append(_settings.MSBuildCustomOption);
+            projectBuilder.Append(_settings.MSBuildCustomOption);
 
             if (EnableLogging)
             {
