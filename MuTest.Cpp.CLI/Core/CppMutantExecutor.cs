@@ -113,7 +113,7 @@ namespace MuTest.Cpp.CLI.Core
                             _context.TestProject.FullName.RemoveBuildEvents();
                         }
 
-                        _context.TestProject.FullName.OptimizeTestProject(); ;
+                        _context.TestProject.FullName.OptimizeTestProject();
                     }
 
                     var buildLog = new StringBuilder();
