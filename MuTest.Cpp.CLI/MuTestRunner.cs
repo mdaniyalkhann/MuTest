@@ -322,11 +322,22 @@ namespace MuTest.Cpp.CLI
                                 ? 0u
                                 : 3u;
 
-                            foreach (var line in packageClass.Lines.Line)
+                            for (var index = 0; index < packageClass.Lines.Line.Count; index++)
                             {
+                                var line = packageClass.Lines.Line[index];
+                                var currentLineNumber = Convert.ToUInt32(line.Number);
                                 if (line.Hits > 0)
                                 {
-                                    _cppClass.CoveredLineNumbers.Add(Convert.ToUInt32(line.Number) - factor);
+                                    _cppClass.CoveredLineNumbers.Add(currentLineNumber - factor);
+
+                                    if (index + 1 < packageClass.Lines.Line.Count)
+                                    {
+                                        var nextLineNumber = Convert.ToUInt32(packageClass.Lines.Line[index + 1].Number);
+                                        for (var lineNumber = currentLineNumber; lineNumber < nextLineNumber; lineNumber++)
+                                        {
+                                            _cppClass.CoveredLineNumbers.Add(lineNumber - factor);
+                                        }
+                                    }
                                 }
                             }
 
