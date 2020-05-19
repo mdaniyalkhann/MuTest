@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MuTest.Core.Mutators;
+using MuTest.Core.Utility;
 
 namespace MuTest.Core.Mutants
 {
@@ -134,7 +135,7 @@ namespace MuTest.Core.Mutants
                     }
                     catch (Exception e)
                     {
-                         Trace.TraceError("unable to process if statement {0}", e);
+                         Trace.TraceError("unable to process if statement at line {0} {1}", ifStatement?.Statement?.LineNumber() + 1 , e);
                     }
                 }
 
