@@ -4,9 +4,11 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("{TEST_PROJECT}")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Knowledge Marketing")]
+[assembly: AssemblyCompany("{COMPANY}")]
 [assembly: AssemblyProduct("{TEST_PROJECT}")]
-[assembly: AssemblyCopyright("Copyright © Knowledge Marketing 2020")]
+[assembly: AssemblyCopyright("Copyright © {COMPANY} 2020")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
 
 [assembly: ComVisible(false)]
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 using MuTest.Core.Utility;
 using MuTest.Cpp.CLI.Model;
 using MuTest.Cpp.CLI.Utility;
@@ -40,7 +41,7 @@ namespace MuTest.Cpp.CLI.Core
             var newTestProjectLocation = $"{projectDirectory}\\{newTestProject}";
             var newSolutionLocation = $"{Path.GetDirectoryName(cppClass.TestSolution)}\\{newTestSolution}";
 
-            var solutionCode = solution.Replace($"{testProjectName}{testProjectExtension}", newTestProject);
+            var solutionCode = Regex.Replace(solution, $"{testProjectName}{testProjectExtension}", newTestProject, RegexOptions.IgnoreCase);
             solutionCode.UpdateCode(newSolutionLocation);
 
             new FileInfo(cppClass.TestProject).CopyTo(newTestProjectLocation, true);
@@ -77,11 +78,9 @@ namespace MuTest.Cpp.CLI.Core
                     var newSourceHeader = $"{sourceHeaderName}_mutest_src_{index}{sourceHeaderExtension}";
                     var newTestClass = $"{testClassName}_mutest_test_{index}{testClassExtension}";
 
-                    var testCode = test.Replace(
-                        $"{sourceClassName}{sourceClassExtension}",
-                        newSourceClass)
-                        .Replace(testClassName, Path.GetFileNameWithoutExtension(newTestClass))
-                        .Replace($"{sourceHeaderName}{sourceHeaderExtension}", newSourceHeader);
+                    var testCode = Regex.Replace(test, $"{sourceClassName}{sourceClassExtension}", newSourceClass, RegexOptions.IgnoreCase);
+                    testCode = Regex.Replace(testCode, testClassName, Path.GetFileNameWithoutExtension(newTestClass), RegexOptions.IgnoreCase);
+                    testCode = Regex.Replace(testCode, $"{sourceHeaderName}{sourceHeaderExtension}", newSourceHeader, RegexOptions.IgnoreCase);
 
                     var newSourceClassLocation = $"{Path.GetDirectoryName(cppClass.SourceClass)}\\{newSourceClass}";
                     var newHeaderClassLocation = $"{Path.GetDirectoryName(cppClass.SourceHeader)}\\{newSourceHeader}";
@@ -93,9 +92,9 @@ namespace MuTest.Cpp.CLI.Core
                     testContext.SourceClass = new FileInfo(newSourceClassLocation);
                     testContext.SourceHeader = new FileInfo(newHeaderClassLocation);
 
-                    if (!sourceHeaderExtension.Equals(sourceClassExtension))
+                    if (!sourceHeaderExtension.Equals(sourceClassExtension, StringComparison.InvariantCultureIgnoreCase))
                     {
-                        var sourceCode = source.Replace($"{sourceHeaderName}{sourceHeaderExtension}", newSourceHeader);
+                        var sourceCode = Regex.Replace(source, $"{sourceHeaderName}{sourceHeaderExtension}", newSourceHeader, RegexOptions.IgnoreCase);
                         sourceCode.UpdateCode(newSourceClassLocation);
                         new FileInfo(cppClass.SourceHeader).CopyTo(newHeaderClassLocation, true);
 
@@ -111,7 +110,7 @@ namespace MuTest.Cpp.CLI.Core
                     testCode.UpdateCode(newTestClassLocation);
                     testContext.TestClass = new FileInfo(newTestClassLocation);
 
-                    if (!testCode.Contains(testContext.SourceClass.Name))
+                    if (!Regex.IsMatch(testCode, testContext.SourceClass.Name, RegexOptions.IgnoreCase))
                     {
                         AddNameSpaceWithSourceReference(newTestClassLocation, testContext, index);
                     }
@@ -195,7 +194,7 @@ namespace MuTest.Cpp.CLI.Core
                     var newSourceClass = $"{sourceClassName}_mutest_src_{index}{sourceClassExtension}";
                     var newTestClass = $"{testClassName}_mutest_test_{index}{testClassExtension}";
 
-                    var solutionCode = solution.Replace($"{testProjectName}{testProjectExtension}", string.Format(newTestProject, index));
+                    var solutionCode = Regex.Replace(solution, $"{testProjectName}{testProjectExtension}", string.Format(newTestProject, index), RegexOptions.IgnoreCase);
                     solutionCode.UpdateCode(string.Format(newSolutionLocation, index));
 
                     var newSourceClassLocation = $"{Path.GetDirectoryName(cppClass.SourceClass)}\\{newSourceClass}";
@@ -204,8 +203,8 @@ namespace MuTest.Cpp.CLI.Core
                     var relativeTestCodePath = cppClass.TestClass.RelativePath(projectDirectory);
                     var relativeNewTestCodePath = newTestClassLocation.RelativePath(projectDirectory);
 
-                    var projectXml = project.Replace(relativeTestCodePath, relativeNewTestCodePath)
-                        .Replace($"{sourceClassName}{sourceClassExtension}", newSourceClass);
+                    var projectXml = Regex.Replace(project, relativeTestCodePath, relativeNewTestCodePath, RegexOptions.IgnoreCase);
+                    projectXml = Regex.Replace(projectXml, $"{sourceClassName}{sourceClassExtension}", newSourceClass, RegexOptions.IgnoreCase);
                     projectXml.UpdateCode(string.Format(newTestProjectLocation, index));
 
                     newSourceClassLocation.DeleteIfExists();
@@ -214,14 +213,14 @@ namespace MuTest.Cpp.CLI.Core
                     testContext.SourceClass = new FileInfo(newSourceClassLocation);
                     new FileInfo(cppClass.SourceClass).CopyTo(newSourceClassLocation);
 
-                    var testCode = test.Replace(
-                            $"{sourceClassName}{sourceClassExtension}", newSourceClass)
-                        .Replace(testClassName, Path.GetFileNameWithoutExtension(newTestClass));
+                    var testCode = Regex.Replace(test, $"{sourceClassName}{sourceClassExtension}", newSourceClass, RegexOptions.IgnoreCase);
+                    testCode = Regex.Replace(testCode, testClassName, Path.GetFileNameWithoutExtension(newTestClass), RegexOptions.IgnoreCase);
 
                     testCode.UpdateCode(newTestClassLocation);
                     testContext.TestClass = new FileInfo(newTestClassLocation);
 
-                    if (!testCode.Contains(testContext.SourceClass.Name) && !project.Contains($"{sourceClassName}{sourceClassExtension}"))
+                    if (!Regex.IsMatch(testCode, testContext.SourceClass.Name, RegexOptions.IgnoreCase) && 
+                        !Regex.IsMatch(project, $"{sourceClassName}{sourceClassExtension}", RegexOptions.IgnoreCase))
                     {
                         AddSourceReference(testContext);
                     }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using MuTest.Core.Common;
 using MuTest.Core.Exceptions;
 using MuTest.Cpp.CLI.Utility;
@@ -242,14 +241,22 @@ namespace MuTest.Cpp.CLI.Options
 
         private void ValidateRequiredParameters()
         {
-            if (string.IsNullOrWhiteSpace(TestClass) ||
-                !File.Exists(TestClass))
+            var testFile = new FileInfo(TestClass);
+            if (testFile.Exists)
+            {
+                TestClass = testFile.FullName;
+            }
+            else
             {
                 throw new MuTestInputException(ErrorMessage, $"The Test Class file is required. Valid Options are {CliOptions.TestClass.ArgumentShortName}");
             }
 
-            if (string.IsNullOrWhiteSpace(SourceClass) ||
-                !File.Exists(SourceClass))
+            var sourceFile = new FileInfo(SourceClass);
+            if (sourceFile.Exists)
+            {
+                SourceClass = sourceFile.FullName;
+            }
+            else
             {
                 throw new MuTestInputException(ErrorMessage, $"The Source Class file is required. Valid Options are {CliOptions.SourceClass.ArgumentShortName}");
             }
