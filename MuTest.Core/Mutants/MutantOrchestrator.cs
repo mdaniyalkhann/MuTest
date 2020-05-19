@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -123,7 +125,17 @@ namespace MuTest.Core.Mutants
                         ifStatement = ifStatement.ReplaceNode(ifStatement.Else, Mutate(ifStatement.Else));
                     }
 
-                    return ifStatement.ReplaceNode(ifStatement.Statement, Mutate(ifStatement.Statement));
+                    try
+                    {
+                        if (ifStatement.Statement != null)
+                        {
+                            return ifStatement.ReplaceNode(ifStatement.Statement, Mutate(ifStatement.Statement));
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                         Trace.TraceError("unable to process if statement {0}", e);
+                    }
                 }
 
                 return MutateWithIfStatements(statement);
