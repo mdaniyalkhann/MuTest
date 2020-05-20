@@ -17,7 +17,8 @@ namespace MuTest.Cpp.CLI.Core
 {
     public class CppMutantExecutor : ICppMutantExecutor
     {
-        private static readonly object _buildAndExecuteTestLock = new object();
+        private static readonly object BuildAndExecuteTestLock = new object();
+        private static readonly object AppendLock = new object();
 
         public double SurvivedThreshold { get; set; } = 1;
 
@@ -258,7 +259,14 @@ namespace MuTest.Cpp.CLI.Core
                     }
 
                     var buildLog = new StringBuilder();
-                    void BuildOutputDataReceived(object sender, string args) => buildLog.Append(args.PrintWithPreTag());
+                    void BuildOutputDataReceived(object sender, string args)
+                    {
+                        lock (AppendLock)
+                        {
+                            buildLog.Append(args.PrintWithPreTag());
+                        }
+                    }
+
                     buildExecutor.OutputDataReceived += BuildOutputDataReceived;
                     await buildExecutor.ExecuteBuild();
 
@@ -271,7 +279,7 @@ namespace MuTest.Cpp.CLI.Core
                         buildExecutor.Rebuild = false;
                     }
 
-                    lock (_buildAndExecuteTestLock)
+                    lock (BuildAndExecuteTestLock)
                     {
                         SetBuildLog(buildExecutor, buildLog.ToString());
                         buildExecutor.OutputDataReceived -= BuildOutputDataReceived;
