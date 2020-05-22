@@ -46,7 +46,7 @@ namespace MuTest.Core.Common.Settings
             set => value = (string)this[nameof(TestsResultDirectory)];
         }
 
-        [ConfigurationProperty(nameof(TestTimeout), DefaultValue = 15000, IsRequired = false)]
+        [ConfigurationProperty(nameof(TestTimeout), DefaultValue = 35000, IsRequired = false)]
         public int TestTimeout
         {
             get => (int)this[nameof(TestTimeout)];

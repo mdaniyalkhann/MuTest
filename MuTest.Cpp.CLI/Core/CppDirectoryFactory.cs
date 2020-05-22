@@ -188,7 +188,6 @@ namespace MuTest.Cpp.CLI.Core
                     var testContext = new CppTestContext
                     {
                         Index = index
-
                     };
 
                     var newSourceClass = $"{sourceClassName}_mutest_src_{index}{sourceClassExtension}";
@@ -219,8 +218,8 @@ namespace MuTest.Cpp.CLI.Core
                     testCode.UpdateCode(newTestClassLocation);
                     testContext.TestClass = new FileInfo(newTestClassLocation);
 
-                    if (!Regex.IsMatch(testCode, testContext.SourceClass.Name, RegexOptions.IgnoreCase) && 
-                        !Regex.IsMatch(project, $"{sourceClassName}{sourceClassExtension}", RegexOptions.IgnoreCase))
+                    if (!Regex.IsMatch(testCode, testContext.SourceClass.Name, RegexOptions.IgnoreCase) &&
+                        !Regex.IsMatch(project, $"include.*.=.*.{sourceClassName}{sourceClassExtension}", RegexOptions.IgnoreCase))
                     {
                         AddSourceReference(testContext);
                     }
@@ -263,8 +262,18 @@ namespace MuTest.Cpp.CLI.Core
         private static void AddSourceReference(CppTestContext testContext)
         {
             var fileLines = new List<string>();
-            var codeFile = testContext.TestClass.FullName;
-            using (var reader = new StreamReader(codeFile))
+            var testCodeFile = testContext.TestClass.FullName;
+
+            var start = "<";
+            var end = ">";
+            var extension = Path.GetExtension(testContext.SourceClass.FullName);
+            if (extension.EndsWith(".h", StringComparison.InvariantCultureIgnoreCase) ||
+                extension.EndsWith(".hpp", StringComparison.InvariantCultureIgnoreCase))
+            {
+                end = start = "\"";
+            }
+
+            using (var reader = new StreamReader(testCodeFile))
             {
                 string line;
                 var sourceReferenceAdded = false;
@@ -279,13 +288,13 @@ namespace MuTest.Cpp.CLI.Core
                         continue;
                     }
 
-                    fileLines.Add($"{Environment.NewLine}#include <{testContext.SourceClass.FullName}>{Environment.NewLine}");
+                    fileLines.Add($"{Environment.NewLine}#include {start}{testContext.SourceClass.FullName}{end}{Environment.NewLine}");
                     fileLines.Add(line);
                     sourceReferenceAdded = true;
                 }
             }
 
-            codeFile.WriteLines(fileLines);
+            testCodeFile.WriteLines(fileLines);
         }
 
         private static void AddNameSpaceWithSourceReference(string codeFile, CppTestContext testContext, int index)
