@@ -219,7 +219,7 @@ namespace MuTest.Cpp.CLI.Core
                     testContext.TestClass = new FileInfo(newTestClassLocation);
 
                     if (!Regex.IsMatch(testCode, testContext.SourceClass.Name, RegexOptions.IgnoreCase) &&
-                        !Regex.IsMatch(project, $"include.*.=.*.{sourceClassName}{sourceClassExtension}", RegexOptions.IgnoreCase))
+                        !Regex.IsMatch(project, $"include.*=.*{sourceClassName}{sourceClassExtension}", RegexOptions.IgnoreCase))
                     {
                         AddSourceReference(testContext);
                     }
