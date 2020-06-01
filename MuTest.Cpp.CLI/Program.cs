@@ -82,7 +82,7 @@ namespace MuTest.Cpp.CLI
 
         private static void CancelMutation()
         {
-            _muTest?.MutantsExecutor?.Stop();;
+            _muTest?.MutantsExecutor?.Stop();
 
             if (_muTest?.DirectoryFactory != null && _muTest.Context != null)
             {
