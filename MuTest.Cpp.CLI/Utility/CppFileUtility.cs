@@ -119,6 +119,20 @@ namespace MuTest.Cpp.CLI.Utility
             }
         }
 
+        public static void DeleteIfExists(this DirectoryInfo directory, string directoryName)
+        {
+            if (directory == null || !directory.Exists)
+            {
+                return;
+            }
+
+            var dirs = directory.GetDirectories($"{directoryName.Trim('/')}*").ToList();
+            foreach (var dir in dirs)
+            {
+                dir.Delete(true);
+            }
+        }
+
         public static void DeleteIfExists(this string path)
         {
             if (string.IsNullOrWhiteSpace(path))

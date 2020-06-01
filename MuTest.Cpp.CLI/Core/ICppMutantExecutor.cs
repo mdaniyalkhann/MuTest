@@ -13,7 +13,9 @@ namespace MuTest.Cpp.CLI.Core
 
         double KilledThreshold { get; set; }
 
-        bool CancelMutationOperation { get; set; }
+        bool CancelMutationOperation { get; }
+
+        void Stop();
 
         bool EnableDiagnostics { get; set; }
 

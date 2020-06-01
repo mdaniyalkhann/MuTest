@@ -25,10 +25,13 @@ namespace MuTest.Cpp.CLI
         public static readonly MuTestSettings MuTestSettings = MuTestSettingsSection.GetSettings();
 
         private readonly IChalk _chalk;
-        private readonly ICppDirectoryFactory _directoryFactory;
+
+        public ICppDirectoryFactory DirectoryFactory { get; }
+
+        public CppBuildContext Context { get; private set; }
+
         private MuTestOptions _options;
         private Stopwatch _stopwatch;
-        private CppBuildContext _context;
         private int _totalMutants;
         private int _mutantProgress;
         private static readonly object Sync = new object();
@@ -39,7 +42,7 @@ namespace MuTest.Cpp.CLI
         public MuTestRunner(IChalk chalk, ICppDirectoryFactory directoryFactory)
         {
             _chalk = chalk;
-            _directoryFactory = directoryFactory;
+            DirectoryFactory = directoryFactory;
         }
 
         public async Task RunMutationTest(MuTestOptions options)
@@ -52,7 +55,7 @@ namespace MuTest.Cpp.CLI
 
                 _chalk.Default("\nPreparing Required Files...\n");
 
-                _directoryFactory.NumberOfMutantsExecutingInParallel = _options.ConcurrentTestRunners;
+                DirectoryFactory.NumberOfMutantsExecutingInParallel = _options.ConcurrentTestRunners;
 
                 _cppClass = new CppClass
                 {
@@ -67,18 +70,18 @@ namespace MuTest.Cpp.CLI
                     IncludeBuildEvents = _options.IncludeBuildEvents
                 };
 
-                _context = !_options.InIsolation
-                    ? _directoryFactory.PrepareTestFiles(_cppClass)
-                    : _directoryFactory.PrepareSolutionFiles(_cppClass);
+                Context = !_options.InIsolation
+                    ? DirectoryFactory.PrepareTestFiles(_cppClass)
+                    : DirectoryFactory.PrepareSolutionFiles(_cppClass);
 
-                if (_context.TestContexts.Any())
+                if (Context.TestContexts.Any())
                 {
                     await ExecuteBuild();
                     await ExecuteTests();
 
                     if (!_options.DisableBuildOptimization)
                     {
-                        _context.EnableBuildOptimization = true;
+                        Context.EnableBuildOptimization = true;
                     }
 
                     _chalk.Default("\nRunning Mutation Analysis...\n");
@@ -102,7 +105,7 @@ namespace MuTest.Cpp.CLI
 
                     if (_cppClass.Mutants.Any())
                     {
-                        MutantsExecutor = new CppMutantExecutor(_cppClass, _context, MuTestSettings)
+                        MutantsExecutor = new CppMutantExecutor(_cppClass, Context, MuTestSettings)
                         {
                             EnableDiagnostics = _options.EnableDiagnostics,
                             KilledThreshold = _options.KilledThreshold,
@@ -114,14 +117,17 @@ namespace MuTest.Cpp.CLI
                         _mutantProgress = 0;
                         MutantsExecutor.MutantExecuted += MutantAnalyzerOnMutantExecuted;
                         await MutantsExecutor.ExecuteMutants();
-                        GenerateReports();
                     }
 
+                    GenerateReports();
                 }
             }
             finally
             {
-                _directoryFactory.DeleteTestFiles(_context);
+                if (Context != null)
+                {
+                    DirectoryFactory.DeleteTestFiles(Context);
+                }
             }
         }
 
@@ -182,22 +188,22 @@ namespace MuTest.Cpp.CLI
             void OutputData(object sender, string args) => log.AppendLine(args);
             var testCodeBuild = new CppBuildExecutor(
                 MuTestSettings,
-                string.Format(_context.TestSolution.FullName, 0),
+                string.Format(Context.TestSolution.FullName, 0),
                 _cppClass.Target)
             {
                 Configuration = _options.Configuration,
                 EnableLogging = _options.EnableDiagnostics,
-                IntDir = string.Format(_context.IntDir, 0),
-                IntermediateOutputPath = string.Format(_context.IntermediateOutputPath, 0),
-                OutDir = string.Format(_context.OutDir, 0),
-                OutputPath = string.Format(_context.OutputPath, 0),
+                IntDir = string.Format(Context.IntDir, 0),
+                IntermediateOutputPath = string.Format(Context.IntermediateOutputPath, 0),
+                OutDir = string.Format(Context.OutDir, 0),
+                OutputPath = string.Format(Context.OutputPath, 0),
                 Platform = _options.Platform,
                 QuietWithSymbols = true
             };
 
             if (!_options.IncludeBuildEvents)
             {
-                string.Format(_context.TestProject.FullName, 0).RemoveBuildEvents();
+                string.Format(Context.TestProject.FullName, 0).RemoveBuildEvents();
             }
 
             testCodeBuild.OutputDataReceived += OutputData;
@@ -209,20 +215,20 @@ namespace MuTest.Cpp.CLI
             if (testCodeBuild.LastBuildStatus == BuildExecutionStatus.Failed && !_options.InIsolation)
             {
                 _chalk.Yellow("\nBuild Failed...Preparing new solution files\n");
-                _directoryFactory.DeleteTestFiles(_context);
-                _context = _directoryFactory.PrepareSolutionFiles(_cppClass);
+                DirectoryFactory.DeleteTestFiles(Context);
+                Context = DirectoryFactory.PrepareSolutionFiles(_cppClass);
 
                 testCodeBuild = new CppBuildExecutor(
                     MuTestSettings,
-                    string.Format(_context.TestSolution.FullName, 0),
+                    string.Format(Context.TestSolution.FullName, 0),
                     _cppClass.Target)
                 {
                     Configuration = _options.Configuration,
                     EnableLogging = _options.EnableDiagnostics,
-                    IntDir = string.Format(_context.IntDir, 0),
-                    IntermediateOutputPath = string.Format(_context.IntermediateOutputPath, 0),
-                    OutDir = string.Format(_context.OutDir, 0),
-                    OutputPath = string.Format(_context.OutputPath, 0),
+                    IntDir = string.Format(Context.IntDir, 0),
+                    IntermediateOutputPath = string.Format(Context.IntermediateOutputPath, 0),
+                    OutDir = string.Format(Context.OutDir, 0),
+                    OutputPath = string.Format(Context.OutputPath, 0),
                     Platform = _options.Platform,
                     QuietWithSymbols = true
                 };
@@ -251,13 +257,13 @@ namespace MuTest.Cpp.CLI
             testExecutor.OutputDataReceived += OutputData;
             var projectDirectory = Path.GetDirectoryName(_options.TestProject);
             var projectName = Path.GetFileNameWithoutExtension(_options.TestProject);
-            var projectNameFromTestContext = string.Format(Path.GetFileNameWithoutExtension(_context.TestProject.Name), 0);
+            var projectNameFromTestContext = string.Format(Path.GetFileNameWithoutExtension(Context.TestProject.Name), 0);
 
-            var app = $"{projectDirectory}\\{string.Format(_context.OutDir.TrimEnd('/'), 0)}\\{projectName}.exe";
+            var app = $"{projectDirectory}\\{string.Format(Context.OutDir.TrimEnd('/'), 0)}\\{projectName}.exe";
 
             if (!File.Exists(app))
             {
-                app = $"{projectDirectory}/{string.Format(_context.OutDir, 0)}{projectNameFromTestContext}.exe";
+                app = $"{projectDirectory}/{string.Format(Context.OutDir, 0)}{projectNameFromTestContext}.exe";
             }
 
             if (!File.Exists(app))
@@ -265,7 +271,7 @@ namespace MuTest.Cpp.CLI
                 throw new MuTestFailingTestException($"Unable to find google tests at path {app}");
             }
 
-            var cppTestContext = _context.TestContexts.First();
+            var cppTestContext = Context.TestContexts.First();
             var filter = $"{Path.GetFileNameWithoutExtension(cppTestContext.TestClass.Name)}*";
             await testExecutor.ExecuteTests(app, filter);
 
@@ -318,7 +324,7 @@ namespace MuTest.Cpp.CLI
                             _chalk.Yellow($"\nCode Coverage for Class {Path.GetFileName(_cppClass.SourceClass)} is {decimal.Divide(coveredLines, totalLines):P} ({coveredLines}/{totalLines})\n");
                             _cppClass.Coverage = Coverage.Create(coveredLines, totalLines - coveredLines, 0, 0);
 
-                            var factor = _context.UseMultipleSolutions || !_context.NamespaceAdded
+                            var factor = Context.UseMultipleSolutions || !Context.NamespaceAdded
                                 ? 0u
                                 : 3u;
 
@@ -355,8 +361,8 @@ namespace MuTest.Cpp.CLI
             var consoleBuilder = new StringBuilder();
             if (_cppClass != null)
             {
-                MutantsExecutor.PrintMutatorSummary(consoleBuilder, _cppClass.Mutants);
-                MutantsExecutor.PrintClassSummary(_cppClass, consoleBuilder);
+                MutantsExecutor?.PrintMutatorSummary(consoleBuilder, _cppClass.Mutants);
+                MutantsExecutor?.PrintClassSummary(_cppClass, consoleBuilder);
                 consoleBuilder.AppendLine("<fieldset style=\"margin-bottom:10; margin-top:10;\">");
                 consoleBuilder.AppendLine("Execution Time: ".PrintImportantWithLegend());
                 consoleBuilder.Append($"{_stopwatch.Elapsed}".PrintWithPreTagWithMarginImportant());

@@ -24,7 +24,7 @@ namespace MuTest.Cpp.CLI.Core
 
         public double KilledThreshold { get; set; } = 1;
 
-        public bool CancelMutationOperation { get; set; }
+        public bool CancelMutationOperation { get; private set; }
 
         public bool EnableDiagnostics { get; set; }
 
@@ -120,7 +120,9 @@ namespace MuTest.Cpp.CLI.Core
                     var buildLog = new StringBuilder();
                     void BuildOutputDataReceived(object sender, string args) => buildLog.Append(args.PrintWithPreTag());
                     buildExecutor.OutputDataReceived += BuildOutputDataReceived;
+
                     await buildExecutor.ExecuteBuild();
+
                     SetBuildLog(buildExecutor, buildLog.ToString());
                     buildExecutor.OutputDataReceived -= BuildOutputDataReceived;
                 }
@@ -181,6 +183,35 @@ namespace MuTest.Cpp.CLI.Core
             }
 
             PrintMutationReport(mutationProcessLog, _cpp.Mutants);
+        }
+
+        public void Stop()
+        {
+            if (_cpp == null || _context == null)
+            {
+                return;
+            } 
+
+            var projectName = Path.GetFileNameWithoutExtension(_cpp.TestProject);
+            var projectNameFromTestContext = Path.GetFileNameWithoutExtension(_context.TestProject.Name).Replace("_{0}", string.Empty);
+            var processes = Process.GetProcesses().Where(x => x.ProcessName.StartsWith(projectName) || 
+                                                              x.ProcessName.StartsWith(projectNameFromTestContext)).ToList();
+            CancelMutationOperation = true;
+            foreach (var process in processes)
+            {
+                try
+                {
+                    if (process != null && !process.HasExited)
+                    {
+                        process.Kill();
+                        process.Dispose();
+                    }
+                }
+                catch
+                {
+                    Trace.WriteLine("\nClosing Child Process...\n");
+                }
+            }
         }
 
         private void SetBuildLog(CppBuildExecutor buildExecutor, string log)

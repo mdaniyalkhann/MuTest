@@ -11,6 +11,11 @@ namespace MuTest.Cpp.CLI.Core
 {
     public class CppDirectoryFactory : ICppDirectoryFactory
     {
+        private const string IntDirName = "mutest_int_dir/";
+        private const string OutDirName = "mutest_out_dir/";
+        private const string IntermediateOutputPathName = "mutest_obj_dir/";
+        private const string BinDirName = "mutest_bin_dir/";
+
         public int NumberOfMutantsExecutingInParallel { get; set; } = 5;
 
         public CppBuildContext PrepareTestFiles(CppClass cppClass)
@@ -48,13 +53,16 @@ namespace MuTest.Cpp.CLI.Core
 
             var context = new CppBuildContext
             {
-                IntDir = "mutest_int_dir/",
-                OutDir = "mutest_out_dir/",
-                IntermediateOutputPath = "mutest_obj_dir/",
-                OutputPath = "mutest_bin_dir/",
+                IntDir = IntDirName,
+                OutDir = OutDirName,
+                IntermediateOutputPath = IntermediateOutputPathName,
+                OutputPath = BinDirName,
                 TestProject = new FileInfo(newTestProjectLocation),
                 TestSolution = new FileInfo(newSolutionLocation)
             };
+
+            DeleteDirectories(context);
+            CreateDirectories(context);
 
             var sourceClassName = Path.GetFileNameWithoutExtension(cppClass.SourceClass);
             var sourceHeaderName = Path.GetFileNameWithoutExtension(cppClass.SourceHeader);
@@ -175,6 +183,8 @@ namespace MuTest.Cpp.CLI.Core
                 UseMultipleSolutions = true
             };
 
+            DeleteDirectories(context);
+
             var sourceClassName = Path.GetFileNameWithoutExtension(cppClass.SourceClass);
             var sourceClassExtension = Path.GetExtension(cppClass.SourceClass);
 
@@ -185,6 +195,7 @@ namespace MuTest.Cpp.CLI.Core
             {
                 try
                 {
+                    CreateDirectories(context, index);
                     var testContext = new CppTestContext
                     {
                         Index = index
@@ -244,6 +255,9 @@ namespace MuTest.Cpp.CLI.Core
                 throw new ArgumentNullException(nameof(context));
             }
 
+            Reset();
+
+            DeleteDirectories(context);
             context.TestProject.DeleteIfExists();
             context.TestSolution.DeleteIfExists();
 
@@ -256,6 +270,32 @@ namespace MuTest.Cpp.CLI.Core
 
                 string.Format(context.TestProject.FullName, index).DeleteIfExists();
                 string.Format(context.TestSolution.FullName, index).DeleteIfExists();
+            }
+        }
+
+        private static void DeleteDirectories(CppBuildContext context)
+        {
+            var testProjectDirectory = context.TestProject.Directory;
+            if (testProjectDirectory != null &&
+                testProjectDirectory.Exists)
+            {
+                testProjectDirectory.DeleteIfExists(IntDirName);
+                testProjectDirectory.DeleteIfExists(OutDirName);
+                testProjectDirectory.DeleteIfExists(IntermediateOutputPathName);
+                testProjectDirectory.DeleteIfExists(BinDirName);
+            }
+        }
+
+        private static void CreateDirectories(CppBuildContext context, int index = 0)
+        {
+            var testProjectDirectory = context.TestProject.Directory;
+            if (testProjectDirectory != null &&
+                testProjectDirectory.Exists)
+            {
+                Directory.CreateDirectory(Path.Combine(testProjectDirectory.FullName, string.Format(context.IntDir, index)));
+                Directory.CreateDirectory(Path.Combine(testProjectDirectory.FullName, string.Format(context.OutDir, index)));
+                Directory.CreateDirectory(Path.Combine(testProjectDirectory.FullName, string.Format(context.IntermediateOutputPath, index)));
+                Directory.CreateDirectory(Path.Combine(testProjectDirectory.FullName, string.Format(context.OutputPath, index)));
             }
         }
 
