@@ -296,7 +296,7 @@ namespace MuTest.Cpp.CLI.Utility
                 projectXml.AddNewXmlNode(linkIncremental, generateManifest);
 
                 projectXml.SetInnerTextMultipleNodes(warningLevel, turnOffAllwarnings);
-                projectXml.AddNewXmlNode(warningLevel, debugInformationFormat, none);
+                projectXml.AddNewXmlNode(warningLevel, debugInformationFormat, string.Empty);
                 projectXml.AddNewXmlNode(warningLevel, supportJustMyCode);
                 projectXml.AddNewXmlNode(warningLevel, multiProcessorCompilation, trueValue);
                 projectXml.AddNewXmlNode(warningLevel, errorReporting, none);
