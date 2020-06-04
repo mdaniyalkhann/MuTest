@@ -407,16 +407,25 @@ namespace MuTest.Cpp.CLI.Utility
 
         public static IEnumerable<ProjectInSolution> GetProjects(this string solutionFile)
         {
+            var projects = new List<ProjectInSolution>();
             if (string.IsNullOrWhiteSpace(solutionFile) || !File.Exists(solutionFile))
             {
-                return new List<ProjectInSolution>();
+                return projects;
             }
 
-            var sol = new FileInfo(solutionFile);
-            var projects = SolutionFile.Parse(sol.FullName)
-                .ProjectsInOrder
-                .Where(x => x.ProjectType == SolutionProjectType.KnownToBeMSBuildFormat ||
-                            x.ProjectType == SolutionProjectType.SolutionFolder).ToList();
+            try
+            {
+                var sol = new FileInfo(solutionFile);
+                projects = SolutionFile.Parse(sol.FullName)
+                    .ProjectsInOrder
+                    .Where(x => x.ProjectType == SolutionProjectType.KnownToBeMSBuildFormat ||
+                                x.ProjectType == SolutionProjectType.SolutionFolder).ToList();
+            }
+            catch (Exception)
+            {
+                Trace.TraceError("Ignoring Invalid Projects");
+            }
+
             return projects;
         }
     }
