@@ -57,7 +57,7 @@ namespace MuTest.Cpp.CLI.Core
         public async Task ExecuteBuild()
         {
             var projectBuilder = new StringBuilder($@"""{_solution}""")
-                .Append($" -t:\"{_project}\"");
+                .Append($" -t:\"{_project.Replace(".", "_")}\"");
 
             if (Rebuild)
             {

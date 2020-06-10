@@ -371,13 +371,20 @@ namespace MuTest.Core.Common
                 var lineNumber = mutant.Mutation.OriginalNode.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
                 var status = $"{Environment.NewLine}Line: {lineNumber} - {mutant.ResultStatus.ToString()} - {mutant.Mutation.DisplayName}".PrintWithDateTimeSimple();
 
-                if (mutant.ResultStatus == MutantStatus.Survived)
+                switch (mutant.ResultStatus)
                 {
-                    _chalk.Yellow(status);
-                }
-                else
-                {
-                    _chalk.Green(status);
+                    case MutantStatus.Survived:
+                        _chalk.Yellow(status);
+                        break;
+                    case MutantStatus.Timeout:
+                        _chalk.Cyan(status);
+                        break;
+                    case MutantStatus.BuildError:
+                        _chalk.Red(status);
+                        break;
+                    default:
+                        _chalk.Green(status);
+                        break;
                 }
 
                 if (EnableDiagnostics)
