@@ -79,11 +79,8 @@ namespace MuTest.Cpp.CLI.Options
             ValidateRequiredParameters();
             ValidateTestProject();
             ValidateTestSolution();
+            ValidateSourceHeader();
 
-            if (!InIsolation)
-            {
-                ValidateSourceHeader();
-            }
 
             ConcurrentTestRunners = ValidateConcurrentTestRunners();
             SetOutputPath();
@@ -138,7 +135,10 @@ namespace MuTest.Cpp.CLI.Options
                     return;
                 }
 
-                throw new MuTestInputException(ErrorMessage, $"Unable to find Source header file. Valid options are {CliOptions.SourceHeader.ArgumentShortName}");
+                if (!InIsolation)
+                {
+                    throw new MuTestInputException(ErrorMessage, $"Unable to find Source header file. Valid options are {CliOptions.SourceHeader.ArgumentShortName}");
+                }
             }
         }
 
@@ -193,7 +193,7 @@ namespace MuTest.Cpp.CLI.Options
                 }
 
                 var target = string.Empty;
-                for (var index = parentFolders.Count - 1; index >= 0 ; index--)
+                for (var index = parentFolders.Count - 1; index >= 0; index--)
                 {
                     target = string.Join("\\", target, parentFolders[index]);
                 }

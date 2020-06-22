@@ -95,6 +95,7 @@ namespace MuTest.Cpp.CLI.Core
                     var newTestClassLocation = $"{Path.GetDirectoryName(cppClass.TestClass)}\\{newTestClass}";
 
                     newSourceClassLocation.DeleteIfExists();
+                    newHeaderClassLocation.DeleteIfExists();
                     newTestClassLocation.DeleteIfExists();
 
                     testContext.SourceClass = new FileInfo(newSourceClassLocation);
@@ -188,8 +189,18 @@ namespace MuTest.Cpp.CLI.Core
             var sourceClassName = Path.GetFileNameWithoutExtension(cppClass.SourceClass);
             var sourceClassExtension = Path.GetExtension(cppClass.SourceClass);
 
+            var sourceHeaderName = Path.GetFileNameWithoutExtension(cppClass.SourceHeader);
+            var sourceHeaderExtension = Path.GetExtension(cppClass.SourceHeader);
+
             var testClassName = Path.GetFileNameWithoutExtension(cppClass.TestClass);
             var testClassExtension = Path.GetExtension(cppClass.TestClass);
+            var source = cppClass.SourceClass.GetCodeFileContent();
+            var header = string.Empty;
+
+            if (File.Exists(cppClass.SourceHeader))
+            {
+                header = cppClass.SourceHeader.GetCodeFileContent();
+            }
 
             for (var index = 0; index < NumberOfMutantsExecutingInParallel; index++)
             {
@@ -202,6 +213,7 @@ namespace MuTest.Cpp.CLI.Core
                     };
 
                     var newSourceClass = $"{sourceClassName}_mutest_src_{index}{sourceClassExtension}";
+
                     var newTestClass = $"{testClassName}_mutest_test_{index}{testClassExtension}";
 
                     var solutionCode = Regex.Replace(solution, $"{testProjectName}{testProjectExtension}", string.Format(newTestProject, index), RegexOptions.IgnoreCase);
@@ -219,11 +231,30 @@ namespace MuTest.Cpp.CLI.Core
 
                     newSourceClassLocation.DeleteIfExists();
                     newTestClassLocation.DeleteIfExists();
-
                     testContext.SourceClass = new FileInfo(newSourceClassLocation);
-                    new FileInfo(cppClass.SourceClass).CopyTo(newSourceClassLocation);
 
                     var testCode = Regex.Replace(test, $"{sourceClassName}{sourceClassExtension}", newSourceClass, RegexOptions.IgnoreCase);
+
+                    if (!sourceHeaderExtension.Equals(sourceClassExtension, StringComparison.InvariantCultureIgnoreCase) &&
+                        !string.IsNullOrWhiteSpace(header) &&
+                        Regex.IsMatch(header, $"{sourceClassName}{sourceClassExtension}", RegexOptions.IgnoreCase))
+                    {
+                        var newSourceHeader = $"{sourceHeaderName}_mutest_src_{index}{sourceHeaderExtension}";
+                        var newHeaderClassLocation = $"{Path.GetDirectoryName(cppClass.SourceHeader)}\\{newSourceHeader}";
+                        testCode = Regex.Replace(testCode, $"{sourceHeaderName}{sourceHeaderExtension}", newSourceHeader, RegexOptions.IgnoreCase);
+                        newHeaderClassLocation.DeleteIfExists();
+
+                        var sourceCode = Regex.Replace(source, $"{sourceHeaderName}{sourceHeaderExtension}", newSourceHeader, RegexOptions.IgnoreCase);
+                        sourceCode.UpdateCode(newSourceClassLocation);
+
+                        var headerCode = Regex.Replace(header, $"{sourceClassName}{sourceClassExtension}", newSourceClass, RegexOptions.IgnoreCase);
+                        headerCode.UpdateCode(newHeaderClassLocation);
+                    }
+                    else
+                    {
+                        new FileInfo(cppClass.SourceClass).CopyTo(newSourceClassLocation);
+                    }
+
                     testCode = Regex.Replace(testCode, testClassName, Path.GetFileNameWithoutExtension(newTestClass), RegexOptions.IgnoreCase);
 
                     testCode.UpdateCode(newTestClassLocation);
