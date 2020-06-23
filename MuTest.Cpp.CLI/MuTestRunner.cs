@@ -49,6 +49,11 @@ namespace MuTest.Cpp.CLI
         {
             try
             {
+                if (!File.Exists(MuTestSettings.MSBuildPath))
+                {
+                    throw new MuTestInputException($"Unable to locate MSBuild Path at {MuTestSettings.MSBuildPath}. Please update MSBuildPath in MuTest.Console.exe.config if you are using different version");
+                }
+
                 _stopwatch = new Stopwatch();
                 _stopwatch.Start();
                 _options = options;

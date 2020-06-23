@@ -248,7 +248,7 @@ namespace MuTest.Cpp.CLI.Options
             }
             else
             {
-                throw new MuTestInputException(ErrorMessage, $"The Test Class file is required. Valid Options are {CliOptions.TestClass.ArgumentShortName}");
+                throw new MuTestInputException(ErrorMessage, $"Unable to find test file {testFile.FullName}. Please use valid test file using {CliOptions.TestClass.ArgumentShortName} option.");
             }
 
             var sourceFile = new FileInfo(SourceClass);
@@ -258,7 +258,7 @@ namespace MuTest.Cpp.CLI.Options
             }
             else
             {
-                throw new MuTestInputException(ErrorMessage, $"The Source Class file is required. Valid Options are {CliOptions.SourceClass.ArgumentShortName}");
+                throw new MuTestInputException(ErrorMessage, $"Unable to find source file {sourceFile.FullName}. Please use valid source file using {CliOptions.SourceClass.ArgumentShortName} option.");
             }
         }
 

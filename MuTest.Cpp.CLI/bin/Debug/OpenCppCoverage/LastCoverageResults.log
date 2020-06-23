@@ -1,45 +1,68 @@
-[2020-04-28 23:31:15] [info] Start Program:
-Path:"D:\\Repos\\Tools\\C++\\MovieManager\\MovieDataDetcherTests\\mutest_out_dir\\MovieDataFetcherTests.exe"
-Arguments:--gtest_filter=MovieAnalyzerTests_mutest_test_0* 
+[2020-06-19 18:44:57] [info] Start Program:
+Path:"D:\\Repos\\olive\\olive-development-xmd\\Debug\\Win32\\OlvTaskDataTest.exe"
+Arguments:
 Working directory: not set.
 Modules: Selected: * Excluded: 
-Sources: Selected: D:\Repos\Tools\C++\MovieManager\MovieDataFetcher Excluded: 
+Sources: Selected: D:\Repos\olive\olive-development-xmd\Develop\AutoProcess Excluded: 
 Log Level: Normal
 Cover Children: 0
 Aggregate by file: 1
 Continue after C++ exception: 0
 Optimized build support: 0
-Export: cobertura C:\Dashboard\TestResults\report_2020428112831.xml 
+Export: html 
 Input coverage: 
 Unified diff: 
 Excluded line regular expressions: 
 Substitute pdb source paths: 
 
-[2020-04-28 23:31:15] [info] Module: D:\Repos\Tools\C++\MovieManager\MovieDataDetcherTests\mutest_out_dir\MovieDataFetcherTests.exe is selected because it matches selected pattern: *
-[2020-04-28 23:31:15] [info] Module: C:\Windows\System32\ntdll.dll is selected because it matches selected pattern: *
-[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\ntdll.dll is selected because it matches selected pattern: *
-[2020-04-28 23:31:15] [info] Module: C:\Windows\System32\wow64.dll is selected because it matches selected pattern: *
-[2020-04-28 23:31:15] [info] Module: C:\Windows\System32\wow64win.dll is selected because it matches selected pattern: *
-[2020-04-28 23:31:15] [info] Module: C:\Windows\System32\wow64cpu.dll is selected because it matches selected pattern: *
-[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\kernel32.dll is selected because it matches selected pattern: *
-[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\KernelBase.dll is selected because it matches selected pattern: *
-[2020-04-28 23:31:15] [info] Module: D:\Repos\Tools\C++\MovieManager\MovieDataDetcherTests\mutest_out_dir\libcurl.dll is selected because it matches selected pattern: *
-[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\ws2_32.dll is selected because it matches selected pattern: *
-[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\rpcrt4.dll is selected because it matches selected pattern: *
-[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\sspicli.dll is selected because it matches selected pattern: *
-[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\cryptbase.dll is selected because it matches selected pattern: *
-[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\bcryptprimitives.dll is selected because it matches selected pattern: *
-[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\sechost.dll is selected because it matches selected pattern: *
-[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\Wldap32.dll is selected because it matches selected pattern: *
-[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\ucrtbase.dll is selected because it matches selected pattern: *
-[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\advapi32.dll is selected because it matches selected pattern: *
-[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\msvcrt.dll is selected because it matches selected pattern: *
-[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\normaliz.dll is selected because it matches selected pattern: *
-[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\crypt32.dll is selected because it matches selected pattern: *
-[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\msasn1.dll is selected because it matches selected pattern: *
-[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\vcruntime140.dll is selected because it matches selected pattern: *
-[2020-04-28 23:31:15] [info] Module: C:\Windows\SysWOW64\kernel.appcore.dll is selected because it matches selected pattern: *
-[2020-04-28 23:31:15] [info] ----------------------------------------------------
-[2020-04-28 23:31:15] [info] Cobertura report generated: C:\Dashboard\TestResults\report_2020428112831.xml
-[2020-04-28 23:31:15] [info] ----------------------------------------------------
-[2020-04-28 23:31:15] [error] Your program stop with error code: 1
+[2020-06-19 18:44:57] [info] Module: D:\Repos\olive\olive-development-xmd\Debug\Win32\OlvTaskDataTest.exe is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\System32\ntdll.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\ntdll.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\System32\wow64.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\System32\wow64win.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\System32\wow64cpu.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\kernel32.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\KernelBase.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\user32.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\win32u.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\gdi32.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\gdi32full.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\msvcp_win.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\ucrtbase.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\oleaut32.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\combase.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\rpcrt4.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\sspicli.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\cryptbase.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\bcryptprimitives.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\sechost.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\shlwapi.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\msimg32.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\msvcrt.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\uxtheme.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\imm32.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\oledlg.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\oleacc.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\advapi32.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\advapi32.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\ole32.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\WinSxS\x86_microsoft.windows.gdiplus_6595b64144ccf1df_1.1.18362.900_none_5f56e39582231feb\GdiPlus.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\shell32.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\winmm.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\cfgmgr32.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\winspool.drv is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\winmmbase.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\SHCore.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\kernel.appcore.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\winmmbase.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\windows.storage.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\bcrypt.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\profapi.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\propsys.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\IPHLPAPI.DLL is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\powrprof.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\umpdc.dll is selected because it matches selected pattern: *
+[2020-06-19 18:44:58] [info] Module: C:\Windows\SysWOW64\cryptsp.dll is selected because it matches selected pattern: *
+[2020-06-19 18:45:02] [info] ----------------------------------------------------
+[2020-06-19 18:45:02] [info] Coverage generated in Folder D:\Repos\Tools\MuTest\MuTest.Cpp.CLI\bin\Debug\OpenCppCoverage\CoverageReport-2020-06-19-18h45m01s
+[2020-06-19 18:45:02] [info] ----------------------------------------------------

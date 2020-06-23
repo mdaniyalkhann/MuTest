@@ -31,6 +31,21 @@ namespace MuTest.Console
 
         public async Task RunMutationTest(MuTestOptions options)
         {
+            if (!File.Exists(MuTestSettings.MSBuildPath))
+            {
+                throw new MuTestInputException($"Unable to locate MSBuild Path at {MuTestSettings.MSBuildPath}. Please update MSBuildPath in MuTest.Console.exe.config if you are using different version");
+            }
+
+            if (!File.Exists(MuTestSettings.VSTestConsolePath))
+            {
+                throw new MuTestInputException($"Unable to locate VS Test Console Path at {MuTestSettings.VSTestConsolePath}. Please update VSTestConsolePath in MuTest.Console.exe.config if you are using different version");
+            }
+
+            if (!File.Exists(MuTestSettings.RunSettingsPath))
+            {
+                throw new MuTestInputException($"Unable to locate tests run settings path at {MuTestSettings.RunSettingsPath}. Please update RunSettingsPath in MuTest.Console.exe.config if you are using different location");
+            }
+
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
 
