@@ -189,17 +189,18 @@ namespace MuTest.Cpp.CLI.Core
             var sourceClassName = Path.GetFileNameWithoutExtension(cppClass.SourceClass);
             var sourceClassExtension = Path.GetExtension(cppClass.SourceClass);
 
-            var sourceHeaderName = Path.GetFileNameWithoutExtension(cppClass.SourceHeader);
-            var sourceHeaderExtension = Path.GetExtension(cppClass.SourceHeader);
-
             var testClassName = Path.GetFileNameWithoutExtension(cppClass.TestClass);
             var testClassExtension = Path.GetExtension(cppClass.TestClass);
             var source = cppClass.SourceClass.GetCodeFileContent();
             var header = string.Empty;
+            var sourceHeaderName = string.Empty;
+            var sourceHeaderExtension = string.Empty;
 
-            if (File.Exists(cppClass.SourceHeader))
+            if (!string.IsNullOrWhiteSpace(cppClass.SourceHeader) && File.Exists(cppClass.SourceHeader))
             {
                 header = cppClass.SourceHeader.GetCodeFileContent();
+                sourceHeaderName = Path.GetFileNameWithoutExtension(cppClass.SourceHeader);
+                sourceHeaderExtension = Path.GetExtension(cppClass.SourceHeader);
             }
 
             for (var index = 0; index < NumberOfMutantsExecutingInParallel; index++)
