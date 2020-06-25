@@ -58,7 +58,6 @@ namespace MuTest.Core.Mutants
                 new RelationalOperatorMutator(),
                 new InterpolatedStringMutator(),
                 new StringMutator(),
-                new StatementBlockMutator(),
                 new MethodCallMutator()
             });
 

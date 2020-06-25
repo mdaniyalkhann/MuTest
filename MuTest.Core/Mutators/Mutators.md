@@ -4,7 +4,8 @@ MuTest supports a variety of mutators, which are listed below.
 
 <!-- TOC -->
 - [Arithmetic Operators](#arithmetic-operators)
-- [Equality Operators](#equality-operators)
+- [Logical Connectors](#logical-connectors)
+- [Relational Operators](#Relational-operators)
 - [Boolean Literals](#boolean-literals)
 - [Assignment statements](#assignment-statements)
 - [Unary Operators](#unary-operators)
@@ -12,13 +13,15 @@ MuTest supports a variety of mutators, which are listed below.
 - [Linq Methods](#linq-methods)
 - [String Literals](#string-literals)
 - [Method Calls](#method-calls)
+- [Statement blocks] (#statement-blocks]
 <!-- /TOC -->
 
 Default Mutators:
 
 <!-- TOC -->
 - [Arithmetic Operators](#arithmetic-operators)
-- [Equality Operators](#equality-operators)
+- [Logical Connectors](#logical-connectors)
+- [Relational Operators](#Relational-operators)
 - [Assignment statements](#assignment-statements)
 - [String Literals](#string-literals)
 - [Method Calls](#method-calls)
@@ -33,7 +36,7 @@ Default Mutators:
 | `/` | `*` |
 | `%` | `*` |
 
-## Equality Operators
+## Relational Operators
 | Original | Mutated | 
 | ------------- | ------------- |
 | `>` | `<` |
@@ -47,7 +50,7 @@ Default Mutators:
 | `==` | `!=` |
 | `!=` | `==` |
 
-## Logical Operators
+## Logical Connectors
 | Original | Mutated | 
 | ------------- | ------------- | 
 | `&&` | `\|\|` | 
