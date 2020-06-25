@@ -31,7 +31,7 @@ namespace MuTest.Core.Mutators
             {
                 OriginalNode = node,
                 ReplacementNode = replacementNode,
-                DisplayName = string.Concat($"Block Statement mutation - remove node {node}".Take(100)),
+                DisplayName = $"Block Statement mutation - remove node {string.Concat(node.ToString().Take(200))}...",
                 Type = MutatorType.Block
             };
         }
