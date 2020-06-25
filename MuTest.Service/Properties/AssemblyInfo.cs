@@ -3,9 +3,8 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("MuTest.Service")]
 [assembly: AssemblyDescription("Mutation Service")]
-[assembly: AssemblyCompany("Trilogy")]
 [assembly: AssemblyProduct("MuTest.Service")]
-[assembly: AssemblyCopyright("Copyright © Trilogy 2019")]
+[assembly: AssemblyCopyright("Copyright © 2020")]
 
 [assembly: ComVisible(false)]
 
