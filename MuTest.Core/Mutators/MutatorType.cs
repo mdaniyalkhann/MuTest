@@ -29,6 +29,8 @@ namespace MuTest.Core.Mutators
         [Description("Method calls")]
         MethodCall,
         [Description("Bitwise operators")]
-        Bitwise
+        Bitwise,
+        [Description("Block Statement")]
+        Block
     }
 }

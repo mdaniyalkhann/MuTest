@@ -51,6 +51,7 @@
                         </Grid.RowDefinitions>
                         <GroupBox Grid.Row="0" Grid.Column="0" Header="Select Mutators">
                             <dxe:ListBoxEdit
+                                FontSize="10"
                                 Name="MutatorList"
                                 ItemsSource="{Binding MutantList.ItemsSource}"
                                 SelectionMode="Multiple"

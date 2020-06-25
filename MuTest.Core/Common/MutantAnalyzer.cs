@@ -202,6 +202,7 @@ namespace MuTest.Core.Common
                 new LogicalConnectorMutator(),
                 new StringMutator(),
                 new MethodCallMutator(),
+                new StatementBlockMutator(),
                 new InterpolatedStringMutator()
             });
         }

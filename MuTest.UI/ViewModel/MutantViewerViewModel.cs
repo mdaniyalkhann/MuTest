@@ -152,6 +152,7 @@ namespace Dashboard.ViewModel
                 new StringMutator(),
                 new InterpolatedStringMutator(),
                 new MethodCallMutator(),
+                new StatementBlockMutator(),
                 new BitwiseOperatorMutator(),
                 new NonVoidMethodCallMutator(),
                 new LinqMutator(),

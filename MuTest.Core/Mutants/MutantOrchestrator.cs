@@ -32,6 +32,7 @@ namespace MuTest.Core.Mutants
                 new ArithmeticOperatorMutator(),
                 new RelationalOperatorMutator(),
                 new LogicalConnectorMutator(),
+                new StatementBlockMutator(),
                 new BitwiseOperatorMutator(),
                 new BooleanMutator(),
                 new CheckedMutator(),
@@ -57,6 +58,7 @@ namespace MuTest.Core.Mutants
                 new RelationalOperatorMutator(),
                 new InterpolatedStringMutator(),
                 new StringMutator(),
+                new StatementBlockMutator(),
                 new MethodCallMutator()
             });
 
@@ -140,7 +142,7 @@ namespace MuTest.Core.Mutants
                     }
                     catch (Exception e)
                     {
-                         Trace.TraceError("unable to process if statement at line {0} {1}", ifStatement?.Statement?.LineNumber() + 1 , e);
+                        Trace.TraceError("unable to process if statement at line {0} {1}", ifStatement?.Statement?.LineNumber() + 1, e);
                     }
                 }
 
@@ -156,6 +158,8 @@ namespace MuTest.Core.Mutants
                 }
             }
 
+            AddBlockMutants(currentNode);
+
             var children = currentNode.ChildNodes().ToList();
             foreach (var child in children)
             {
@@ -163,6 +167,18 @@ namespace MuTest.Core.Mutants
             }
 
             return currentNode;
+        }
+
+        private void AddBlockMutants(SyntaxNode currentNode)
+        {
+            if (currentNode is StatementSyntax block && currentNode.Kind() == SyntaxKind.Block)
+            {
+                var mutant = FindMutants(block).FirstOrDefault();
+                if (mutant != null)
+                {
+                    Mutants.Add(mutant);
+                }
+            }
         }
 
         private IEnumerable<Mutant> FindMutants(SyntaxNode current)
@@ -208,7 +224,7 @@ namespace MuTest.Core.Mutants
             var mutations = mutator.Mutate(syntaxNode);
             foreach (var mutation in mutations)
             {
-                yield return new Mutant()
+                yield return new Mutant
                 {
                     Id = MutantCount++,
                     Mutation = mutation,

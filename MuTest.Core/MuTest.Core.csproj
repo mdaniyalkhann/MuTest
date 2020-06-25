@@ -234,6 +234,7 @@
     <Compile Include="Mutators\NegateConditionMutator.cs" />
     <Compile Include="Mutators\PostfixUnaryMutator.cs" />
     <Compile Include="Mutators\PrefixUnaryMutator.cs" />
+    <Compile Include="Mutators\StatementBlockMutator.cs" />
     <Compile Include="Mutators\StringMutator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Testing\ChalkHtml.cs" />
