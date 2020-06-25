@@ -13,7 +13,7 @@ MuTest supports a variety of mutators, which are listed below.
 - [Linq Methods](#linq-methods)
 - [String Literals](#string-literals)
 - [Method Calls](#method-calls)
-- [Statement blocks] (#statement-blocks]
+- [Statement Blocks](#statement-blocks)
 <!-- /TOC -->
 
 Default Mutators:
@@ -125,7 +125,7 @@ Default Mutators:
 | `ActionOne();` | `;` |
 | `OpenConnection();` | `;` |
 
-## Statement blocks
+## Statement Blocks
 | Original | Mutated |
 | ------------- | ------------- |
 | `void Method() { .... }` | `void Method() { }` |
