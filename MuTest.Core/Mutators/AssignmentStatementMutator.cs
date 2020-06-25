@@ -43,7 +43,7 @@ namespace MuTest.Core.Mutators
             }
         }
 
-        public string Description { get; } = "ASSIGNMENT [+=, -=, x=, %=, MOD, &, |, <<, >>]";
+        public string Description { get; } = "ASSIGNMENT [+=, -=, x=, /=, %=, &=, |=, <<=, >>=]";
 
         public bool DefaultMutant { get; } = true;
     }
