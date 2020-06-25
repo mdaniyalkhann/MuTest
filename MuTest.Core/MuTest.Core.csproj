@@ -218,7 +218,10 @@
     <Compile Include="Mutants\MutantStatus.cs" />
     <Compile Include="Mutants\Mutation.cs" />
     <Compile Include="Mutators\AssignmentStatementMutator.cs" />
-    <Compile Include="Mutators\BinaryExpressionMutator.cs" />
+    <Compile Include="Mutators\ArithmeticOperatorMutator.cs" />
+    <Compile Include="Mutators\LogicalConnectorMutator.cs" />
+    <Compile Include="Mutators\RelationalOperatorMutator.cs" />
+    <Compile Include="Mutators\BitwiseOperatorMutator.cs" />
     <Compile Include="Mutators\BooleanMutator.cs" />
     <Compile Include="Mutators\CheckedMutator.cs" />
     <Compile Include="Mutators\IMutator.cs" />

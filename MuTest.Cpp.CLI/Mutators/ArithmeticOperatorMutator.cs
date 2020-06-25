@@ -3,9 +3,9 @@ using MuTest.Core.Mutators;
 
 namespace MuTest.Cpp.CLI.Mutators
 {
-    internal class ArithmeticMutator : Mutator, IMutator
+    internal class ArithmeticOperatorMutator : Mutator, IMutator
     {
-        public ArithmeticMutator()
+        public ArithmeticOperatorMutator()
         {
             KindsToMutate = new Dictionary<string, IList<string>>
             {
@@ -18,7 +18,7 @@ namespace MuTest.Cpp.CLI.Mutators
 
         public override MutatorType MutatorType { get; } = MutatorType.Arithmetic;
 
-        public string Description { get; } = "MATH [+, -, x, %]";
+        public string Description { get; } = "ARITHMETIC [+, -, x, %]";
 
         public bool DefaultMutant { get; } = true;
     }

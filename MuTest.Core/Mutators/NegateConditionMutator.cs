@@ -51,7 +51,7 @@ namespace MuTest.Core.Mutators
             return SyntaxFactory.PrefixUnaryExpression(SyntaxKind.LogicalNotExpression, SyntaxFactory.ParenthesizedExpression(expressionSyntax));
         }
 
-        public string Description { get; } = "Negate (!Is, Is...)";
+        public string Description { get; } = "NEGATE (!Is, Is...)";
 
         public bool DefaultMutant { get; } = false;
     }

@@ -3,9 +3,9 @@ using MuTest.Core.Mutators;
 
 namespace MuTest.Cpp.CLI.Mutators
 {
-    internal class EqualityMutator : Mutator, IMutator
+    internal class RelationalOperatorMutator : Mutator, IMutator
     {
-        public EqualityMutator()
+        public RelationalOperatorMutator()
         {
             KindsToMutate = new Dictionary<string, IList<string>>
             {
@@ -18,9 +18,9 @@ namespace MuTest.Cpp.CLI.Mutators
             };
         }
 
-        public override MutatorType MutatorType { get; } = MutatorType.Equality;
+        public override MutatorType MutatorType { get; } = MutatorType.Relational;
 
-        public string Description { get; } = "EQUALITY [==, !=, <, >, <=, >=]";
+        public string Description { get; } = "RELATIONAL [==, !=, <, >, <=, >=]";
 
         public bool DefaultMutant { get; } = true;
     }

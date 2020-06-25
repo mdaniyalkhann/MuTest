@@ -21,10 +21,10 @@ namespace MuTest.Cpp.CLI.Mutants
             Mutators = mutators ?? new List<IMutator>
             {
                 new AssignmentStatementMutator(),
-                new ArithmeticMutator(),
+                new ArithmeticOperatorMutator(),
                 new BooleanMutator(),
-                new EqualityMutator(),
-                new LogicalMutator(),
+                new RelationalOperatorMutator(),
+                new LogicalConnectorMutator(),
                 new PrePostfixUnaryMutator()
             };
 
@@ -42,9 +42,9 @@ namespace MuTest.Cpp.CLI.Mutants
 
             var orchestrator = new CppMutantOrchestrator(new List<IMutator>
             {
-                new ArithmeticMutator(),
-                new EqualityMutator(),
-                new LogicalMutator()
+                new ArithmeticOperatorMutator(),
+                new RelationalOperatorMutator(),
+                new LogicalConnectorMutator()
             })
             {
                 SpecificLines = specificLines

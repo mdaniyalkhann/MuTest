@@ -3,9 +3,9 @@ using MuTest.Core.Mutators;
 
 namespace MuTest.Cpp.CLI.Mutators
 {
-    internal class LogicalMutator : Mutator, IMutator
+    internal class LogicalConnectorMutator : Mutator, IMutator
     {
-        public LogicalMutator()
+        public LogicalConnectorMutator()
         {
             KindsToMutate = new Dictionary<string, IList<string>>
             {

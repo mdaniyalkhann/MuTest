@@ -133,11 +133,11 @@
     <Compile Include="Mutants\CppMutation.cs" />
     <Compile Include="Mutants\IMutantOrchestrator.cs" />
     <Compile Include="Mutants\CppMutantOrchestrator.cs" />
-    <Compile Include="Mutators\EqualityMutator.cs" />
+    <Compile Include="Mutators\RelationalOperatorMutator.cs" />
     <Compile Include="Mutators\BooleanMutator.cs" />
     <Compile Include="Mutators\PrePostfixUnaryMutator.cs" />
-    <Compile Include="Mutators\LogicalMutator.cs" />
-    <Compile Include="Mutators\ArithmeticMutator.cs" />
+    <Compile Include="Mutators\LogicalConnectorMutator.cs" />
+    <Compile Include="Mutators\ArithmeticOperatorMutator.cs" />
     <Compile Include="Mutators\AssignmentStatementMutator.cs" />
     <Compile Include="Mutators\IMutator.cs" />
     <Compile Include="Mutators\Mutator.cs" />

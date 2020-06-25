@@ -29,7 +29,10 @@ namespace MuTest.Core.Mutants
             Mutators = mutators ?? new List<IMutator>
             {
                 new AssignmentStatementMutator(),
-                new BinaryExpressionMutator(),
+                new ArithmeticOperatorMutator(),
+                new RelationalOperatorMutator(),
+                new LogicalConnectorMutator(),
+                new BitwiseOperatorMutator(),
                 new BooleanMutator(),
                 new CheckedMutator(),
                 new InterpolatedStringMutator(),
@@ -49,7 +52,9 @@ namespace MuTest.Core.Mutants
             var orchestrator = new MutantOrchestrator(new List<IMutator>
             {
                 new AssignmentStatementMutator(),
-                new BinaryExpressionMutator(),
+                new ArithmeticOperatorMutator(),
+                new LogicalConnectorMutator(),
+                new RelationalOperatorMutator(),
                 new InterpolatedStringMutator(),
                 new StringMutator(),
                 new MethodCallMutator()
