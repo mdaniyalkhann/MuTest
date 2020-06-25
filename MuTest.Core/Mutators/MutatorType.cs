@@ -16,8 +16,6 @@ namespace MuTest.Core.Mutators
         Assignment,
         [Description("Unary operators")]
         Unary,
-        [Description("Update operators")]
-        Update,
         [Description("Checked statements")]
         Checked,
         [Description("Linq methods")]

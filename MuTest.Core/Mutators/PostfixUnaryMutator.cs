@@ -28,7 +28,7 @@ namespace MuTest.Core.Mutators
                     OriginalNode = node,
                     ReplacementNode = replacementNode,
                     DisplayName = $"{unaryKind} to {oppositeKind} mutation - {node} replace with {replacementNode}",
-                    Type = MutatorType.Update
+                    Type = MutatorType.Unary
                 };
             }
         }
