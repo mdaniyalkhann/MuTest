@@ -124,3 +124,9 @@ Default Mutators:
 | ------------- | ------------- |
 | `ActionOne();` | `;` |
 | `OpenConnection();` | `;` |
+
+## Statement blocks
+| Original | Mutated |
+| ------------- | ------------- |
+| `void Method() { .... }` | `void Method() { }` |
+| `if (condition > 0 ) { .... }` | `if (condition > 0 ) { }` |
