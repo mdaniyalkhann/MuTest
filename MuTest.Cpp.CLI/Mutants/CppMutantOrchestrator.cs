@@ -37,14 +37,15 @@ namespace MuTest.Cpp.CLI.Mutants
         {
             if (sourceFile == null)
             {
-                new Collection<CppMutant>();
+                return new Collection<CppMutant>();
             }
 
             var orchestrator = new CppMutantOrchestrator(new List<IMutator>
             {
                 new ArithmeticOperatorMutator(),
                 new RelationalOperatorMutator(),
-                new LogicalConnectorMutator()
+                new LogicalConnectorMutator(),
+                new PrePostfixUnaryMutator()
             })
             {
                 SpecificLines = specificLines
