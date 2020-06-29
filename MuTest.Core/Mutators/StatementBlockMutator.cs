@@ -11,7 +11,7 @@ namespace MuTest.Core.Mutators
     {
         public string Description { get; } = "BLOCK [{}]";
 
-        public bool DefaultMutant { get; } = false;
+        public bool DefaultMutant { get; } = true;
 
         public override IEnumerable<Mutation> ApplyMutations(BlockSyntax node)
         {

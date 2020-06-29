@@ -148,18 +148,18 @@ namespace Dashboard.ViewModel
                 new ArithmeticOperatorMutator(),
                 new RelationalOperatorMutator(),
                 new LogicalConnectorMutator(),
+                new StatementBlockMutator(),
+                new PostfixUnaryMutator(),
+                new PrefixUnaryMutator(),
                 new AssignmentStatementMutator(),
                 new StringMutator(),
                 new InterpolatedStringMutator(),
                 new MethodCallMutator(),
-                new StatementBlockMutator(),
                 new BitwiseOperatorMutator(),
                 new NonVoidMethodCallMutator(),
                 new LinqMutator(),
                 new BooleanMutator(),
-                new NegateConditionMutator(),
-                new PostfixUnaryMutator(),
-                new PrefixUnaryMutator()
+                new NegateConditionMutator()
             };
 
             SelectedMutators.Clear();

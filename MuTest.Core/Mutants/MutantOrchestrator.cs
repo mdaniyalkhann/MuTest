@@ -52,13 +52,12 @@ namespace MuTest.Core.Mutants
         {
             var orchestrator = new MutantOrchestrator(new List<IMutator>
             {
-                new AssignmentStatementMutator(),
                 new ArithmeticOperatorMutator(),
                 new LogicalConnectorMutator(),
                 new RelationalOperatorMutator(),
-                new InterpolatedStringMutator(),
-                new StringMutator(),
-                new MethodCallMutator()
+                new StatementBlockMutator(),
+                new PrefixUnaryMutator(),
+                new PostfixUnaryMutator()
             });
 
             orchestrator.Mutate(node);
@@ -192,9 +191,12 @@ namespace MuTest.Core.Mutants
         {
             foreach (var mutator in Mutators)
             {
-                foreach (var mutation in ApplyMutator(current, mutator))
+                if (!(mutator is StatementBlockMutator))
                 {
-                    yield return mutation;
+                    foreach (var mutation in ApplyMutator(current, mutator))
+                    {
+                        yield return mutation;
+                    }
                 }
             }
 
