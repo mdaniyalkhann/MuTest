@@ -19,6 +19,8 @@ namespace MuTest.Core.Common.InspectCode
                 IList<IRule> rules = new List<IRule>
                 {
                     new ArrayToListInForEach(),
+                    new UnnecessaryTestDataCase(),
+                    new UnnecessaryTestCase(),
                     new InappropriateUsageOfProperty(),
                     new ProtectedPublicConstants(),
                     new BlankCodeBlock(),

@@ -155,6 +155,8 @@
     <Compile Include="Common\InspectCode\Rules\DisposableWarning.cs" />
     <Compile Include="Common\InspectCode\Rules\EnumWithoutDefaultValue.cs" />
     <Compile Include="Common\InspectCode\Rules\ExceptionWithoutContext.cs" />
+    <Compile Include="Common\InspectCode\Rules\UnnecessaryTestCase.cs" />
+    <Compile Include="Common\InspectCode\Rules\UnnecessaryTestDataCase.cs" />
     <Compile Include="Common\InspectCode\Rules\FieldAsProtectedOrPublic.cs" />
     <Compile Include="Common\InspectCode\Rules\GeneralReservedException.cs" />
     <Compile Include="Common\InspectCode\Rules\InappropriateUsageOfProperty.cs" />
