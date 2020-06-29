@@ -90,6 +90,16 @@ namespace MuTest.Core.Mutants
 
         public SyntaxNode Mutate(SyntaxNode currentNode)
         {
+            if (currentNode is MethodDeclarationSyntax ||
+                currentNode is ConstructorDeclarationSyntax ||
+                currentNode is PropertyDeclarationSyntax)
+            {
+                foreach (var blockNode in currentNode.DescendantNodes<BlockSyntax>())
+                {
+                    AddBlockMutants(blockNode);
+                }
+            }
+
             if (GetExpressionSyntax(currentNode) is var expressionSyntax && expressionSyntax != null)
             {
                 if (currentNode is ExpressionStatementSyntax syntax)
@@ -157,8 +167,6 @@ namespace MuTest.Core.Mutants
                 }
             }
 
-            AddBlockMutants(currentNode);
-
             var children = currentNode.ChildNodes().ToList();
             foreach (var child in children)
             {
@@ -172,7 +180,7 @@ namespace MuTest.Core.Mutants
         {
             if (currentNode is StatementSyntax block && currentNode.Kind() == SyntaxKind.Block)
             {
-                var mutant = FindMutants(block).FirstOrDefault();
+                var mutant = FindMutantsWithoutChild(block).FirstOrDefault();
                 if (mutant != null)
                 {
                     Mutants.Add(mutant);
@@ -193,6 +201,17 @@ namespace MuTest.Core.Mutants
             foreach (var mutant in current.ChildNodes().SelectMany(FindMutants))
             {
                 yield return mutant;
+            }
+        }
+
+        private IEnumerable<Mutant> FindMutantsWithoutChild(SyntaxNode current)
+        {
+            foreach (var mutator in Mutators)
+            {
+                foreach (var mutation in ApplyMutator(current, mutator))
+                {
+                    yield return mutation;
+                }
             }
         }
 
