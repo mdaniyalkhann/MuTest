@@ -242,5 +242,78 @@ namespace MuTest.Core.Utility
             return type == "bool" ||
                    type == "bool?";
         }
+
+        private static readonly Random Random = new Random();
+
+        public static string GetRandomValue(this string type)
+        {
+            switch (UnBoxType(type))
+            {
+                case "int":
+                case "uint":
+                case "decimal":
+                case "long":
+                case "ulong":
+                    return Random.Next(int.MaxValue).ToString();
+                case "double":
+                    return $"{Random.Next(int.MaxValue)}d";
+                case "short":
+                    return $"{Random.Next(short.MaxValue)}";
+                case "ushort":
+                    return $"{Random.Next(ushort.MaxValue)}";
+                case "float":
+                    return $"{Random.Next(int.MaxValue)}f";
+                case "byte":
+                    return $"{Random.Next(byte.MaxValue)}";
+                case "sbyte":
+                    return $"{Random.Next(sbyte.MaxValue)}";
+                case "char":
+                    return $"'{Guid.NewGuid().ToString("n").Substring(0, 1)}'";
+                case "string":
+                    return $"\"{Guid.NewGuid().ToString("n").Substring(0, 8)}\"";
+                case "T":
+                    return "default(T)";
+                default:
+                    return "null";
+            }
+        }
+
+        public static string UnBoxType(this string type)
+        {
+            type = type.Trim('?');
+            switch (type)
+            {
+                case "Int32":
+                    return "int";
+                case "UInt32":
+                    return "uint";
+                case "Double":
+                    return "double";
+                case "Int16":
+                    return "short";
+                case "UInt16":
+                    return "ushort";
+                case "Decimal":
+                    return "decimal";
+                case "Float":
+                    return "float";
+                case "Byte":
+                    return "byte";
+                case "SByte":
+                    return "sbyte";
+                case "Int64":
+                    return "long";
+                case "UInt64":
+                    return "ulong";
+                case "Boolean":
+                    return "bool";
+                case "Char":
+                    return "char";
+                case "String":
+                    return "string";
+                default:
+                    return type;
+            }
+        }
     }
 }
