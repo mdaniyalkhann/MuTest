@@ -14,13 +14,13 @@ namespace MuTest.Cpp.CLI.Utility
     {
         public static FileInfo FindCppProjectFile(this FileInfo file)
         {
-            var projectFile = file.DirectoryName.FindCppProjectFile();
+            var projectFile = file.DirectoryName.FindCppProjectFile(file.Name);
             if (projectFile == null)
             {
                 var parentDirectory = file.Directory?.Parent;
                 while (parentDirectory != null)
                 {
-                    projectFile = parentDirectory.FullName.FindCppProjectFile();
+                    projectFile = parentDirectory.FullName.FindCppProjectFile(file.Name);
                     if (projectFile != null)
                     {
                         break;
@@ -33,7 +33,7 @@ namespace MuTest.Cpp.CLI.Utility
             return projectFile;
         }
 
-        private static FileInfo FindCppProjectFile(this string path)
+        private static FileInfo FindCppProjectFile(this string path, string fileName)
         {
             if (Directory.Exists(path))
             {
@@ -41,7 +41,8 @@ namespace MuTest.Cpp.CLI.Utility
                     .FirstOrDefault(x => x.Name.EndsWith(".vcxproj", StringComparison.InvariantCulture) &&
                                          !x.Name.StartsWith("f.") &&
                                          !x.Name.StartsWith("TemporaryGeneratedFile_") &&
-                                         !x.Name.StartsWith("AssemblyInfo"));
+                                         !x.Name.StartsWith("AssemblyInfo") &&
+                                         x.GetCodeFileContent().Contains(fileName));
             }
 
             return null;

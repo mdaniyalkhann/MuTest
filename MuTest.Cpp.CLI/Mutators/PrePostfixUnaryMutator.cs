@@ -18,6 +18,6 @@ namespace MuTest.Cpp.CLI.Mutators
 
         public string Description { get; } = "UNARY [++, --]";
 
-        public bool DefaultMutant { get; } = true;
+        public bool DefaultMutant { get; } = false;
     }
 }

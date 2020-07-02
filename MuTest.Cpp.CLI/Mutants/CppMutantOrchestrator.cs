@@ -44,8 +44,7 @@ namespace MuTest.Cpp.CLI.Mutants
             {
                 new ArithmeticOperatorMutator(),
                 new RelationalOperatorMutator(),
-                new LogicalConnectorMutator(),
-                new PrePostfixUnaryMutator()
+                new LogicalConnectorMutator()
             })
             {
                 SpecificLines = specificLines
@@ -91,8 +90,9 @@ namespace MuTest.Cpp.CLI.Mutants
                 "namespace",
                 "typedef",
                 "static",
-                "static",
-                "class"
+                "class",
+                "trace",
+                "delete"
             };
 
             using (var reader = new StreamReader(sourceFile))
@@ -124,7 +124,7 @@ namespace MuTest.Cpp.CLI.Mutants
                     }
 
                     if (string.IsNullOrWhiteSpace(line) ||
-                        skipList.Any(x => line.StartsWith(x)) ||
+                        skipList.Any(x => line.StartsWith(x, StringComparison.InvariantCultureIgnoreCase)) ||
                         line.EndsWith("):"))
                     {
                         continue;
