@@ -21,6 +21,7 @@ namespace MuTest.Core.Common.InspectCode
                     new ArrayToListInForEach(),
                     new UnnecessaryTestDataCase(),
                     new UnnecessaryTestCase(),
+                    new SimplifyShims(),
                     new InappropriateUsageOfProperty(),
                     new ProtectedPublicConstants(),
                     new BlankCodeBlock(),
@@ -37,9 +38,11 @@ namespace MuTest.Core.Common.InspectCode
                     new GeneralReservedException(),
                     new LiskovSubstitutionPrincipal(),
                     new MethodWithBoolArgument(),
+                    new UnnecessaryUseOfShimsContext(),
                     new MethodWithGreaterThanSevenArguments(),
                     new SwitchWithoutDefaultCase(),
                     new AssertSingleItemWithUow(),
+                    new DuplicateShimsDefinition(),
                     new TestEntireUow()
                 };
 

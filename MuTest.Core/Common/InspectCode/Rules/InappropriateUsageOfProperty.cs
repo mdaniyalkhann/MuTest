@@ -20,6 +20,11 @@ namespace MuTest.Core.Common.InspectCode.Rules
                 return null;
             }
 
+            if (property.DescendantNodes<ArrowExpressionClauseSyntax>().Count < 4)
+            {
+                return null;
+            }
+
             if (!(property.DescendantNodes<InvocationExpressionSyntax>().Any() ||
                   property.DescendantNodes<ObjectCreationExpressionSyntax>().Any()))
             {

@@ -131,6 +131,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AridNodes\AridNodeFilterProvider.cs" />
+    <Compile Include="AridNodes\ClassNodesClassifier.cs" />
+    <Compile Include="AridNodes\Filters\ByDefinition\ByDefinitionFilter.cs" />
+    <Compile Include="AridNodes\Filters\HardCoded\ConsoleNodeFilter.cs" />
+    <Compile Include="AridNodes\Filters\HardCoded\DebugNodeFilter.cs" />
+    <Compile Include="AridNodes\Filters\IAridNodeFilter.cs" />
+    <Compile Include="AridNodes\IAridNodeFilterProvider.cs" />
+    <Compile Include="AridNodes\SimpleNodeExtensions.cs" />
     <Compile Include="Common\BuildExecutor.cs" />
     <Compile Include="Common\Constants.cs" />
     <Compile Include="Common\CoverageAnalyzer.cs" />
@@ -141,6 +149,7 @@
     <Compile Include="Common\IMutantAnalyzer.cs" />
     <Compile Include="Common\IMutantExecutor.cs" />
     <Compile Include="Common\IMutantInitializer.cs" />
+    <Compile Include="Common\IMutantSelector.cs" />
     <Compile Include="Common\InspectCode\Compilation.cs" />
     <Compile Include="Common\InspectCode\DuplicateCodeFinder.cs" />
     <Compile Include="Common\InspectCode\Inspection.cs" />
@@ -151,10 +160,13 @@
     <Compile Include="Common\InspectCode\Rules\BlankCodeBlock.cs" />
     <Compile Include="Common\InspectCode\Rules\ClassesAreNoun.cs" />
     <Compile Include="Common\InspectCode\Rules\ContextualKeyword.cs" />
+    <Compile Include="Common\InspectCode\Rules\SimplifyShims.cs" />
+    <Compile Include="Common\InspectCode\Rules\DuplicateShimsDefinition.cs" />
     <Compile Include="Common\InspectCode\Rules\DefineStruct.cs" />
     <Compile Include="Common\InspectCode\Rules\DisposableWarning.cs" />
     <Compile Include="Common\InspectCode\Rules\EnumWithoutDefaultValue.cs" />
     <Compile Include="Common\InspectCode\Rules\ExceptionWithoutContext.cs" />
+    <Compile Include="Common\InspectCode\Rules\UnnecessaryUseOfShimsContext.cs" />
     <Compile Include="Common\InspectCode\Rules\UnnecessaryTestCase.cs" />
     <Compile Include="Common\InspectCode\Rules\UnnecessaryTestDataCase.cs" />
     <Compile Include="Common\InspectCode\Rules\FieldAsProtectedOrPublic.cs" />
@@ -176,6 +188,7 @@
     <Compile Include="Common\MutantEventArgs.cs" />
     <Compile Include="Common\MutantExecutor.cs" />
     <Compile Include="Common\MutantInitializer.cs" />
+    <Compile Include="Common\MutantSelector.cs" />
     <Compile Include="Common\Settings\MuTestSettings.cs" />
     <Compile Include="Common\Settings\MuTestSettingsSection.cs" />
     <Compile Include="Common\StaticAnalyzers\AssertsAnalyzer.cs" />
@@ -188,6 +201,11 @@
     <Compile Include="Exceptions\MuTestFailingBuildException.cs" />
     <Compile Include="Exceptions\MuTestFailingTestException.cs" />
     <Compile Include="Exceptions\MuTestInputException.cs" />
+    <Compile Include="Model\AridNodes\AridCheckResult.cs" />
+    <Compile Include="Model\AridNodes\ClassNodesClassification.cs" />
+    <Compile Include="Model\AridNodes\CompoundNode.cs" />
+    <Compile Include="Model\AridNodes\INode.cs" />
+    <Compile Include="Model\AridNodes\SimpleNode.cs" />
     <Compile Include="Model\Assert.cs" />
     <Compile Include="Model\AssertMethod.cs" />
     <Compile Include="Model\AssertString.cs" />
@@ -219,6 +237,7 @@
     <Compile Include="Mutants\MutantOrchestrator.cs" />
     <Compile Include="Mutants\MutantStatus.cs" />
     <Compile Include="Mutants\Mutation.cs" />
+    <Compile Include="AridNodes\AridNodeChecker.cs" />
     <Compile Include="Mutators\AssignmentStatementMutator.cs" />
     <Compile Include="Mutators\ArithmeticOperatorMutator.cs" />
     <Compile Include="Mutators\LogicalConnectorMutator.cs" />
@@ -259,6 +278,7 @@
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.3.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.3.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
