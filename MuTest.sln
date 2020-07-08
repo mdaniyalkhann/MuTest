@@ -23,7 +23,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MuTest.Cpp.CLI", "MuTest.Cp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MuTest.Core.Tests", "MuTest.Core.Tests\MuTest.Core.Tests.csproj", "{FF189E8D-1988-4495-830D-83F3CD71F8B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mutest.AridNodeClassAnalyzer", "Mutest.AridNodeClassAnalyzer\Mutest.AridNodeClassAnalyzer.csproj", "{13C8E383-4B87-499A-9328-7F992C212C0C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MuTest.AridNodeClassAnalyzer", "Mutest.AridNodeClassAnalyzer\MuTest.AridNodeClassAnalyzer.csproj", "{13C8E383-4B87-499A-9328-7F992C212C0C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
