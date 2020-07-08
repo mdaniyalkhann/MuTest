@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using MuTest.Core.Mutators;
 
 namespace MuTest.Core.Common
 {
@@ -13,8 +14,10 @@ namespace MuTest.Core.Common
 
         string SpecificFilterRegEx { get; set; }
 
+        int MutantsPerLine { get; set; }
+
         List<int> MutantsAtSpecificLines { get; }
 
-        Task InitializeMutants(IList<object> selectedMutators);
+        Task InitializeMutants(IList<IMutator> selectedMutators);
     }
 }

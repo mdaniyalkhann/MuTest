@@ -73,6 +73,8 @@ namespace Dashboard.ViewModel
 
         public virtual decimal NumberOfMutantsExecutedInParallel { get; set; } = 5;
 
+        public virtual decimal MutantsPerLine { get; set; } = 1;
+
         public virtual HorizontalAlignment HorizontalAlignment { get; set; } = HorizontalAlignment.Center;
 
         public virtual VerticalAlignment VerticalAlignment { get; set; } = VerticalAlignment.Center;
@@ -143,25 +145,7 @@ namespace Dashboard.ViewModel
 
         private void InitItemSources()
         {
-            var mutators = new List<IMutator>
-            {
-                new ArithmeticOperatorMutator(),
-                new RelationalOperatorMutator(),
-                new LogicalConnectorMutator(),
-                new StatementBlockMutator(),
-                new PostfixUnaryMutator(),
-                new PrefixUnaryMutator(),
-                new AssignmentStatementMutator(),
-                new StringMutator(),
-                new InterpolatedStringMutator(),
-                new MethodCallMutator(),
-                new BitwiseOperatorMutator(),
-                new NonVoidMethodCallMutator(),
-                new LinqMutator(),
-                new BooleanMutator(),
-                new NegateConditionMutator()
-            };
-
+            var mutators = MutantOrchestrator.AllMutators;
             SelectedMutators.Clear();
             SelectedMutators.AddRange(mutators.Where(x => x.DefaultMutant).ToList());
 
@@ -348,8 +332,9 @@ namespace Dashboard.ViewModel
             _mutantInitializer.MutantFilterId = MutantFilterId;
             _mutantInitializer.MutantFilterRegEx = MutantFilterRegEx;
             _mutantInitializer.SpecificFilterRegEx = SpecificMutantRegEx;
+            _mutantInitializer.MutantsPerLine = Convert.ToInt32(MutantsPerLine);
 
-            await _mutantInitializer.InitializeMutants(selectedMutators);
+            await _mutantInitializer.InitializeMutants(selectedMutators.Cast<IMutator>().ToList());
 
             if (_previousMutants.Any())
             {

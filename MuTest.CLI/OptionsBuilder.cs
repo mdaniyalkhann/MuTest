@@ -67,6 +67,8 @@ namespace MuTest.Console
 
         public CommandOption FindTestTime { get; set; }
 
+        public CommandOption MutantsPerLine { get; set; }
+
         public MuTestOptions Build()
         {
             var muTestOptions = new MuTestOptions
@@ -96,7 +98,8 @@ namespace MuTest.Console
                 Specific = GetOption(Specific.Value(), CliOptions.Specific),
                 ClassName = GetOption(ClassName.Value(), CliOptions.ClassName),
                 ProcessWholeProject = GetOption(ProcessWholeProject.Value(), CliOptions.ProcessWholeProject),
-                TestExecutionThreshold = GetOption(FindTestTime.Value(), CliOptions.TestExecutionThreshold)
+                TestExecutionThreshold = GetOption(FindTestTime.Value(), CliOptions.TestExecutionThreshold),
+                MutantsPerLine = GetOption(MutantsPerLine.Value(), CliOptions.MutantsPerLine)
             };
 
             muTestOptions

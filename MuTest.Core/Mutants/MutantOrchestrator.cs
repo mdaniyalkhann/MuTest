@@ -20,37 +20,28 @@ namespace MuTest.Core.Mutants
 
     public class MutantOrchestrator : IMutantOrchestrator
     {
-        private ICollection<Mutant> Mutants { get; set; }
-        private int MutantCount { get; set; }
-        private IEnumerable<IMutator> Mutators { get; }
-
-        public MutantOrchestrator(IEnumerable<IMutator> mutators = null)
-        {
-            Mutators = mutators ?? new List<IMutator>
+        public static IList<IMutator> AllMutators =>
+            new List<IMutator>
             {
-                new AssignmentStatementMutator(),
                 new ArithmeticOperatorMutator(),
                 new RelationalOperatorMutator(),
                 new LogicalConnectorMutator(),
                 new StatementBlockMutator(),
-                new BitwiseOperatorMutator(),
-                new BooleanMutator(),
-                new CheckedMutator(),
-                new InterpolatedStringMutator(),
-                new LinqMutator(),
-                new MethodCallMutator(),
-                new NegateConditionMutator(),
-                new NonVoidMethodCallMutator(),
                 new PostfixUnaryMutator(),
                 new PrefixUnaryMutator(),
-                new StringMutator()
+                new AssignmentStatementMutator(),
+                new StringMutator(),
+                new InterpolatedStringMutator(),
+                new MethodCallMutator(),
+                new BitwiseOperatorMutator(),
+                new NonVoidMethodCallMutator(),
+                new LinqMutator(),
+                new BooleanMutator(),
+                new NegateConditionMutator()
             };
-            Mutants = new Collection<Mutant>();
-        }
 
-        public static IEnumerable<Mutant> GetDefaultMutants(SyntaxNode node)
-        {
-            var orchestrator = new MutantOrchestrator(new List<IMutator>
+        public static IList<IMutator> DefaultMutators =>
+            new List<IMutator>
             {
                 new ArithmeticOperatorMutator(),
                 new LogicalConnectorMutator(),
@@ -58,7 +49,21 @@ namespace MuTest.Core.Mutants
                 new StatementBlockMutator(),
                 new PrefixUnaryMutator(),
                 new PostfixUnaryMutator()
-            });
+            };
+
+        private ICollection<Mutant> Mutants { get; set; }
+        private int MutantCount { get; set; }
+        private IEnumerable<IMutator> Mutators { get; }
+
+        public MutantOrchestrator(IEnumerable<IMutator> mutators = null)
+        {
+            Mutators = mutators ?? AllMutators;
+            Mutants = new Collection<Mutant>();
+        }
+
+        public static IEnumerable<Mutant> GetDefaultMutants(SyntaxNode node)
+        {
+            var orchestrator = new MutantOrchestrator(DefaultMutators);
 
             orchestrator.Mutate(node);
 
@@ -110,7 +115,6 @@ namespace MuTest.Core.Mutants
 
                     if (GetExpressionSyntax(expressionSyntax) is var subExpressionSyntax && subExpressionSyntax != null)
                     {
-
                         return currentNode.ReplaceNode(expressionSyntax, Mutate(expressionSyntax));
                     }
 
@@ -134,7 +138,8 @@ namespace MuTest.Core.Mutants
                         return null;
                     }
 
-                    ifStatement = ifStatement.ReplaceNode(ifStatement.Condition, MutateWithConditionalExpressions(ifStatement.Condition));
+                    ifStatement = ifStatement.ReplaceNode(ifStatement.Condition,
+                        MutateWithConditionalExpressions(ifStatement.Condition));
 
                     if (ifStatement.Else != null)
                     {
@@ -150,14 +155,16 @@ namespace MuTest.Core.Mutants
                     }
                     catch (Exception e)
                     {
-                        Trace.TraceError("unable to process if statement at line {0} {1}", ifStatement?.Statement?.LineNumber() + 1, e);
+                        Trace.TraceError("unable to process if statement at line {0} {1}",
+                            ifStatement?.Statement?.LineNumber() + 1, e);
                     }
                 }
 
                 return MutateWithIfStatements(statement);
             }
 
-            if (currentNode is InvocationExpressionSyntax invocationExpression && invocationExpression.ArgumentList.Arguments.Count == 0)
+            if (currentNode is InvocationExpressionSyntax invocationExpression &&
+                invocationExpression.ArgumentList.Arguments.Count == 0)
             {
                 var mutant = FindMutants(invocationExpression).FirstOrDefault();
                 if (mutant != null)

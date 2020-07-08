@@ -17,6 +17,7 @@ namespace MuTest.Console.Options
         private const string JsonExtension = ".json";
         private const string HtmlExtension = ".html";
         private const int DefaultConcurrentTestRunners = 4;
+        private const int DefaultMutantsPerLine = -1;
         private const double DefaultThreshold = 1.0;
 
         [JsonProperty("source-project")]
@@ -45,6 +46,9 @@ namespace MuTest.Console.Options
 
         [JsonProperty("concurrent-test-runners")]
         public int ConcurrentTestRunners { get; set; } = DefaultConcurrentTestRunners;
+
+        [JsonProperty("mutants-per-line")]
+        public int MutantsPerLine { get; set; } = DefaultMutantsPerLine;
 
         [JsonProperty("survived-threshold")]
         public double SurvivedThreshold { get; set; } = DefaultThreshold;

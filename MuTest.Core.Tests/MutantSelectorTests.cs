@@ -49,6 +49,20 @@ namespace MuTest.Core.Tests
             _mutantSelector = new MutantSelector();
         }
 
+        [TestCase(0)]
+        [TestCase(-1)]
+        public void SelectMutants_Method_With_Single_Mutant_LCR_PerLine_Select_Less_Than_One_ShouldSelect_All(int mutantsPerLine)
+        {
+            // Arrange
+            var mutants = GetMethodMutants(MethodWithSingleMutantLcrPerline);
+
+            // Act
+            var selectedMutants = _mutantSelector.SelectMutants(mutantsPerLine, mutants);
+
+            // Assert
+            mutants.ShouldBe(selectedMutants);
+        }
+
         [Test]
         public void SelectMutants_Method_With_Single_Mutant_LCR_PerLine_ShouldSelect_LCR()
         {

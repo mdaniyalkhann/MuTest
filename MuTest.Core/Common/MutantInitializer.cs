@@ -15,6 +15,7 @@ namespace MuTest.Core.Common
     public class MutantInitializer : IMutantInitializer
     {
         private readonly SourceClassDetail _source;
+        private readonly IMutantSelector _selector;
 
         public string MutantFilterId { get; set; }
 
@@ -24,21 +25,24 @@ namespace MuTest.Core.Common
 
         public string SpecificFilterRegEx { get; set; }
 
+        public int MutantsPerLine { get; set; }
+
         public List<int> MutantsAtSpecificLines { get; } = new List<int>();
 
-        public MutantInitializer(SourceClassDetail source)
+        public MutantInitializer(SourceClassDetail source, IMutantSelector selector = null)
         {
             _source = source ?? throw new ArgumentNullException(nameof(source));
+            _selector = selector ?? new MutantSelector();
         }
 
-        public async Task InitializeMutants(IList<object> selectedMutators)
+        public async Task InitializeMutants(IList<IMutator> selectedMutators)
         {
             if (selectedMutators == null || !selectedMutators.Any())
             {
                 return;
             }
 
-            var mutatorFinder = new MutantOrchestrator(selectedMutators.Cast<IMutator>());
+            var mutatorFinder = new MutantOrchestrator(selectedMutators);
             var id = 1;
             foreach (var method in _source.MethodDetails)
             {
@@ -46,6 +50,7 @@ namespace MuTest.Core.Common
                 method.Mutants.Clear();
                 mutatorFinder.Mutate(method.Method);
                 var latestMutantBatch = mutatorFinder.GetLatestMutantBatch().ToList();
+                latestMutantBatch = _selector.SelectMutants(MutantsPerLine, latestMutantBatch).ToList();
                 foreach (var mutant in latestMutantBatch)
                 {
                     mutant.Method = method;

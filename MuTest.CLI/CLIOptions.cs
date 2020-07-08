@@ -223,6 +223,15 @@ namespace MuTest.Console
             ValueType = CommandOptionType.SingleValue
         };
 
+        public static readonly CliOption<int> MutantsPerLine = new CliOption<int>
+        {
+            ArgumentName = "--mutants-per-line",
+            ArgumentShortName = "-mpl <integer>",
+            ArgumentDescription = "Set number of mutants per line Default is -1 (Unlimited)",
+            DefaultValue = DefaultOptions.MutantsPerLine,
+            ValueType = CommandOptionType.SingleValue
+        };
+
         public static readonly CliOption<double> SurvivedThreshold = new CliOption<double>
         {
             ArgumentName = "--survived-threshold",

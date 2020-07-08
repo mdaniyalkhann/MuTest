@@ -72,6 +72,8 @@ namespace MuTest.Core.Common
 
         public char ProgressIndicator { get; set; } = '*';
 
+        public int MutantsPerLine { get; set; }
+
         public MutantAnalyzer(IChalk chalk, MuTestSettings settings)
         {
             _chalk = chalk ?? throw new ArgumentNullException(nameof(chalk));
@@ -194,15 +196,7 @@ namespace MuTest.Core.Common
                 mutantAnalyzer.MutantsAtSpecificLines.AddRange(ExternalCoveredMutants);
             }
 
-            await mutantAnalyzer.InitializeMutants(new List<object>
-            {
-                new ArithmeticOperatorMutator(),
-                new RelationalOperatorMutator(),
-                new LogicalConnectorMutator(),
-                new StatementBlockMutator(),
-                new PostfixUnaryMutator(),
-                new PrefixUnaryMutator()
-            });
+            await mutantAnalyzer.InitializeMutants(MutantOrchestrator.DefaultMutators);
         }
 
         private async Task Initialization(SourceClassDetail source)

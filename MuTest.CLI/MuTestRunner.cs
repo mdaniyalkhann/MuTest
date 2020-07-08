@@ -114,7 +114,8 @@ namespace MuTest.Console
                 TestProjectLibrary = _options.TestProjectLibraryParameter,
                 UseClassFilter = _options.UseClassFilter,
                 X64TargetPlatform = _options.X64TargetPlatform,
-                TestExecutionTime = _options.TestExecutionThreshold
+                TestExecutionTime = _options.TestExecutionThreshold,
+                MutantsPerLine = _options.MutantsPerLine
             };
 
             foreach (var targetClass in _options.MultipleTargetClasses)

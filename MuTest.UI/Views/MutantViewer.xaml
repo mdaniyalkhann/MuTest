@@ -68,50 +68,58 @@
                         <GroupBox Grid.Row="2" Header="Mutants Filters">
                             <Grid>
                                 <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1.8*" />
                                     <ColumnDefinition Width="0.5*" />
-                                    <ColumnDefinition Width="1.5*" />
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
-                                <Label Grid.Row="0"
-                                       Grid.Column="0"
-                                       Margin="0 5 0 0"
-                                       Content="Include RegEx"
-                                       FontSize="11" VerticalAlignment="Center" />
                                 <dxe:TextEdit
                                     Grid.Row="0"
-                                    Grid.Column="1"
+                                    Grid.Column="0"
+                                    Grid.ColumnSpan="2"
                                     Margin="0 5 0 0"
                                     FontSize="11"
-                                    Text="{Binding SpecificMutantRegEx, Mode=TwoWay}"
-                                    Width="200" />
-                                <Label Grid.Row="1"
-                                       Grid.Column="0"
-                                       Margin="0 5 0 0"
-                                       Content="Exclude RegEx"
-                                       FontSize="11" VerticalAlignment="Center" />
+                                    NullText="Include RegEx"
+                                    ToolTip="Include RegEx"
+                                    Text="{Binding SpecificMutantRegEx, Mode=TwoWay}" />
                                 <dxe:TextEdit
                                     Grid.Row="1"
-                                    Grid.Column="1"
+                                    Grid.Column="0"
+                                    Grid.ColumnSpan="2"
+                                    NullText="Exclude RegEx"
+                                    ToolTip="Exclude RegEx"
                                     Margin="0 5 0 0"
                                     FontSize="11"
-                                    Text="{Binding MutantFilterRegEx, Mode=TwoWay}"
-                                    Width="200" />
-                                <Label Grid.Row="2"
-                                       Grid.Column="0"
-                                       Margin="0 5 0 0"
-                                       Content="Filter by Key"
-                                       FontSize="11" VerticalAlignment="Center" />
+                                    Text="{Binding MutantFilterRegEx, Mode=TwoWay}" />
                                 <dxe:TextEdit
                                     Grid.Row="2"
-                                    Grid.Column="1"
+                                    Grid.Column="0"
+                                    NullText="Filter By Key"
+                                    ToolTip="Filter By Key"
                                     Margin="0 5 0 0"
                                     FontSize="11"
-                                    Text="{Binding MutantFilterId, Mode=TwoWay}"
-                                    Width="200" />
+                                    Text="{Binding MutantFilterId, Mode=TwoWay}" />
+                                <Label Grid.Row="2"
+                                       Grid.Column="1"
+                                       Margin="0 5 40 0"
+                                       Content="MpL"
+                                       ToolTip="Mutants Per Line"
+                                       FontSize="12"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Right" />
+                                <dxe:SpinEdit Grid.Row="2"
+                                              Grid.Column="1"
+                                              IsTextEditable="False"
+                                              IsReadOnly="{Binding DisableMutators, Mode=TwoWay}"
+                                              Value="{Binding MutantsPerLine, Mode=TwoWay}"
+                                              Margin="0 5 0 0"
+                                              HorizontalAlignment="Right"
+                                              IsFloatValue="False"
+                                              MaxValue="5"
+                                              MinValue="0" Height="24" VerticalAlignment="Bottom" />
                             </Grid>
                         </GroupBox>
                         <GroupBox Grid.Row="3" Header="Mutants Settings">
@@ -125,8 +133,8 @@
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
-                                    <RowDefinition Height ="Auto" />
-                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
                                 <Label Grid.Row="0"
                                        Grid.Column="0"
@@ -247,7 +255,7 @@
                         <GroupBox Grid.Row="4" Header="Mutants Operation">
                             <Grid>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1*" />
@@ -299,6 +307,9 @@
                             </Grid>
                         </GroupBox>
                         <Grid Grid.Row="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="1*" />
                                 <ColumnDefinition Width="Auto" />
@@ -310,8 +321,8 @@
                                 Margin="1 5 0 0"
                                 Grid.Column="1"
                                 Grid.Row="0"
-                                Height="30"
                                 HorizontalAlignment="Right"
+                                VerticalContentAlignment="Stretch"
                                 FontFamily="Consolas">
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand EventName="Click"
@@ -369,8 +380,7 @@
                                           AutoWidth="True"
                                           AllowPerPixelScrolling="True"
                                           AutoExpandAllNodes="True"
-                                          AllowScrollAnimation="True">
-                        </dxg:TreeListView>
+                                          AllowScrollAnimation="True" />
                     </dxg:GridControl.View>
                 </dxg:GridControl>
             </Grid>

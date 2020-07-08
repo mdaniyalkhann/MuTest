@@ -48,6 +48,7 @@ namespace MuTest.Console
             var useClassFilter = CreateOption(app, CliOptions.UseClassFilter);
 
             var parallel = CreateOption(app, CliOptions.Parallel);
+            var mutantsPerLine = CreateOption(app, CliOptions.MutantsPerLine);
             var survivedThreshold = CreateOption(app, CliOptions.SurvivedThreshold);
             var killedThreshold = CreateOption(app, CliOptions.KilledThreshold);
             var x64 = CreateOption(app, CliOptions.X64TargetPlatform);
@@ -94,7 +95,8 @@ namespace MuTest.Console
                     SurvivedThreshold = survivedThreshold,
                     KilledThreshold = killedThreshold,
                     OptimizeTestProject = optimizeTestProject,
-                    AnalyzeExternalCoveredClasses = analyzeExternalCoveredClasses
+                    AnalyzeExternalCoveredClasses = analyzeExternalCoveredClasses,
+                    MutantsPerLine = mutantsPerLine
                 }.Build();
 
                 await RunMuTest(options);
