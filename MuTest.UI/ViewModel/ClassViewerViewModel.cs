@@ -418,6 +418,9 @@ namespace Dashboard.ViewModel
                               <SpecificVersion>False</SpecificVersion>
                               <HintPath>{libraryPathName}\KellermanSoftware.Compare-NET-Objects.dll</HintPath>
                             </Reference>
+                            <Reference Include=""DeepCloner, Version=0.10.0.0, Culture=neutral, PublicKeyToken=dc0b95cf99bf4e99, processorArchitecture=MSIL"">
+                              <HintPath>{libraryPathName}\DeepCloner.dll</HintPath>
+                            </Reference>
 	                        <Reference Include=""MuTest.DynamicAsserts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"">
                               <SpecificVersion>False</SpecificVersion>
                               <HintPath>{libraryPathName}\MuTest.DynamicAsserts.dll</HintPath>

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
+using Force.DeepCloner;
 using KellermanSoftware.CompareNetObjects;
 using MuTest.DynamicAsserts.Properties;
 
@@ -54,7 +55,7 @@ namespace MuTest.DynamicAsserts
 
         public static void SetupTestClass<T>(this T testClass, string testName, string id, int depth, bool compareChildren) where T : new()
         {
-            _initialClass = testClass.Copy(compareChildren);
+            _initialClass = testClass.DeepClone();
             _testName = testName;
             _id = BaseDirectory + id;
             _depth = depth;
@@ -252,6 +253,40 @@ namespace MuTest.DynamicAsserts
                    !fullName.Contains("RequiredFieldValidator");
         }
 
+        private static bool Supported(this Type type)
+        {
+            var fullName = type.FullName;
+
+            if (!_analyzeComplexFields)
+            {
+                return type.IsSimple() ||
+                       type.IsACollection() ||
+                       type.IsAction() ||
+                       type.IsObject();
+            }
+
+            return fullName != null &&
+                   !fullName.Contains("CultureInfo") &&
+                   !fullName.Contains("DataSet") &&
+                   !fullName.Contains("DataTable") &&
+                   !fullName.Contains("DropDownList") &&
+                   !fullName.Contains("IDisposable") &&
+                   !fullName.Contains("Microsoft.Win32.SafeHandles.SafeFileMappingHandle") &&
+                   !fullName.Contains("Microsoft.Win32.SafeHandles.SafeViewOfFileHandle") &&
+                   !fullName.Contains("Microsoft.Win32.SafeHandles.SafeWaitHandle") &&
+                   !fullName.Contains("PrivateObject") &&
+                   !fullName.Contains("PrivateType") &&
+                   !fullName.Contains("RequiredFieldValidator") &&
+                   !fullName.Contains("Shim") &&
+                   !fullName.Contains("System.IO.Stream") &&
+                   !fullName.Contains("System.IntPtr") &&
+                   !fullName.Contains("System.Reflection.INVOCATION_FLAGS") &&
+                   !fullName.Contains("System.Runtime") &&
+                   !fullName.Contains("System.Threading") &&
+                   !fullName.Contains("System.Void*") &&
+                   !fullName.Contains("log4net");
+        }
+
         private static void GenerateComplexAsserts(string memberName, object untest, object tested, Type type, List<string> asserts)
         {
             try
@@ -327,8 +362,7 @@ namespace MuTest.DynamicAsserts
 
         private static void GenerateActionAssert(string memberName, object objValue, ICollection<string> asserts)
         {
-            var action = objValue as Action;
-            if (action != null)
+            if (objValue is Action action)
             {
                 try
                 {
@@ -527,7 +561,11 @@ namespace MuTest.DynamicAsserts
                     {
                         MaxDifferences = int.MaxValue,
                         MaxStructDepth = _depth,
-                        CompareChildren = _analyzeComplexFields
+                        CompareChildren = _analyzeComplexFields,
+                        CustomComparers =
+                        {
+                            new ColorComparer(RootComparerFactory.GetRootComparer())
+                        }
                     }
                 };
 
@@ -579,6 +617,16 @@ namespace MuTest.DynamicAsserts
         {
             try
             {
+                if (difference.Object1 != null && !difference.Object1.GetType().Supported())
+                {
+                    return null;
+                }
+
+                if (difference.Object2 != null && !difference.Object2.GetType().Supported())
+                {
+                    return null;
+                }
+
                 if (difference.ParentObject2 != null)
                 {
                     var propertyInfo = difference.ParentObject2.GetType().GetProperty(difference.PropertyName);
@@ -755,12 +803,18 @@ namespace MuTest.DynamicAsserts
                     var dateTime = (DateTime)difference.Object2;
                     return $"() => {fieldName}.{propertyName}{nullableType}ToString(CultureInfo.InvariantCulture).ShouldBe(\"{dateTime.ToString(CultureInfo.InvariantCulture)}\"),-{unBoxType}";
                 default:
+                    if (difference.Object2 != null && 
+                        difference.Object2.GetType().FullName == "System.Drawing.Color")
+                    {
+                        var colorName = difference.Object2.GetType().GetProperty("Name").GetValue(difference.Object2);
+                        return
+                            $"() => {fieldName}.{propertyName.Replace(TypeMethod, string.Empty)}Name.ShouldBe(\"{colorName}\"),-{unBoxType}";
+                    }
+
+
                     if (!string.IsNullOrWhiteSpace(unBoxType))
                     {
-                        var unknownBuilder = new StringBuilder()
-                            .AppendLine($"() => {fieldName}.{propertyName.Replace(TypeMethod, string.Empty)}ShouldNotBeNull(),-{unBoxType}")
-                            .Append($"() => {fieldName}.{propertyName.Replace(TypeMethod, string.Empty)}ShouldBeOfType<{unBoxType}>(),-{unBoxType}");
-                        return unknownBuilder.ToString();
+                        return $"() => {fieldName}.{propertyName.Replace(TypeMethod, string.Empty)}ShouldNotBeNull(),-{unBoxType}";
                     }
 
                     return null;
