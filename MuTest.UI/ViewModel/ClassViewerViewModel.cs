@@ -14,6 +14,7 @@ using DevExpress.Mvvm.POCO;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using MuTest.Core.Common;
+using MuTest.Core.Common.ClassDeclarationLoaders;
 using MuTest.Core.Common.InspectCode;
 using MuTest.Core.Common.Settings;
 using MuTest.Core.Common.StaticAnalyzers;
@@ -124,7 +125,7 @@ namespace Dashboard.ViewModel
 
         public void BtnStaticMutantsClick(object selectedItems)
         {
-            _currentFileName = $"{_source.Claz.ClassName()}_Static_Mutation_Analysis";
+            _currentFileName = $"{_source.Claz.Syntax.ClassName()}_Static_Mutation_Analysis";
             var selectedMethods = (ObservableCollection<object>)selectedItems;
             if (!selectedMethods.Any())
             {
@@ -133,7 +134,7 @@ namespace Dashboard.ViewModel
             }
 
             SourceCodeHtml = HtmlTemplate;
-            SourceCodeHtml += _methodAnalyzer.FindMutants(_source.TestClaz.Claz, selectedMethods.Cast<MethodDetail>().ToList()).ToString();
+            SourceCodeHtml += _methodAnalyzer.FindMutants(_source.TestClaz.Claz.Syntax, selectedMethods.Cast<MethodDetail>().ToList()).ToString();
         }
 
         public void BtnDynamicMutantsClick(object selectedItems)
@@ -215,7 +216,7 @@ namespace Dashboard.ViewModel
                 _testExecutor.X64TargetPlatform = ChkTargetPlatformX64.IsChecked;
                 _testExecutor.FullyQualifiedName = selectedMethods.Count > Convert.ToInt32(MuTestSettings.UseClassFilterTestsThreshold) ||
                                                    _source.TestClaz.BaseClass != null
-                    ? _source.TestClaz.Claz.FullName()
+                    ? _source.TestClaz.Claz.Syntax.FullName()
                     : string.Empty;
                 await _testExecutor.ExecuteTests(selectedMethods.Cast<MethodDetail>().ToList());
 
@@ -260,7 +261,7 @@ namespace Dashboard.ViewModel
             Compilation.LoadSemanticModels();
             foreach (var partialClass in _source.TestClaz.PartialClasses)
             {
-                var inspections = await Inspector.FindInspections(partialClass.Claz, partialClass.FilePath);
+                var inspections = await Inspector.FindInspections(partialClass.Claz.Syntax, partialClass.FilePath);
                 if (inspections.Any())
                 {
                     inspectionsOutput.Append(Inspector.PrintInspections(inspections, partialClass.FilePath));
@@ -347,7 +348,7 @@ namespace Dashboard.ViewModel
 
         public async Task BtnGenerateDynamicAssertsClick(object selectedItems)
         {
-            _currentFileName = $"{_source.Claz.ClassName()}_Dynamic_Asserts";
+            _currentFileName = $"{_source.Claz.Syntax.ClassName()}_Dynamic_Asserts";
             var originalLines = new List<string>();
             FileInfo testFile = null;
             FileInfo project = null;
@@ -385,8 +386,8 @@ namespace Dashboard.ViewModel
                     return;
                 }
 
-                var setupMethod = _source.TestClaz.PartialClassWithSetupLogic?.Claz.NUnitSetupMethod();
-                var tearDownMethod = _source.TestClaz.PartialClassWithSetupLogic?.Claz.NUnitTearDownMethod();
+                var setupMethod = _source.TestClaz.PartialClassWithSetupLogic?.Claz.Syntax.NUnitSetupMethod();
+                var tearDownMethod = _source.TestClaz.PartialClassWithSetupLogic?.Claz.Syntax.NUnitTearDownMethod();
                 ClassDetail setupLibPath = _source.TestClaz.PartialClassWithSetupLogic;
 
                 if (!_source.TestClaz.SetupInBaseClass && (setupMethod == null || tearDownMethod == null))
@@ -407,7 +408,7 @@ namespace Dashboard.ViewModel
 
                 project.Create().Close();
 
-                await factory.UpdateProjectFile(0, _source.TestClaz.Claz.NameSpace(), setupLibPath?.FilePath, _source.TestClaz.ClassProject);
+                await factory.UpdateProjectFile(0, _source.TestClaz.Claz.Syntax.NameSpace(), setupLibPath?.FilePath, _source.TestClaz.ClassProject);
                 var projectDocument = new FileInfo(project.FullName).GetProjectDocument();
                 var referenceNode = projectDocument.SelectSingleNode("/Project/ItemGroup/Reference")?.ParentNode;
 
@@ -455,8 +456,8 @@ namespace Dashboard.ViewModel
                         MuTestSettings.DynamicAssertsCoreAssemblyPath.DirectoryCopy(libraryPathName);
                     }
 
-                    var setupLocation = _source.TestClaz.Claz.DescendantNodes<MethodDeclarationSyntax>().FirstOrDefault().LineNumber();
-                    var tearDownLocationEnd = _source.TestClaz.Claz.DescendantNodes<MethodDeclarationSyntax>().FirstOrDefault().EndLineNumber() + 1;
+                    var setupLocation = _source.TestClaz.Claz.Syntax.DescendantNodes<MethodDeclarationSyntax>().FirstOrDefault().LineNumber();
+                    var tearDownLocationEnd = _source.TestClaz.Claz.Syntax.DescendantNodes<MethodDeclarationSyntax>().FirstOrDefault().EndLineNumber() + 1;
 
                     if (setupMethod != null && tearDownMethod != null)
                     {
@@ -545,7 +546,7 @@ namespace Dashboard.ViewModel
                         testExecutor.EnableLogging = false;
                         testExecutor.FullyQualifiedName = selectedMethods.Count > Convert.ToInt32(MuTestSettings.UseClassFilterTestsThreshold) ||
                                                           ChkUseClassFilter.IsChecked
-                            ? _source.TestClaz.Claz.FullName()
+                            ? _source.TestClaz.Claz.Syntax.FullName()
                             : string.Empty;
 
                         await testExecutor.ExecuteTests(selectedMethods.Cast<MethodDetail>().ToList());
@@ -663,7 +664,7 @@ namespace Dashboard.ViewModel
             SourceCodeHtml += "Analyzing Asserts".PrintWithDateTime().PrintWithPreTagImportant();
             var assertStrings = new List<AssertString>();
 
-            var methods = _source.TestClaz.Claz.Methods().ToList();
+            var methods = _source.TestClaz.Claz.Syntax.Methods().ToList();
             var methodsWithParameters = methods.Where(x => x.ParameterList.Parameters.Any(p => p.Identifier.ValueText.StartsWith("expected")));
             foreach (var method in methodsWithParameters)
             {
@@ -1033,7 +1034,7 @@ namespace Dashboard.ViewModel
                 }
             }
 
-            var classEnd = _source.TestClaz.Claz.EndLineNumber();
+            var classEnd = _source.TestClaz.Claz.Syntax.EndLineNumber();
 
             SourceCodeHtml += "Adding Asserts to Test File".PrintWithDateTime().PrintWithPreTagImportant();
             var fileLines = new List<string>();
@@ -1064,18 +1065,18 @@ namespace Dashboard.ViewModel
 
                     if (lineNumber == classEnd)
                     {
-                        if (!_source.TestClaz.Claz.ContainMethod(nameof(CheckParameter)))
+                        if (!_source.TestClaz.Claz.Syntax.ContainMethod(nameof(CheckParameter)))
                         {
                             fileLines.Add(CheckParameter);
                         }
 
-                        if (!_source.TestClaz.Claz.ContainMethod(nameof(ShouldContain)) &&
+                        if (!_source.TestClaz.Claz.Syntax.ContainMethod(nameof(ShouldContain)) &&
                             ChkIgnoreCollectionOrder.IsChecked)
                         {
                             fileLines.Add(ShouldContain);
                         }
 
-                        if (!_source.TestClaz.Claz.ContainMethod(nameof(ShouldEqual)) &&
+                        if (!_source.TestClaz.Claz.Syntax.ContainMethod(nameof(ShouldEqual)) &&
                             !ChkIgnoreCollectionOrder.IsChecked)
                         {
                             fileLines.Add(ShouldEqual);
@@ -1087,9 +1088,10 @@ namespace Dashboard.ViewModel
             }
 
             _source.TestClaz.FilePath.WriteLines(fileLines);
-            var className = _source.TestClaz.Claz.ClassName();
-            _source.TestClaz.Claz = _source.TestClaz.FilePath.GetCodeFileContent().ClassName(className);
-            var partialClass = _source.TestClaz.PartialClasses.FirstOrDefault(x => x.Claz.ClassName() == className);
+            var className = _source.TestClaz.Claz.Syntax.ClassName();
+            var classDeclarationLoader = new ClassDeclarationLoader();
+            _source.TestClaz.Claz = classDeclarationLoader.Load(_source.TestClaz.FilePath, className);
+            var partialClass = _source.TestClaz.PartialClasses.FirstOrDefault(x => x.Claz.Syntax.ClassName() == className);
             if (partialClass != null)
             {
                 partialClass.Claz = _source.TestClaz.Claz;
@@ -1219,7 +1221,7 @@ namespace Dashboard.ViewModel
 
             try
             {
-                var assertsFile = asserts.GenerateFile(MuTestSettings.TestsResultDirectory, _source.Claz.ClassName(), _source.Claz.NameSpace());
+                var assertsFile = asserts.GenerateFile(MuTestSettings.TestsResultDirectory, _source.Claz.Syntax.ClassName(), _source.Claz.Syntax.NameSpace());
                 Process.Start(MuTestSettings.DefaultEditor, string.Format(MuTestSettings.DefaultEditorOptions, assertsFile));
             }
             catch (Exception e)

@@ -179,7 +179,7 @@ namespace MuTest.Console
                                 TargetClass = new TargetClass
                                 {
                                     ClassPath = _source.FilePath,
-                                    ClassName = _source.Claz.FullName(),
+                                    ClassName = _source.Claz.Syntax.FullName(),
                                     TestClassPath = _source.TestClaz.FilePath
                                 },
                                 MutationScore = _source.MutationScore,
@@ -295,7 +295,7 @@ namespace MuTest.Console
             builder.Append($"{_stopwatch.Elapsed}".PrintWithPreTagWithMarginImportant());
             builder.AppendLine("</fieldset>");
 
-            _source.FullName = _source.Claz.FullName();
+            _source.FullName = _source.Claz.Syntax.FullName();
             CreateHtmlReport(builder, _source.FullName.Replace(".", "_"));
             CreateJsonReport(
                 _source.FullName.Replace(".", "_"),

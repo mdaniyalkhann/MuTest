@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MuTest.Core.Exceptions;
 using MuTest.Core.Model;
+using MuTest.Core.Model.ClassDeclarations;
 using MuTest.Core.Utility;
 using Newtonsoft.Json;
 using static MuTest.Core.Common.Constants;
@@ -259,17 +260,17 @@ namespace MuTest.Console.Options
                     var sourceClassDetails = classes.SelectMany(cu => cu.CompilationUnitSyntax.DescendantNodes<ClassDeclarationSyntax>(),
                         (cu, claz) => new SourceClassDetail
                         {
-                            Claz = claz,
+                            Claz = new ClassDeclaration(claz),
                             FullName = $"{cu.CompilationUnitSyntax.NameSpace()}.{claz.Identifier.Text}",
                             FilePath = cu.FileName
                         })
-                        .OrderBy(x => x.Claz.Ancestors<ClassDeclarationSyntax>().Count).ToList();
+                        .OrderBy(x => x.Claz.Syntax.Ancestors<ClassDeclarationSyntax>().Count).ToList();
 
                     SourceClassParameter = sourceClassDetails.FirstOrDefault(x => x.FullName.Equals(ClassName, StringComparison.InvariantCultureIgnoreCase))?.FilePath;
 
                     if (string.IsNullOrWhiteSpace(SourceClassParameter))
                     {
-                        SourceClassParameter = sourceClassDetails.FirstOrDefault(x => x.Claz.ClassName().Equals(ClassName, StringComparison.CurrentCultureIgnoreCase))?.FilePath;
+                        SourceClassParameter = sourceClassDetails.FirstOrDefault(x => x.Claz.Syntax.ClassName().Equals(ClassName, StringComparison.CurrentCultureIgnoreCase))?.FilePath;
 
                         if (!string.IsNullOrWhiteSpace(SourceClassParameter))
                         {

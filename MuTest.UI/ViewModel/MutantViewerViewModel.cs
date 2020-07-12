@@ -178,7 +178,7 @@ namespace Dashboard.ViewModel
                     !_source.TestClaz.DoNetCoreProject)
                 {
                     var originalProject = _source.TestClaz.ClassProject;
-                    _source.TestClaz.ClassProject = originalProject.UpdateTestProject(_source.TestClaz.Claz.ClassName());
+                    _source.TestClaz.ClassProject = originalProject.UpdateTestProject(_source.TestClaz.Claz.Syntax.ClassName());
 
                     buildPassed = await ExecuteBuild();
 
@@ -292,12 +292,12 @@ namespace Dashboard.ViewModel
                 test.X64TargetPlatform = _source.X64TargetPlatform;
                 test.FullyQualifiedName = _source.TestClaz.MethodDetails.Count > Convert.ToInt32(Settings.UseClassFilterTestsThreshold) ||
                                           ChkUseClassFilter.IsChecked || _source.TestClaz.BaseClass != null
-                    ? _source.TestClaz.Claz.FullName()
+                    ? _source.TestClaz.Claz.Syntax.FullName()
                     : string.Empty;
 
                 if (_silently)
                 {
-                    test.FullyQualifiedName = _source.TestClaz.Claz.FullName();
+                    test.FullyQualifiedName = _source.TestClaz.Claz.Syntax.FullName();
                 }
 
                 await test.ExecuteTests(_source.TestClaz.MethodDetails);
@@ -576,7 +576,7 @@ namespace Dashboard.ViewModel
 
             _printDocument = MutationDocumentManagerService.CreateDocument(
                 nameof(CommandPromptOutputViewer),
-                _outputLogger.GetLogFromOutput($"{_source.Claz.ClassName()}_Dynamic_Mutation_Analysis", _mutationProcessLog.ToString()));
+                _outputLogger.GetLogFromOutput($"{_source.Claz.Syntax.ClassName()}_Dynamic_Mutation_Analysis", _mutationProcessLog.ToString()));
 
             _printDocument.Show();
         }

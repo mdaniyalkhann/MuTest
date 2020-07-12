@@ -1,28 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.CodeAnalysis;
 
 namespace MuTest.Core.Model.AridNodes
 {
-    public class ClassNodesClassification
+    public class NodesClassification
     {
-        private readonly IDictionary<SyntaxNode, AridCheckResult> _results;
+        private readonly IDictionary<IAnalyzableNode, AridCheckResult> _results;
 
-        internal ClassNodesClassification(IDictionary<SyntaxNode, AridCheckResult> results)
+        internal NodesClassification(IDictionary<IAnalyzableNode, AridCheckResult> results)
         {
             _results = results;
         }
 
-        public AridCheckResult GetResult(SyntaxNode syntaxNode)
+        public AridCheckResult GetResult(IAnalyzableNode syntaxNode)
         {
             if (!_results.ContainsKey(syntaxNode))
             {
-                throw new InvalidOperationException($"No result exists for the {nameof(SyntaxNode)} provided.");
+                throw new InvalidOperationException($"No result exists for the {nameof(IAnalyzableNode)} provided.");
             }
             return _results[syntaxNode];
         }
 
-        public bool TryGetResult(SyntaxNode syntaxNode, out AridCheckResult result)
+        public bool TryGetResult(IAnalyzableNode syntaxNode, out AridCheckResult result)
         {
             if (!_results.ContainsKey(syntaxNode))
             {

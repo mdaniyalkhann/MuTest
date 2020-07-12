@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MuTest.Core.Common;
+using MuTest.Core.Model.ClassDeclarations;
 using MuTest.Core.Mutants;
 using MuTest.Core.Mutators;
 using MuTest.Core.Tests.Utility;
@@ -28,6 +29,7 @@ namespace MuTest.Core.Tests
         private const string  MethodWithFiveMutantsSbrLcrRorUorAorPerLine = "Method_With_Five_Mutants_SBR_LCR_ROR_UOR_AOR_Per_Line";
         private const string  MethodWithOneMutantVmcrPerLine = "Method_With_One_Mutant_VMCR_Per_Line";
         private const string  MethodWithTwoMutantVmcrSlrPerLine = "Method_With_Two_Mutant_VMCR_SLR_Per_Line";
+        private const string  MethodWithNoMutantsAsArid = "Method_With_No_Mutants_As_Arid";
         private MutantSelector _mutantSelector;
         private ClassDeclarationSyntax _class;
 
@@ -321,6 +323,21 @@ namespace MuTest.Core.Tests
             selectedMutants.First(LineWithVoidMethodCall).Mutation.Type.ShouldBe(MutatorType.String);
         }
 
+        [Test]
+        public void Method_With_No_Mutants_As_Arid()
+        {
+            // Arrange
+            var mutants = GetMethodMutants(MethodWithNoMutantsAsArid);
+
+            // Act
+            var selectedMutants = _mutantSelector.SelectMutants(1, mutants);
+
+            // Assert
+            this.ShouldSatisfyAllConditions(
+                () => mutants.ShouldBeEmpty(),
+                () => selectedMutants.ShouldBeEmpty());
+        }
+
         private IList<Mutant> GetMethodMutants(string method)
         {
             var methodSyntax = _class
@@ -329,8 +346,10 @@ namespace MuTest.Core.Tests
             if (methodSyntax != null)
             {
                 var mutantOrchestrator = new MutantOrchestrator();
-                mutantOrchestrator.Mutate(methodSyntax);
-
+                var syntaxNodeAnalysisFactory = new SyntaxNodeAnalysisFactory();
+                var classDeclaration = new ClassDeclaration(_class);
+                var syntaxNodeAnalysis = syntaxNodeAnalysisFactory.Create(methodSyntax, classDeclaration);
+                mutantOrchestrator.Mutate(syntaxNodeAnalysis);
                 return mutantOrchestrator.GetLatestMutantBatch().ToList();
             }
 

@@ -14,6 +14,7 @@ using DevExpress.Mvvm.POCO;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using MuTest.Core.Model;
+using MuTest.Core.Model.ClassDeclarations;
 using MuTest.Core.Utility;
 using static MuTest.Core.Common.Constants;
 
@@ -317,7 +318,7 @@ namespace Dashboard.ViewModel
             }
             catch (Exception exp)
             {
-                Trace.TraceError("Unknown Exception Occurred On Setting Source Project Build {0}", exp);
+                Trace.TraceError("Unknown Exception Occurred On Setting Source Project Build {0}", exp.ToString().TrimToTraceLimit());
                 IsSplashScreenShown = false;
                 MessageBoxService.Show(ErrorMessage);
             }
@@ -379,7 +380,7 @@ namespace Dashboard.ViewModel
                 FilePath = _selectedTestClass.FilePath
             });
 
-            var baseListSyntax = _selectedTestClass.Claz.BaseList;
+            var baseListSyntax = _selectedTestClass.Claz.Syntax.BaseList;
             if (baseListSyntax != null &&
                 baseListSyntax.Types.Any())
             {
@@ -422,8 +423,8 @@ namespace Dashboard.ViewModel
             {
                 if (_selectedTestClass.FullName == data.FullName)
                 {
-                    var setupMethod = data.Claz.NUnitSetupMethod();
-                    var tearDownMethod = data.Claz.NUnitTearDownMethod();
+                    var setupMethod = data.Claz.Syntax.NUnitSetupMethod();
+                    var tearDownMethod = data.Claz.Syntax.NUnitTearDownMethod();
 
                     if (setupMethod != null && tearDownMethod != null)
                     {
@@ -523,7 +524,7 @@ namespace Dashboard.ViewModel
                 }
                 catch (Exception e)
                 {
-                    Trace.TraceError("{0}", e);
+                    Trace.TraceError("{0}", e.ToString().TrimToTraceLimit());
                     ShowMessage(e.Message);
                 }
                 finally
@@ -557,7 +558,7 @@ namespace Dashboard.ViewModel
                                               FullName = $"{cu.CompilationUnitSyntax.NameSpace()}.{classDeclarationSyntax.Identifier.Text}",
                                               FilePath = cu.FileName,
                                               TotalNumberOfMethods = classDeclarationSyntax.DescendantNodes<MethodDeclarationSyntax>().Count,
-                                              Claz = classDeclarationSyntax
+                                              Claz = new ClassDeclaration(classDeclarationSyntax)
                                           })
                     .OrderByDescending(x => x.TotalNumberOfMethods)
                     .ToList();
@@ -604,7 +605,7 @@ namespace Dashboard.ViewModel
                             FullName = $"{cu.CompilationUnitSyntax.NameSpace()}.{classDeclarationSyntax.Identifier.Text}",
                             FilePath = cu.FileName,
                             TotalNumberOfMethods = classDeclarationSyntax.DescendantNodes<MethodDeclarationSyntax>().Count,
-                            Claz = classDeclarationSyntax
+                            Claz = new ClassDeclaration(classDeclarationSyntax)
                         }).Where(x => x.TotalNumberOfMethods > 0)
                     .OrderByDescending(x => x.TotalNumberOfMethods)
                     .ToList();

@@ -63,7 +63,12 @@ namespace MuTest.Core.Tests.Samples
 
         public void Method_With_Two_Mutant_VMCR_SLR_Per_Line()
         {
-            Console.WriteLine("Testing"); // Void Method Call and String Literal Replacement
+            Environment.GetEnvironmentVariable("Testing");
+        }
+
+        public void Method_With_No_Mutants_As_Arid()
+        {
+            Console.WriteLine("Testing");
         }
     }
 }

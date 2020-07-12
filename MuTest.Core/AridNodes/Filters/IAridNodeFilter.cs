@@ -1,9 +1,10 @@
-﻿using MuTest.Core.Model.AridNodes;
+﻿using MuTest.Core.Model;
+using MuTest.Core.Model.AridNodes;
 
 namespace MuTest.Core.AridNodes.Filters
 {
     public interface IAridNodeFilter
     {
-        bool IsSatisfied(SimpleNode node);
+        bool IsSatisfied(IAnalyzableNode node);
     }
 }

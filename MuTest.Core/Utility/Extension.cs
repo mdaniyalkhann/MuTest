@@ -75,15 +75,17 @@ namespace MuTest.Core.Utility
             Task.WaitAll(cSharpFileInfos
                 .Select(cSharpFileInfo => Task.Run(() =>
                 {
-                    SyntaxNode codeFileContent = cSharpFileInfo.GetCodeFileContent()?.RootNode();
-
-                    if (codeFileContent is CompilationUnitSyntax syntax)
+                    if (cSharpFileInfo.Exists)
                     {
-                        cus.Add(new SyntaxFile
+                        var codeFileContent = cSharpFileInfo.GetCodeFileContent()?.RootNode();
+                        if (codeFileContent is CompilationUnitSyntax syntax)
                         {
-                            CompilationUnitSyntax = syntax,
-                            FileName = cSharpFileInfo.FullName
-                        });
+                            cus.Add(new SyntaxFile
+                            {
+                                CompilationUnitSyntax = syntax,
+                                FileName = cSharpFileInfo.FullName
+                            });
+                        }
                     }
                 })).ToArray());
 
@@ -276,6 +278,17 @@ namespace MuTest.Core.Utility
                 default:
                     return "null";
             }
+        }
+
+        public static string TrimToTraceLimit(this string message)
+        {
+            if (message == null || 
+                message.Length <= 30000)
+            {
+                return message;
+            }
+
+            return string.Concat(message.Take(30000));
         }
 
         public static string UnBoxType(this string type)

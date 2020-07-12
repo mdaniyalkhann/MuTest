@@ -45,6 +45,12 @@ namespace MuTest.Core.Tests.Utility
             return root?.FullName;
         }
 
+        public static string GetSampleProjectAbsolutePath()
+        {
+            var sampleProjectRoot = GetSampleClassesRootDirectory();
+            return Path.Combine(sampleProjectRoot, "MuTest.Core.Tests.csproj");
+        }
+
         public static Func<ClassDeclarationSyntax, SyntaxNode> GetFirstSyntaxNodeOfMethodFunc<TSyntaxNode>(this string methodName) where TSyntaxNode : SyntaxNode
         {
             if (string.IsNullOrWhiteSpace(methodName))

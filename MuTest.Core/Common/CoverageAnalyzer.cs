@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualStudio.Coverage.Analysis;
 using MuTest.Core.Model;
+using MuTest.Core.Model.ClassDeclarations;
 using MuTest.Core.Mutants;
 using MuTest.Core.Utility;
 using static MuTest.Core.Common.Constants;
@@ -22,11 +23,11 @@ namespace MuTest.Core.Common
             {
                 source.ExternalCoveredClasses.Clear();
                 source.ExternalCoveredClasses.AddRange(FindExternalCoveredClasses(source, codeCoverage));
-                var parentClassName = string.Join(".", source.Claz.Ancestors<ClassDeclarationSyntax>().Select(x => x.ClassName()));
-                var className = $"{parentClassName}.{source.Claz.ClassName()}".TrimStart('.');
+                var parentClassName = string.Join(".", source.Claz.Syntax.Ancestors<ClassDeclarationSyntax>().Select(x => x.ClassName()));
+                var className = $"{parentClassName}.{source.Claz.Syntax.ClassName()}".TrimStart('.');
                 var coverages = codeCoverage
                     .Class
-                    .Where(x => x.NamespaceTableRow.NamespaceName == source.Claz.NameSpace() &&
+                    .Where(x => x.NamespaceTableRow.NamespaceName == source.Claz.Syntax.NameSpace() &&
                                 (x.ClassName == className ||
                                  x.ClassName.StartsWith($"{className}.{GenericMethodStart}") ||
                                  x.ClassName.StartsWith($"{className}{GenericMethodStart}"))).ToList();
@@ -138,11 +139,11 @@ namespace MuTest.Core.Common
             thirdPartyLibs.Add("microsoft.");
             if (codeCoverage != null)
             {
-                var parentClassNameList = $"{source.Claz.NameSpace()}.{string.Join(".", source.Claz.Ancestors<ClassDeclarationSyntax>().Select(x => x.ClassName()))}".TrimEnd('.');
-                var nestedClassNameList = $"{parentClassNameList}.{source.Claz.ClassName()}.{string.Join(".", source.Claz.DescendantNodes<ClassDeclarationSyntax>().Select(x => x.ClassName()))}".TrimEnd('.');
-                if (parentClassNameList == source.Claz.NameSpace())
+                var parentClassNameList = $"{source.Claz.Syntax.NameSpace()}.{string.Join(".", source.Claz.Syntax.Ancestors<ClassDeclarationSyntax>().Select(x => x.ClassName()))}".TrimEnd('.');
+                var nestedClassNameList = $"{parentClassNameList}.{source.Claz.Syntax.ClassName()}.{string.Join(".", source.Claz.Syntax.DescendantNodes<ClassDeclarationSyntax>().Select(x => x.ClassName()))}".TrimEnd('.');
+                if (parentClassNameList == source.Claz.Syntax.NameSpace())
                 {
-                    parentClassNameList = $"{parentClassNameList}.{source.Claz.ClassName()}";
+                    parentClassNameList = $"{parentClassNameList}.{source.Claz.Syntax.ClassName()}";
                 }
 
                 foreach (CoverageDSPriv.ClassRow claz in codeCoverage.Class)
@@ -189,9 +190,10 @@ namespace MuTest.Core.Common
                                     if (!string.IsNullOrWhiteSpace(file) && File.Exists(file))
                                     {
                                         var root = file.GetCodeFileContent().RootNode().ClassNode(className.Split('.').Last());
+                                        var classDeclaration = new ClassDeclaration(root);
                                         var classDetail = new SourceClassDetail
                                         {
-                                            Claz = root,
+                                            Claz = classDeclaration,
                                             TestClaz = new TestClassDetail()
                                         };
 
@@ -200,7 +202,7 @@ namespace MuTest.Core.Common
                                             new MethodsInitializer().FindMethods(classDetail).Wait();
                                             var mutants = classDetail.MethodDetails
                                                 .Where(x => !x.IsProperty && !x.IsConstructor && !x.IsOverrideMethod)
-                                                .SelectMany(x => MutantOrchestrator.GetDefaultMutants(x.Method));
+                                                .SelectMany(x => MutantOrchestrator.GetDefaultMutants(x.Method, classDetail.Claz));
                                             var coveredLines = claz.GetMethodRows().SelectMany(x => x.GetLinesRows()).Where(x => x.Coverage == 0).ToList();
                                             mutants = mutants.Where(x => coveredLines.Any(y => y.LnStart == x.Mutation.Location)).ToList();
                                             mutantsLines = mutants.Select(x => x.Mutation.Location ?? 0).ToList();

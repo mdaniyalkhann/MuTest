@@ -95,6 +95,7 @@ namespace MuTest.Core.Common
                     try
                     {
                         var updatedSourceCode = _source.Claz
+                            .Syntax
                             .Root()
                             .ReplaceNode(mutant.Mutation.OriginalNode, mutant.Mutation.ReplacementNode);
 
@@ -122,7 +123,7 @@ namespace MuTest.Core.Common
             mutationProcessLog.AppendLine("<fieldset style=\"margin-bottom:10; margin-top:10\">");
             mutationProcessLog.AppendLine("Mutation Report".PrintImportantWithLegend());
             mutationProcessLog.Append("  ".PrintWithPreTag());
-            mutationProcessLog.Append($"{"Class Name    :".PrintImportant()} {_source.Claz.FullName()}".PrintWithPreTag());
+            mutationProcessLog.Append($"{"Class Name    :".PrintImportant()} {_source.Claz.Syntax.FullName()}".PrintWithPreTag());
             mutationProcessLog.Append($"{"Source Path   :".PrintImportant()} {_source.FilePath}".PrintWithPreTag());
             mutationProcessLog.Append($"{"Source Project:".PrintImportant()} {_source.ClassProject}".PrintWithPreTag());
             mutationProcessLog.Append($"{"Test Path     :".PrintImportant()} {_source.TestClaz.FilePath}".PrintWithPreTag());
@@ -263,7 +264,7 @@ namespace MuTest.Core.Common
                 BaseAddress = BaseAddress,
                 EnableTimeout = _settings.EnableTestTimeout,
                 FullyQualifiedName = UseClassFilter
-                    ? _source.TestClaz.Claz.FullName()
+                    ? _source.TestClaz.Claz.Syntax.FullName()
                     : string.Empty
             };
 

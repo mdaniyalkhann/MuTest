@@ -5,9 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MuTest.Core.Common.ClassDeclarationLoaders;
 using MuTest.Core.Common.Settings;
 using MuTest.Core.Exceptions;
 using MuTest.Core.Model;
+using MuTest.Core.Model.ClassDeclarations;
 using MuTest.Core.Mutants;
 using MuTest.Core.Mutators;
 using MuTest.Core.Testing;
@@ -84,18 +86,19 @@ namespace MuTest.Core.Common
         public async Task<SourceClassDetail> Analyze(string sourceClass, string className, string sourceProject)
         {
             var testClaz = TestClass.GetClass();
+            var semanticsClassDeclarationLoader = new SemanticsClassDeclarationLoader();
             var source = new SourceClassDetail
             {
                 ClassLibrary = SourceProjectLibrary,
                 ClassProject = sourceProject,
                 BuildInReleaseMode = BuildInReleaseMode,
-                Claz = sourceClass.GetCodeFileContent().RootNode().ClassNode(className),
+                Claz = semanticsClassDeclarationLoader.Load(sourceClass, sourceProject, className),
                 FullName = className,
                 FilePath = sourceClass,
                 X64TargetPlatform = X64TargetPlatform,
                 TestClaz = new TestClassDetail
                 {
-                    Claz = testClaz,
+                    Claz = new ClassDeclaration(testClaz),
                     BuildInReleaseMode = BuildInReleaseMode,
                     ClassLibrary = TestProjectLibrary,
                     ClassProject = TestProject,
@@ -114,7 +117,7 @@ namespace MuTest.Core.Common
                 FilePath = source.TestClaz.FilePath
             });
 
-            var baseListSyntax = source.TestClaz.Claz.BaseList;
+            var baseListSyntax = source.TestClaz.Claz.Syntax.BaseList;
             if (baseListSyntax != null &&
                 baseListSyntax.Types.Any())
             {
@@ -147,7 +150,7 @@ namespace MuTest.Core.Common
                             FullName = $"{cu.CompilationUnitSyntax.NameSpace()}.{classDeclarationSyntax.Identifier.Text}",
                             FilePath = cu.FileName,
                             TotalNumberOfMethods = classDeclarationSyntax.DescendantNodes<MethodDeclarationSyntax>().Count,
-                            Claz = classDeclarationSyntax
+                            Claz = new ClassDeclaration(classDeclarationSyntax)
                         }).Where(x => x.TotalNumberOfMethods > 0)
                     .OrderByDescending(x => x.TotalNumberOfMethods)
                     .ToList();
@@ -201,7 +204,7 @@ namespace MuTest.Core.Common
 
         private async Task Initialization(SourceClassDetail source)
         {
-            var defaultMutants = MutantOrchestrator.GetDefaultMutants(source.Claz);
+            var defaultMutants = MutantOrchestrator.GetDefaultMutants(source.Claz.Syntax, source.Claz);
 
             await InitItemSources(source);
             if ((defaultMutants.Any() || string.IsNullOrWhiteSpace(ProcessWholeProject)) && !UseExternalCodeCoverage)
@@ -228,7 +231,7 @@ namespace MuTest.Core.Common
                 X64TargetPlatform = X64TargetPlatform,
                 FullyQualifiedName = source.TestClaz.MethodDetails.Count > _useClassFilterTestsThreshold ||
                                      UseClassFilter || source.TestClaz.BaseClass != null
-                    ? source.TestClaz.Claz.FullName()
+                    ? source.TestClaz.Claz.Syntax.FullName()
                     : string.Empty,
                 EnableCustomOptions = true,
                 EnableLogging = true
@@ -269,7 +272,7 @@ namespace MuTest.Core.Common
                 X64TargetPlatform = X64TargetPlatform,
                 FullyQualifiedName = source.TestClaz.MethodDetails.Count > _useClassFilterTestsThreshold ||
                                      UseClassFilter || source.TestClaz.BaseClass != null
-                    ? source.TestClaz.Claz.FullName()
+                    ? source.TestClaz.Claz.Syntax.FullName()
                     : string.Empty,
                 EnableLogging = true,
                 EnableCustomOptions = false

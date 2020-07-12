@@ -16,7 +16,7 @@ namespace MuTest.Core.Tests.Samples
 
         public void MethodContainingSingleDiagnosticsNode()
         {
-            Debug.Assert(true);
+            System.Diagnostics.Debug.Assert(true);
         }
 
         public void MethodContainingSingleConsoleNode()
@@ -28,7 +28,7 @@ namespace MuTest.Core.Tests.Samples
         {
             for (;;)
             {
-                Debug.Print("Ok");
+                System.Diagnostics.Debug.Print("Ok");
             }
         }
 
@@ -36,17 +36,30 @@ namespace MuTest.Core.Tests.Samples
         {
             if (p > 10)
             {
-                Debug.Print("Ok");
+                System.Diagnostics.Debug.Print("Ok");
             }
             else
             {
-                Debug.Fail("NotValid");
+                System.Diagnostics.Debug.Fail("NotValid");
             }
         }
 
         public bool ContainsOkText(string input)
         {
             return input.Contains("Ok");
+        }
+
+        public void MethodContainingNonDiagnosticsNodeWithSameNameAsDiagnosticsDebug()
+        {
+            Debug.Print("Test");
+        }
+    }
+
+    internal static class Debug
+    {
+        public static void Print(string text)
+        {
+            // Do something
         }
     }
 }

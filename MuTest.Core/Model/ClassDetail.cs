@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MuTest.Core.Model.ClassDeclarations;
 using Newtonsoft.Json;
 
 namespace MuTest.Core.Model
@@ -29,7 +29,7 @@ namespace MuTest.Core.Model
         public int TotalNumberOfMethods { get; set; }
 
         [JsonIgnore]
-        public ClassDeclarationSyntax Claz { get; set; }
+        public ClassDeclaration Claz { get; set; }
 
         [JsonIgnore]
         public bool BuildInReleaseMode { get; set; }

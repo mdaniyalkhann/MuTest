@@ -6,6 +6,9 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MuTest.Core.Common;
+using MuTest.Core.Model.AridNodes;
+using MuTest.Core.Model.ClassDeclarations;
 using MuTest.Core.Mutators;
 using MuTest.Core.Utility;
 
@@ -13,13 +16,14 @@ namespace MuTest.Core.Mutants
 {
     public interface IMutantOrchestrator
     {
-        SyntaxNode Mutate(SyntaxNode rootNode);
+        SyntaxNode Mutate(SyntaxNodeAnalysis analysis);
 
         IEnumerable<Mutant> GetLatestMutantBatch();
     }
 
     public class MutantOrchestrator : IMutantOrchestrator
     {
+        private static readonly SyntaxNodeAnalysisFactory SyntaxNodeAnalysisFactory = new SyntaxNodeAnalysisFactory(); 
         public static IList<IMutator> AllMutators =>
             new List<IMutator>
             {
@@ -61,11 +65,12 @@ namespace MuTest.Core.Mutants
             Mutants = new Collection<Mutant>();
         }
 
-        public static IEnumerable<Mutant> GetDefaultMutants(SyntaxNode node)
+        public static IEnumerable<Mutant> GetDefaultMutants(SyntaxNode node, ClassDeclaration classDeclaration)
         {
             var orchestrator = new MutantOrchestrator(DefaultMutators);
 
-            orchestrator.Mutate(node);
+            var analysis = SyntaxNodeAnalysisFactory.Create(node, classDeclaration);
+            orchestrator.Mutate(analysis);
 
             return orchestrator.GetLatestMutantBatch();
         }
@@ -92,19 +97,31 @@ namespace MuTest.Core.Mutants
             return tempMutants;
         }
 
-        public SyntaxNode Mutate(SyntaxNode currentNode)
+        public SyntaxNode Mutate(SyntaxNodeAnalysis analysis)
         {
+            return Mutate(analysis.Root, analysis);
+        }
+
+        private SyntaxNode Mutate(SyntaxNode currentNode, SyntaxNodeAnalysis analysis)
+        {
+
             if (currentNode is MethodDeclarationSyntax ||
                 currentNode is ConstructorDeclarationSyntax ||
                 currentNode is PropertyDeclarationSyntax)
             {
                 foreach (var blockNode in currentNode.DescendantNodes<BlockSyntax>())
                 {
+                    if (analysis.IsNodeArid(blockNode))
+                    {
+                        continue;
+                    }
                     AddBlockMutants(blockNode);
                 }
             }
 
-            if (GetExpressionSyntax(currentNode) is var expressionSyntax && expressionSyntax != null)
+            if (GetExpressionSyntax(currentNode) is var expressionSyntax 
+                && expressionSyntax != null 
+                && !analysis.IsNodeArid(expressionSyntax))
             {
                 if (currentNode is ExpressionStatementSyntax syntax)
                 {
@@ -115,7 +132,7 @@ namespace MuTest.Core.Mutants
 
                     if (GetExpressionSyntax(expressionSyntax) is var subExpressionSyntax && subExpressionSyntax != null)
                     {
-                        return currentNode.ReplaceNode(expressionSyntax, Mutate(expressionSyntax));
+                        return currentNode.ReplaceNode(expressionSyntax, Mutate(expressionSyntax, analysis));
                     }
 
                     return MutateWithIfStatements(syntax);
@@ -124,11 +141,13 @@ namespace MuTest.Core.Mutants
                 return currentNode.ReplaceNode(expressionSyntax, MutateWithConditionalExpressions(expressionSyntax));
             }
 
-            if (currentNode is StatementSyntax statement && currentNode.Kind() != SyntaxKind.Block)
+            if (currentNode is StatementSyntax statement 
+                && currentNode.Kind() != SyntaxKind.Block
+                && !analysis.IsNodeArid(statement))
             {
                 if (currentNode is LocalFunctionStatementSyntax localFunction)
                 {
-                    return localFunction.ReplaceNode(localFunction.Body, Mutate(localFunction.Body));
+                    return localFunction.ReplaceNode(localFunction.Body, Mutate(localFunction.Body, analysis));
                 }
 
                 if (currentNode is IfStatementSyntax ifStatement)
@@ -143,14 +162,15 @@ namespace MuTest.Core.Mutants
 
                     if (ifStatement.Else != null)
                     {
-                        ifStatement = ifStatement.ReplaceNode(ifStatement.Else, Mutate(ifStatement.Else));
+                        ifStatement = ifStatement.ReplaceNode(ifStatement.Else, Mutate(ifStatement.Else, analysis));
                     }
 
                     try
                     {
                         if (ifStatement.Statement != null)
                         {
-                            return ifStatement.ReplaceNode(ifStatement.Statement, Mutate(ifStatement.Statement));
+                            return ifStatement.ReplaceNode(ifStatement.Statement,
+                                Mutate(ifStatement.Statement, analysis));
                         }
                     }
                     catch (Exception e)
@@ -163,8 +183,9 @@ namespace MuTest.Core.Mutants
                 return MutateWithIfStatements(statement);
             }
 
-            if (currentNode is InvocationExpressionSyntax invocationExpression &&
-                invocationExpression.ArgumentList.Arguments.Count == 0)
+            if (currentNode is InvocationExpressionSyntax invocationExpression 
+                && invocationExpression.ArgumentList.Arguments.Count == 0
+                && !analysis.IsNodeArid(invocationExpression))
             {
                 var mutant = FindMutants(invocationExpression).FirstOrDefault();
                 if (mutant != null)
@@ -176,7 +197,7 @@ namespace MuTest.Core.Mutants
             var children = currentNode.ChildNodes().ToList();
             foreach (var child in children)
             {
-                Mutate(child);
+                Mutate(child, analysis);
             }
 
             return currentNode;

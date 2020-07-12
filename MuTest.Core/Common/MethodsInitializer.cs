@@ -22,10 +22,11 @@ namespace MuTest.Core.Common
                 return;
             }
 
-            var getClass = await source.Claz.SetFields();
-            source.Claz = getClass
+            var getClass = await source.Claz.Syntax.SetFields();
+            var classDeclarationSyntax = getClass
                 .DescendantNodes<ClassDeclarationSyntax>()
-                .FirstOrDefault(x => x.ClassName() == source.Claz.ClassName());
+                .FirstOrDefault(x => x.ClassName() == source.Claz.Syntax.ClassName());
+            source.Claz.Syntax = classDeclarationSyntax;
             source.MethodDetails.Clear();
 
             var index = 1;
@@ -36,12 +37,14 @@ namespace MuTest.Core.Common
             {
                 sourceMethods = source
                     .Claz
+                    .Syntax
                     .Root()
                     .GetMethods()
                     .OrderBy(x => x.MethodName()).ToList();
 
                 constructorMethods = source
                     .Claz
+                    .Syntax
                     .Root()
                     .DescendantNodes<ConstructorDeclarationSyntax>()
                     .OrderBy(x => x.MethodName())
@@ -49,17 +52,19 @@ namespace MuTest.Core.Common
 
                 sourceProperties = source
                     .Claz
+                    .Syntax
                     .Root()
                     .DescendantNodes<PropertyDeclarationSyntax>()
-                    .Where(x => MutantOrchestrator.GetDefaultMutants(x).Any())
+                    .Where(x => MutantOrchestrator.GetDefaultMutants(x, source.Claz).Any())
                     .OrderBy(x => x.Identifier.ValueText)
                     .ToList();
             }
             else
             {
-                var parentClassNodesCount = source.Claz?.AncestorsAndSelf().OfType<ClassDeclarationSyntax>().Count() ?? 0;
+                var parentClassNodesCount = source.Claz?.Syntax.AncestorsAndSelf().OfType<ClassDeclarationSyntax>().Count() ?? 0;
                 sourceMethods = source
                     .Claz
+                    .Syntax
                     .GetMethods()
                     .Where(x => x.Ancestors<ClassDeclarationSyntax>().Count == parentClassNodesCount)
                     .OrderBy(x => x.MethodName())
@@ -67,6 +72,7 @@ namespace MuTest.Core.Common
 
                 constructorMethods = source
                     .Claz
+                    .Syntax
                     .DescendantNodes<ConstructorDeclarationSyntax>()
                     .Where(x => x.Ancestors<ClassDeclarationSyntax>().Count == parentClassNodesCount)
                     .OrderBy(x => x.MethodName())
@@ -74,9 +80,10 @@ namespace MuTest.Core.Common
 
                 sourceProperties = source
                     .Claz
+                    .Syntax
                     .DescendantNodes<PropertyDeclarationSyntax>()
                     .Where(x => x.Ancestors<ClassDeclarationSyntax>().Count == parentClassNodesCount)
-                    .Where(x => MutantOrchestrator.GetDefaultMutants(x).Any())
+                    .Where(x => MutantOrchestrator.GetDefaultMutants(x, source.Claz).Any())
                     .OrderBy(x => x.Identifier.ValueText)
                     .ToList();
             }
@@ -116,7 +123,7 @@ namespace MuTest.Core.Common
 
             foreach (var partialClass in source.TestClaz.PartialClasses)
             {
-                source.TestClaz.MethodDetails.AddRange(GetTestMethods(partialClass.Claz));
+                source.TestClaz.MethodDetails.AddRange(GetTestMethods(partialClass.Claz.Syntax));
             }
         }
 

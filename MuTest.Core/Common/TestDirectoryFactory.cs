@@ -134,7 +134,7 @@ namespace MuTest.Core.Common
 
                 for (var index = 0; index < NumberOfMutantsExecutingInParallel; index++)
                 {
-                    await UpdateProjectFile(index, _source.Claz.NameSpace(), _source.FilePath, _source.ClassProject);
+                    await UpdateProjectFile(index, _source.Claz.Syntax.NameSpace(), _source.FilePath, _source.ClassProject);
                 }
             }
             catch (Exception exp)

@@ -50,14 +50,14 @@ namespace MuTest.Core.Common.InspectCode
                 .AddRange(allAssembliesFiles
                     .Select(file => MetadataReference.CreateFromFile(file.FullName)));
 
-            var trees = TestClass.PartialClasses.Select(c => c.Claz.Root().SyntaxTree).ToList();
+            var trees = TestClass.PartialClasses.Select(c => c.Claz.Syntax.Root().SyntaxTree).ToList();
             CSharpCompilation compilation = CSharpCompilation.Create("HelloWorld")
                 .AddReferences(metaDataList)
                 .AddSyntaxTrees(trees);
 
             foreach (var partialClass in TestClass.PartialClasses)
             {
-                var tree = partialClass.Claz.Root().SyntaxTree;
+                var tree = partialClass.Claz.Syntax.Root().SyntaxTree;
                 var semanticModel = compilation.GetSemanticModel(tree);
                 if (!SemanticModels.ContainsKey(partialClass.FilePath))
                 {

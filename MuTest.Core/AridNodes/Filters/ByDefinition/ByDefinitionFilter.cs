@@ -1,27 +1,26 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using MuTest.Core.Model;
 using MuTest.Core.Model.AridNodes;
 
 namespace MuTest.Core.AridNodes.Filters.ByDefinition
 {
     public class ByDefinitionFilter : IAridNodeFilter
     {
-        public bool IsSatisfied(SimpleNode node)
+        public bool IsSatisfied(IAnalyzableNode node)
         {
-            switch (node.SyntaxNode)
+            switch (node.SyntaxType)
             {
-                case BinaryExpressionSyntax _:
-                case AssignmentExpressionSyntax _:
-                case LiteralExpressionSyntax _:
-                case CheckedExpressionSyntax _:
-                case InterpolatedStringExpressionSyntax _:
-                case InvocationExpressionSyntax _:
-                case ConditionalExpressionSyntax _:
-                case PostfixUnaryExpressionSyntax _:
-                case PrefixUnaryExpressionSyntax _:
-                case MemberAccessExpressionSyntax _:
-                case ArgumentListSyntax _:
-                case ArgumentSyntax _:
-                case IdentifierNameSyntax _:
+                case AnalyzableNodeSyntaxType.BinaryExpressionSyntax:
+                case AnalyzableNodeSyntaxType.AssignmentExpressionSyntax:
+                case AnalyzableNodeSyntaxType.LiteralExpressionSyntax:
+                case AnalyzableNodeSyntaxType.CheckedExpressionSyntax:
+                case AnalyzableNodeSyntaxType.InterpolatedStringExpressionSyntax:
+                case AnalyzableNodeSyntaxType.InvocationExpressionSyntax:
+                case AnalyzableNodeSyntaxType.ConditionalExpressionSyntax:
+                case AnalyzableNodeSyntaxType.PostfixUnaryExpressionSyntax:
+                case AnalyzableNodeSyntaxType.PrefixUnaryExpressionSyntax:
+                case AnalyzableNodeSyntaxType.MemberAccessExpressionSyntax:
+                case AnalyzableNodeSyntaxType.BlockSyntax:
+                case AnalyzableNodeSyntaxType.StatementSyntax:
                     return false;
                 default:
                     return true;

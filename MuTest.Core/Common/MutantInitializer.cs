@@ -5,7 +5,10 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualStudio.Coverage.Analysis;
+using MuTest.Core.AridNodes;
 using MuTest.Core.Model;
+using MuTest.Core.Model.AridNodes;
+using MuTest.Core.Model.ClassDeclarations;
 using MuTest.Core.Mutants;
 using MuTest.Core.Mutators;
 using MuTest.Core.Utility;
@@ -14,6 +17,7 @@ namespace MuTest.Core.Common
 {
     public class MutantInitializer : IMutantInitializer
     {
+        private static readonly SyntaxNodeAnalysisFactory SyntaxNodeAnalysisFactory = new SyntaxNodeAnalysisFactory();
         private readonly SourceClassDetail _source;
         private readonly IMutantSelector _selector;
 
@@ -48,7 +52,8 @@ namespace MuTest.Core.Common
             {
                 method.TestMethods.Clear();
                 method.Mutants.Clear();
-                mutatorFinder.Mutate(method.Method);
+                var syntaxNodeAnalysis = SyntaxNodeAnalysisFactory.Create(method.Method, _source.Claz);
+                mutatorFinder.Mutate(syntaxNodeAnalysis);
                 var latestMutantBatch = mutatorFinder.GetLatestMutantBatch().ToList();
                 latestMutantBatch = _selector.SelectMutants(MutantsPerLine, latestMutantBatch).ToList();
                 foreach (var mutant in latestMutantBatch)
@@ -78,7 +83,7 @@ namespace MuTest.Core.Common
                         var className = method.Method.Class().ClassName();
                         if (!ExecuteAllTests && !method.IsProperty)
                         {
-                            if (testMethod.Method.ValidTestMethod(className, sourceMethodName, _source.TestClaz.Claz))
+                            if (testMethod.Method.ValidTestMethod(className, sourceMethodName, _source.TestClaz.Claz.Syntax))
                             {
                                 method.TestMethods.Add(testMethod);
                                 continue;
@@ -91,7 +96,7 @@ namespace MuTest.Core.Common
                                 {
                                     var methodName = classMethod.MethodName();
                                     if (classMethod.ChildMethodNames().Any(x => x.Contains(sourceMethodName)) &&
-                                        testMethod.Method.ValidTestMethod(className, methodName, _source.TestClaz.Claz))
+                                        testMethod.Method.ValidTestMethod(className, methodName, _source.TestClaz.Claz.Syntax))
                                     {
                                         method.TestMethods.Add(testMethod);
                                         if (!method.ParentMethodNames.Contains(methodName))
@@ -159,7 +164,7 @@ namespace MuTest.Core.Common
                 }
             }
         }
-
+        
         private void FilterMutants(MethodDetail method)
         {
             if (MutantsAtSpecificLines.Any())
