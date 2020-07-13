@@ -14,7 +14,7 @@ namespace MuTest.DynamicAsserts
 
         public override bool IsTypeMatch(Type type1, Type type2)
         {
-            return type1.FullName == ColorType;
+            return type1?.FullName == ColorType;
         }
 
         public override void CompareType(CompareParms parms)

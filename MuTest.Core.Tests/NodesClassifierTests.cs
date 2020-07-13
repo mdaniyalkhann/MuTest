@@ -58,6 +58,22 @@ namespace MuTest.Core.Tests
         }
 
         [Test]
+        public void Check_WhenNodeIsIONode_ShouldBeArid()
+        {
+            // Arrange
+            const string methodName = nameof(AridNodesSampleClass.MethodContainingSingleIONode);
+            var getSyntaxNode = methodName.GetFirstSyntaxNodeOfMethodFunc<InvocationExpressionSyntax>();
+
+            // Act
+            var result = GetAridCheckResult(getSyntaxNode, methodName);
+
+            // Assert
+            result.ShouldSatisfyAllConditions(
+                () => result.IsArid.ShouldBeTrue(),
+                () => result.TriggeredBy.ShouldNotBeEmpty());
+        }
+
+        [Test]
         public void Check_WhenNodeIsNodeNamedDebugButNoDiagnostics_ShouldNotBeArid()
         {
             // Arrange

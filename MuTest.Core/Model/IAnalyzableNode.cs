@@ -16,5 +16,7 @@ namespace MuTest.Core.Model
         string Kind();
         string GetText();
         bool IsMemberAccessExpressionOfType(Type type);
+        bool IsInvocationOfMemberOfTypeBelongingToNamespace(string @namespace);
+        bool IsMemberAccessExpressionOfTypeBelongingToNamespace(string @namespace);
     }
 }

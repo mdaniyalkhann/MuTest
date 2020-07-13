@@ -613,5 +613,18 @@ namespace MuTest.Core.Utility
                 .OfType<T>()
                 .ToList();
         }
+
+        public static bool IsMemberInvocation(this SyntaxNode syntaxNode, out MemberAccessExpressionSyntax value)
+        {
+            if (syntaxNode is InvocationExpressionSyntax invocationExpression &&
+                invocationExpression.Expression is MemberAccessExpressionSyntax memberAccessExpression)
+            {
+                value = memberAccessExpression;
+                return true;
+            }
+
+            value = null;
+            return false;
+        }
     }
 }

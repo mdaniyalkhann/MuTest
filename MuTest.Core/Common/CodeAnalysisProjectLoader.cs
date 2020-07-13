@@ -20,7 +20,7 @@ namespace MuTest.Core.Common
         {
             var workspace = CreateWorkspace();
             var project = workspace.OpenProjectAsync(projectPath).Result;
-            
+
             var compilation = project.GetCompilationAsync().Result;
             if (compilation == null)
             {
@@ -45,7 +45,7 @@ namespace MuTest.Core.Common
                 {
                     return compiledProject;
                 }
-                var errorsText =string.Join(Environment.NewLine, errors);
+                var errorsText = string.Join(Environment.NewLine, errors);
 
                 throw new CodeAnalysisProjectLoadException(
                     $"There were some errors during loading of project located on {project.FilePath}. Please ensure that the project builds successfully in Visual Studio. Errors: {errorsText}");
@@ -69,7 +69,7 @@ namespace MuTest.Core.Common
             return workspace;
         }
 
-        private static readonly string[] MsBuildDlls = new[]
+        private static readonly string[] MsBuildDlls =
         {
             "Microsoft.Build.dll",
             "Microsoft.Build.Engine.dll",
@@ -81,7 +81,6 @@ namespace MuTest.Core.Common
         private static void CopyMsBuildDllsToExecutionDir()
         {
             var currentPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            // TODO Get registered
             var msBuildFolderPath = MSBuildLocator.QueryVisualStudioInstances().First().MSBuildPath;
             foreach (var msBuildDll in MsBuildDlls)
             {

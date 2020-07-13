@@ -388,13 +388,7 @@ namespace Dashboard.ViewModel
 
                 var setupMethod = _source.TestClaz.PartialClassWithSetupLogic?.Claz.Syntax.NUnitSetupMethod();
                 var tearDownMethod = _source.TestClaz.PartialClassWithSetupLogic?.Claz.Syntax.NUnitTearDownMethod();
-                ClassDetail setupLibPath = _source.TestClaz.PartialClassWithSetupLogic;
-
-                if (!_source.TestClaz.SetupInBaseClass && (setupMethod == null || tearDownMethod == null))
-                {
-                    MessageBoxService.Show("NUnit TearDown and Setup methods are required");
-                    return;
-                }
+                var setupLibPath = _source.TestClaz.PartialClassWithSetupLogic ?? _source.TestClaz;
 
                 var factory = new TestDirectoryFactory(_source)
                 {
@@ -482,14 +476,14 @@ namespace Dashboard.ViewModel
                                     : "false";
 
                                 fileLines.Add(
-                                    _source.TestClaz.SetupInBaseClass
+                                    _source.TestClaz.SetupInBaseClass || setupMethod == null
                                         ? $"[NUnit.Framework.SetUp]public void  SetupDynamicAsserts() {{ MuTest.DynamicAsserts.ObjectGraphGenerator.SetupTestClass(this, NUnit.Framework.TestContext.CurrentContext.Test.Name, \"{id}\", {StructDept}, {compareChildren});}}\n"
                                         : $"MuTest.DynamicAsserts.ObjectGraphGenerator.SetupTestClass(this, NUnit.Framework.TestContext.CurrentContext.Test.Name, \"{id}\", {StructDept}, {compareChildren});");
                             }
 
                             if (lineNumber == tearDownLocationEnd)
                             {
-                                fileLines.Add(_source.TestClaz.SetupInBaseClass
+                                fileLines.Add(_source.TestClaz.SetupInBaseClass || tearDownMethod == null
                                     ? "[NUnit.Framework.TearDown]public void  TearDownDynamicAsserts() {{ MuTest.DynamicAsserts.ObjectGraphGenerator.GenerateObjectGraphForTestClass(this); }}\n"
                                     : " MuTest.DynamicAsserts.ObjectGraphGenerator.GenerateObjectGraphForTestClass(this);");
                             }

@@ -170,12 +170,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AridNodes\AridNodeFilterProvider.cs" />
-    <Compile Include="AridNodes\NodesClassifier.cs" />
+    <Compile Include="AridNodes\Filters\HardCoded\IONodeFilter.cs" />
     <Compile Include="AridNodes\Filters\ByDefinition\ByDefinitionFilter.cs" />
     <Compile Include="AridNodes\Filters\HardCoded\ConsoleNodeFilter.cs" />
     <Compile Include="AridNodes\Filters\HardCoded\DebugNodeFilter.cs" />
     <Compile Include="AridNodes\Filters\IAridNodeFilter.cs" />
     <Compile Include="AridNodes\IAridNodeFilterProvider.cs" />
+    <Compile Include="AridNodes\NodesClassifier.cs" />
     <Compile Include="Common\SyntaxNodeAnalysisFactory.cs" />
     <Compile Include="Common\BuildExecutor.cs" />
     <Compile Include="Common\ClassDeclarationLoaders\SemanticsClassDeclarationLoader.cs" />

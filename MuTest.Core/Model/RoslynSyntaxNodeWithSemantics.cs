@@ -18,7 +18,19 @@ namespace MuTest.Core.Model
             {
                 throw new ArgumentNullException(nameof(type));
             }
-            return _semanticModel.GetTypeInfo(memberAccessExpressionSyntax.Expression).Type?.ToDisplayString() == type.FullName;
+
+            var memberTypeFullName = _semanticModel.GetTypeInfo(memberAccessExpressionSyntax.Expression).Type
+                ?.ToDisplayString();
+            return memberTypeFullName == type.FullName;
+        }
+
+        protected override bool IsMemberAccessExpressionOfTypeBelongingToNamespace(
+            MemberAccessExpressionSyntax memberAccessExpressionSyntax,
+            string @namespace)
+        {
+            var memberNamespaceFullName = _semanticModel.GetTypeInfo(memberAccessExpressionSyntax.Expression).Type
+                ?.ContainingNamespace.ToDisplayString();
+            return memberNamespaceFullName == @namespace;
         }
 
         protected override IAnalyzableNode CreateRelativeNode(SyntaxNode syntaxNode)

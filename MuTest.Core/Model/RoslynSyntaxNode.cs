@@ -10,7 +10,7 @@ namespace MuTest.Core.Model
 {
     public class RoslynSyntaxNode : IAnalyzableNode
     {
-        protected readonly SyntaxNode SyntaxNode;
+        protected SyntaxNode SyntaxNode { get; }
 
         public RoslynSyntaxNode(SyntaxNode syntaxNode)
         {
@@ -55,6 +55,37 @@ namespace MuTest.Core.Model
 
             return IsMemberAccessExpressionOfType(memberAccessExpressionSyntax, type);
         }
+
+        public bool IsInvocationOfMemberOfTypeBelongingToNamespace(string @namespace)
+        {
+            return SyntaxNode is InvocationExpressionSyntax invocationExpressionSyntax
+                   && invocationExpressionSyntax.Expression is MemberAccessExpressionSyntax memberAccessExpressionSyntax
+                   && IsMemberAccessExpressionOfTypeBelongingToNamespace(memberAccessExpressionSyntax, @namespace);
+        }
+
+        public bool IsMemberAccessExpressionOfTypeBelongingToNamespace(string @namespace)
+        {
+            if (!(SyntaxNode is MemberAccessExpressionSyntax memberAccessExpressionSyntax))
+            {
+                return false;
+            }
+
+            return IsMemberAccessExpressionOfTypeBelongingToNamespace(memberAccessExpressionSyntax, @namespace);
+        }
+
+        protected virtual bool IsMemberAccessExpressionOfTypeBelongingToNamespace(MemberAccessExpressionSyntax memberAccessExpressionSyntax, string @namespace)
+        {
+            if (@namespace == null)
+            {
+                throw new ArgumentNullException(nameof(@namespace));
+            }
+            // Not accurate enough, but it's the best we can do with the available data
+            return memberAccessExpressionSyntax.Expression is IdentifierNameSyntax identifierNameSyntax
+                   && identifierNameSyntax.Identifier.Text.Contains(@namespace);
+        }
+
+
+
 
         protected virtual bool IsMemberAccessExpressionOfType(MemberAccessExpressionSyntax memberAccessExpressionSyntax, Type type)
         {

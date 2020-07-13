@@ -1,5 +1,4 @@
 ﻿using MuTest.Core.Model;
-using MuTest.Core.Model.AridNodes;
 
 namespace MuTest.Core.AridNodes.Filters
 {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 // ReSharper disable UnusedMember.Global
 
@@ -22,6 +23,10 @@ namespace MuTest.Core.Tests.Samples
         public void MethodContainingSingleConsoleNode()
         {
             Console.WriteLine("Hello World");
+        }
+        public void MethodContainingSingleIONode()
+        {
+            File.ReadAllText("SamplePath");
         }
 
         public void MethodContainingLoopWithOnlyDiagnosticsNode()

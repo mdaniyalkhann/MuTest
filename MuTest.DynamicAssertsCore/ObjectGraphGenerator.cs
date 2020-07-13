@@ -814,7 +814,10 @@ namespace MuTest.DynamicAsserts
 
                     if (!string.IsNullOrWhiteSpace(unBoxType))
                     {
-                        return $"() => {fieldName}.{propertyName.Replace(TypeMethod, string.Empty)}ShouldNotBeNull(),-{unBoxType}";
+                        var unknownBuilder = new StringBuilder()
+                            .AppendLine($"() => {fieldName}.{propertyName.Replace(TypeMethod, string.Empty)}ShouldNotBeNull(),-{unBoxType}")
+                            .Append($"() => {fieldName}.{propertyName.Replace(TypeMethod, string.Empty)}ShouldBeOfType<{unBoxType}>(),-{unBoxType}");
+                        return unknownBuilder.ToString();
                     }
 
                     return null;

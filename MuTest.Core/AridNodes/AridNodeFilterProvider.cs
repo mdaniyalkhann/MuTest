@@ -10,7 +10,8 @@ namespace MuTest.Core.AridNodes
         {
             new ByDefinitionFilter(),
             new DebugNodeFilter(),
-            new ConsoleNodeFilter()
+            new ConsoleNodeFilter(),
+            new IONodeFilter()
         };
     }
 }
