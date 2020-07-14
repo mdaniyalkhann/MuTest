@@ -59,6 +59,15 @@ namespace MuTest.Cpp.CLI
             ValueType = CommandOptionType.SingleValue
         };
 
+        public static readonly CliOption<int> MutantsPerLine = new CliOption<int>
+        {
+            ArgumentName = "--mutants-per-line",
+            ArgumentShortName = "-mpl <integer>",
+            ArgumentDescription = "Set number of mutants per line Default is 1 (< 1 = Unlimited)",
+            DefaultValue = DefaultOptions.MutantsPerLine,
+            ValueType = CommandOptionType.SingleValue
+        };
+
         public static readonly CliOption<string> BuildConfiguration = new CliOption<string>
         {
             ArgumentName = "--configuration",

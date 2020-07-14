@@ -10,23 +10,34 @@ namespace MuTest.Cpp.CLI.Mutants
 {
     public class CppMutantOrchestrator : IMutantOrchestrator
     {
-        private ICollection<CppMutant> Mutants { get; set; }
-
-        private IList<IMutator> Mutators { get; }
-
-        public string SpecificLines { get; private set; }
-
-        public CppMutantOrchestrator(IList<IMutator> mutators = null, string specificLines = "")
+        public static IList<IMutator> AllMutators => new List<IMutator>
         {
-            Mutators = mutators ?? new List<IMutator>
+            new AssignmentStatementMutator(),
+            new ArithmeticOperatorMutator(),
+            new BooleanMutator(),
+            new RelationalOperatorMutator(),
+            new LogicalConnectorMutator(),
+            new PrePostfixUnaryMutator()
+        };
+
+        public static IList<IMutator> DefaultMutators =>
+            new List<IMutator>
             {
-                new AssignmentStatementMutator(),
                 new ArithmeticOperatorMutator(),
-                new BooleanMutator(),
                 new RelationalOperatorMutator(),
                 new LogicalConnectorMutator(),
                 new PrePostfixUnaryMutator()
             };
+
+        public string SpecificLines { get; private set; }
+
+        private ICollection<CppMutant> Mutants { get; set; }
+
+        private IList<IMutator> Mutators { get; }
+
+        public CppMutantOrchestrator(IList<IMutator> mutators = null, string specificLines = "")
+        {
+            Mutators = mutators ?? AllMutators;
 
             SpecificLines = specificLines;
 
@@ -40,12 +51,7 @@ namespace MuTest.Cpp.CLI.Mutants
                 return new Collection<CppMutant>();
             }
 
-            var orchestrator = new CppMutantOrchestrator(new List<IMutator>
-            {
-                new ArithmeticOperatorMutator(),
-                new RelationalOperatorMutator(),
-                new LogicalConnectorMutator()
-            })
+            var orchestrator = new CppMutantOrchestrator(DefaultMutators)
             {
                 SpecificLines = specificLines
             };

@@ -17,6 +17,8 @@ using MuTest.Cpp.CLI.Options;
 using MuTest.Cpp.CLI.Utility;
 using Newtonsoft.Json;
 using static MuTest.Core.Common.Constants;
+using IMutantSelector = MuTest.Cpp.CLI.Core.IMutantSelector;
+using MutantSelector = MuTest.Cpp.CLI.Core.MutantSelector;
 
 namespace MuTest.Cpp.CLI
 {
@@ -36,13 +38,15 @@ namespace MuTest.Cpp.CLI
         private int _mutantProgress;
         private static readonly object Sync = new object();
         private CppClass _cppClass;
+        private IMutantSelector _mutantsSelector;
 
         public ICppMutantExecutor MutantsExecutor { get; private set; }
 
-        public MuTestRunner(IChalk chalk, ICppDirectoryFactory directoryFactory)
+        public MuTestRunner(IChalk chalk, ICppDirectoryFactory directoryFactory, IMutantSelector mutantsSelector = null)
         {
             _chalk = chalk;
             DirectoryFactory = directoryFactory;
+            _mutantsSelector = mutantsSelector ?? new MutantSelector();
         }
 
         public async Task RunMutationTest(MuTestOptions options)
@@ -92,8 +96,9 @@ namespace MuTest.Cpp.CLI
                     _chalk.Default("\nRunning Mutation Analysis...\n");
 
 
-                    _cppClass.Mutants.AddRange(
-                        CppMutantOrchestrator.GetDefaultMutants(_options.SourceClass, _options.SpecificLines));
+                    var defaultMutants = CppMutantOrchestrator.GetDefaultMutants(_options.SourceClass, _options.SpecificLines).ToList();
+                    defaultMutants = _mutantsSelector.SelectMutants(_options.MutantsPerLine, defaultMutants).ToList();
+                    _cppClass.Mutants.AddRange(defaultMutants);
 
                     if (_cppClass.CoveredLineNumbers.Any())
                     {

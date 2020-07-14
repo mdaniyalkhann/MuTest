@@ -113,6 +113,8 @@
     <Compile Include="Core\CoberturaReportLoader.cs" />
     <Compile Include="Core\CppBuildExecutor.cs" />
     <Compile Include="Core\CppDirectoryFactory.cs" />
+    <Compile Include="Core\IMutantSelector.cs" />
+    <Compile Include="Core\MutantSelector.cs" />
     <Compile Include="Core\OpenCppCoverageExecutor.cs" />
     <Compile Include="Core\GoogleTestExecutor.cs" />
     <Compile Include="Core\CppMutantExecutor.cs" />

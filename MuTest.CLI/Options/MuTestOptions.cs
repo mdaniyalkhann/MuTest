@@ -18,7 +18,7 @@ namespace MuTest.Console.Options
         private const string JsonExtension = ".json";
         private const string HtmlExtension = ".html";
         private const int DefaultConcurrentTestRunners = 4;
-        private const int DefaultMutantsPerLine = -1;
+        private const int DefaultMutantsPerLine = 1;
         private const double DefaultThreshold = 1.0;
 
         [JsonProperty("source-project")]

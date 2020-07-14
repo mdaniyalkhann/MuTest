@@ -16,6 +16,7 @@ namespace MuTest.Cpp.CLI.Options
         private const string HtmlExtension = ".html";
         private const int DefaultConcurrentTestRunners = 5;
         private const double DefaultThreshold = 1.0;
+        private const int DefaultMutantsPerLine = 1;
 
         [JsonProperty("source-class")]
         public string SourceClass { get; set; }
@@ -73,6 +74,9 @@ namespace MuTest.Cpp.CLI.Options
 
         [JsonProperty("include-build-events")]
         public bool IncludeBuildEvents { get; set; }
+
+        [JsonProperty("mutants-per-line")]
+        public int MutantsPerLine { get; set; } = DefaultMutantsPerLine;
 
         public void ValidateOptions()
         {

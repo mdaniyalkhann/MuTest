@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using MuTest.Core.Mutants;
 using MuTest.Core.Mutators;
+using MuTest.Cpp.CLI.Mutants;
 
-namespace MuTest.Core.Common
+namespace MuTest.Cpp.CLI.Core
 {
     public class MutantSelector : IMutantSelector
     {
@@ -16,16 +16,16 @@ namespace MuTest.Core.Common
             MutatorType.Unary
         };
 
-        public IList<Mutant> SelectMutants(int numberOfMutantsPerLine, IList<Mutant> mutants)
+        public IList<CppMutant> SelectMutants(int numberOfMutantsPerLine, IList<CppMutant> mutants)
         {
             if (numberOfMutantsPerLine < 1)
             {
                 return mutants;
             }
 
-            var selectedMutants = new List<Mutant>();
+            var selectedMutants = new List<CppMutant>();
             var mutantsByLine = mutants
-                .GroupBy(grp => grp.Mutation.Location)
+                .GroupBy(grp => grp.Mutation.LineNumber)
                 .Select(x => new
                 {
                     Line = x.Key,

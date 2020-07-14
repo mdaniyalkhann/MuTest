@@ -227,7 +227,7 @@ namespace MuTest.Console
         {
             ArgumentName = "--mutants-per-line",
             ArgumentShortName = "-mpl <integer>",
-            ArgumentDescription = "Set number of mutants per line Default is -1 (Unlimited)",
+            ArgumentDescription = "Set number of mutants per line Default is 1 (< 1 = Unlimited)",
             DefaultValue = DefaultOptions.MutantsPerLine,
             ValueType = CommandOptionType.SingleValue
         };

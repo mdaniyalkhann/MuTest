@@ -42,6 +42,9 @@ namespace MuTest.Cpp.CLI
 
         public CommandOption IncludeBuildEvents { get; set; }
 
+        public CommandOption MutantsPerLine { get; set; }
+
+
         public MuTestOptions Build()
         {
             var muTestOptions = new MuTestOptions
@@ -53,6 +56,7 @@ namespace MuTest.Cpp.CLI
                 TestClass = GetOption(TestClass.Value(), CliOptions.TestClass),
                 EnableDiagnostics = GetOption(Diagnostics.Value(), CliOptions.EnableDiagnostics),
                 ConcurrentTestRunners = GetOption(Parallel.Value(), CliOptions.Parallel),
+                MutantsPerLine = GetOption(MutantsPerLine.Value(), CliOptions.MutantsPerLine),
                 SurvivedThreshold = GetOption(SurvivedThreshold.Value(), CliOptions.SurvivedThreshold),
                 KilledThreshold = GetOption(KilledThreshold.Value(), CliOptions.KilledThreshold),
                 InIsolation = GetOption(InIsolation.Value(), CliOptions.InIsolation),

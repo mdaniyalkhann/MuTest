@@ -38,6 +38,7 @@ namespace MuTest.Cpp.CLI
             var testClass = CreateOption(app, CliOptions.TestClass);
 
             var parallel = CreateOption(app, CliOptions.Parallel);
+            var mutantsPerLine = CreateOption(app, CliOptions.MutantsPerLine);
             var survivedThreshold = CreateOption(app, CliOptions.SurvivedThreshold);
             var killedThreshold = CreateOption(app, CliOptions.KilledThreshold);
             var inIsolation = CreateOption(app, CliOptions.InIsolation);
@@ -68,6 +69,7 @@ namespace MuTest.Cpp.CLI
                     KilledThreshold = killedThreshold,
                     InIsolation = inIsolation,
                     SpecificLines = specificLines,
+                    MutantsPerLine = mutantsPerLine,
                     DisableBuildOptimization = disableBuildOptimization,
                     IncludeBuildEvents = includeBuildEvents
                 }.Build();
