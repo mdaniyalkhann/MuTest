@@ -164,7 +164,7 @@ namespace MuTest.Core.Common
                 }
             }
         }
-        
+
         private void FilterMutants(MethodDetail method)
         {
             if (MutantsAtSpecificLines.Any())

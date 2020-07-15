@@ -496,7 +496,8 @@ namespace Dashboard.ViewModel
                         UseClassFilter = ChkUseClassFilter.IsChecked,
                         X64TargetPlatform = _source.X64TargetPlatform,
                         UseExternalCodeCoverage = true,
-                        ProgressIndicator = '*'
+                        ProgressIndicator = '*',
+                        MutantsPerLine = Convert.ToInt32(MutantsPerLine)
                     };
 
                     var document = MutationDocumentManagerService.CreateDocument(nameof(CommandPromptOutputViewer), externalCoverageLog);

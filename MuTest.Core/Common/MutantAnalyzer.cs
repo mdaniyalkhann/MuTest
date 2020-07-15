@@ -11,7 +11,6 @@ using MuTest.Core.Exceptions;
 using MuTest.Core.Model;
 using MuTest.Core.Model.ClassDeclarations;
 using MuTest.Core.Mutants;
-using MuTest.Core.Mutators;
 using MuTest.Core.Testing;
 using MuTest.Core.Utility;
 
@@ -188,7 +187,8 @@ namespace MuTest.Core.Common
             {
                 ExecuteAllTests = source.TestClaz.MethodDetails.Count > _useClassFilterTestsThreshold || ExecuteAllTests,
                 MutantFilterRegEx = RegEx,
-                SpecificFilterRegEx = Specific
+                SpecificFilterRegEx = Specific,
+                MutantsPerLine = MutantsPerLine
             };
 
             if (UseExternalCodeCoverage)
