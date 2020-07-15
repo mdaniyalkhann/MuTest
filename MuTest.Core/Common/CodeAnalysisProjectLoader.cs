@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.Build.Locator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.MSBuild;
+using MuTest.Core.Common.Settings;
 using MuTest.Core.Model;
 using MuTest.Core.Utility;
 
@@ -13,17 +14,11 @@ namespace MuTest.Core.Common
 {
     public class CodeAnalysisProjectLoader
     {
+        public static readonly MuTestSettings MuTestSettings = MuTestSettingsSection.GetSettings();
+
         static CodeAnalysisProjectLoader()
         {
-            var enterpriseInstance = MSBuildLocator.QueryVisualStudioInstances()
-                .FirstOrDefault(instance => instance.Name.Contains("Enterprise"));
-            if (enterpriseInstance != null)
-            {
-                MSBuildLocator.RegisterInstance(enterpriseInstance);
-                return;
-            }
-
-            MSBuildLocator.RegisterDefaults();
+            MSBuildLocator.RegisterMSBuildPath(new FileInfo(MuTestSettings.MSBuildPath).Directory?.FullName);
         }
         public Project Load(string projectPath)
         {
