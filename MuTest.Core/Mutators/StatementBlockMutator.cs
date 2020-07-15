@@ -28,7 +28,7 @@ namespace MuTest.Core.Mutators
             var method = node.Ancestors<MethodDeclarationSyntax>().FirstOrDefault();
             var property = node.Ancestors<PropertyDeclarationSyntax>().FirstOrDefault();
 
-            var returnType = method?.ReturnType.ToString() ?? property?.Type.ToString();
+            var returnType = method?.ReturnType?.ToString() ?? property?.Type?.ToString();
             var randomValue = returnType?.GetRandomValue();
 
             if (!string.IsNullOrWhiteSpace(returnType) &&
@@ -40,12 +40,16 @@ namespace MuTest.Core.Mutators
                     returnType == "boolean")
                 {
                     var returnNode = node.DescendantNodes<ReturnStatementSyntax>().FirstOrDefault();
-                    if (returnNode != null)
+                    if (returnNode?.Expression != null)
                     {
                         randomValue = returnNode.Expression.ToString().Trim();
                         randomValue = randomValue.StartsWith(BooleanInverter)
                             ? randomValue.TrimStart('!')
                             : $"{BooleanInverter}{randomValue}";
+                    }
+                    else
+                    {
+                        randomValue = "false";
                     }
                 }
 

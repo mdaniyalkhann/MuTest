@@ -1,16 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Microsoft.Build.Locator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.MSBuild;
 using MuTest.Core.Model;
+using MuTest.Core.Utility;
 
 namespace MuTest.Core.Common
 {
     public class CodeAnalysisProjectLoader
     {
+        static CodeAnalysisProjectLoader()
+        {
+            var enterpriseInstance = MSBuildLocator.QueryVisualStudioInstances()
+                .FirstOrDefault(instance => instance.Name.Contains("Enterprise"));
+            if (enterpriseInstance != null)
+            {
+                MSBuildLocator.RegisterInstance(enterpriseInstance);
+                return;
+            }
+
+            MSBuildLocator.RegisterDefaults();
+        }
         public Project Load(string projectPath)
         {
             return GetCompiledProject(projectPath, out _);
@@ -52,7 +66,14 @@ namespace MuTest.Core.Common
             }
             finally
             {
-                DeleteMsBuildDlls();
+                try
+                {
+                    DeleteMsBuildDlls();
+                }
+                catch(Exception e)
+                {
+                    Trace.WriteLine(e.ToString().TrimToTraceLimit());
+                }
             }
         }
 
