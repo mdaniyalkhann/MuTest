@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -29,7 +31,7 @@ namespace MuTest.Core.Model
             string @namespace)
         {
             var memberNamespaceFullName = _semanticModel.GetTypeInfo(memberAccessExpressionSyntax.Expression).Type
-                ?.ContainingNamespace.ToDisplayString();
+                ?.ContainingNamespace?.ToDisplayString();
             return memberNamespaceFullName == @namespace;
         }
 

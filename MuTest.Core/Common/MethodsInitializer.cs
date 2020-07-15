@@ -22,11 +22,6 @@ namespace MuTest.Core.Common
                 return;
             }
 
-            var getClass = await source.Claz.Syntax.SetFields();
-            var classDeclarationSyntax = getClass
-                .DescendantNodes<ClassDeclarationSyntax>()
-                .FirstOrDefault(x => x.ClassName() == source.Claz.Syntax.ClassName());
-            source.Claz.Syntax = classDeclarationSyntax;
             source.MethodDetails.Clear();
 
             var index = 1;

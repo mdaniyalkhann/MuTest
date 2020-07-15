@@ -554,44 +554,6 @@ namespace MuTest.Core.Utility
             return fields;
         }
 
-        public static async Task<CompilationUnitSyntax> SetFields(this ClassDeclarationSyntax claz)
-        {
-            if (claz == null)
-            {
-                return null;
-            }
-
-            var fields = claz.Fields();
-            var root = claz.Root();
-
-            using (var workspace = new AdhocWorkspace())
-            {
-                var projectId = ProjectId.CreateNewId();
-                var versionStamp = VersionStamp.Create();
-                var projectInfo = ProjectInfo.Create(projectId, versionStamp, "NewProject", "projName", LanguageNames.CSharp);
-                var newProject = workspace.AddProject(projectInfo);
-                var document = workspace.AddDocument(newProject.Id, "NewFile.cs", root.GetText());
-                var editor = await DocumentEditor.CreateAsync(document);
-
-                var documentNode = await document.GetSyntaxRootAsync();
-                foreach (var invocation in documentNode.DescendantNodes<InvocationExpressionSyntax>())
-                {
-                    foreach (var argument in invocation.ArgumentList.Arguments)
-                    {
-                        if (argument.RefOrOutKeyword.IsMissing)
-                        {
-                            if (fields.ContainsKey(argument.Expression.ToString()))
-                            {
-                                editor.ReplaceNode(argument.Expression, fields[argument.Expression.ToString()]);
-                            }
-                        }
-                    }
-                }
-
-                return await editor.GetChangedDocument().GetSyntaxRootAsync() as CompilationUnitSyntax;
-            }
-        }
-
         /// <summary>
         /// Descendant Nodes
         /// </summary>
