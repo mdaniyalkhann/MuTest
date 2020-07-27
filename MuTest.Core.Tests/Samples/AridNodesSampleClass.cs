@@ -2,6 +2,10 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using log4net;
+using Serilog;
+using Log4NetLogManager = log4net.LogManager;
+using NLogLogManager = NLog.LogManager;
 
 // ReSharper disable UnusedMember.Global
 
@@ -57,6 +61,23 @@ namespace MuTest.Core.Tests.Samples
         public void MethodContainingNonDiagnosticsNodeWithSameNameAsDiagnosticsDebug()
         {
             Debug.Print("Test");
+        }
+
+        public void MethodContainingLog4NetNode()
+        {
+            var log = Log4NetLogManager.GetLogger(GetType());
+            log.Debug("Test");
+        }
+
+        public void MethodContainingNLogNode()
+        {
+            var log = NLogLogManager.GetCurrentClassLogger();
+            log.Debug("Test");
+        }
+
+        public void MethodContainingSerilogNode()
+        {
+            Log.Debug("Test");
         }
     }
 

@@ -85,8 +85,6 @@ namespace MuTest.Cpp.CLI.Mutants
                 "};",
                 "});",
                 ")",
-                "assert(",
-                "static_assert(",
                 "public:",
                 "private:",
                 "protected:",

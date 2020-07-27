@@ -117,8 +117,7 @@ namespace MuTest.Cpp.CLI.Options
                 var sourceClass = new FileInfo(SourceClass);
                 var sourceClassExtension = Path.GetExtension(sourceClass.Name);
 
-                if (sourceClassExtension.Equals(".h", StringComparison.InvariantCultureIgnoreCase) ||
-                    sourceClassExtension.Equals(".hpp", StringComparison.InvariantCultureIgnoreCase))
+                if (sourceClassExtension.IsHeader())
                 {
                     SourceHeader = SourceClass;
                     return;

@@ -169,6 +169,24 @@ namespace MuTest.Core.Tests
                 () => result.TriggeredBy.ShouldNotBeEmpty());
         }
 
+        [Test]
+        [TestCase(nameof(AridNodesSampleClass.MethodContainingLog4NetNode))]
+        [TestCase(nameof(AridNodesSampleClass.MethodContainingNLogNode))]
+        [TestCase(nameof(AridNodesSampleClass.MethodContainingSerilogNode))]
+        public void Check_WhenNodeIsLogNode_ShouldBeArid(string methodName)
+        {
+            // Arrange
+            var getSyntaxNode = methodName.GetLastSyntaxNodeOfMethodFunc<InvocationExpressionSyntax>();
+
+            // Act
+            var result = GetAridCheckResult(getSyntaxNode, methodName);
+
+            // Assert
+            result.ShouldSatisfyAllConditions(
+                () => result.IsArid.ShouldBeTrue(),
+                () => result.TriggeredBy.ShouldNotBeEmpty());
+        }
+
         private AridCheckResult GetAridCheckResult(Func<ClassDeclarationSyntax, SyntaxNode> getSyntaxNode, string methodName)
         {
             var sampleProjectAbsolutePath = SyntaxExtension.GetSampleProjectAbsolutePath();

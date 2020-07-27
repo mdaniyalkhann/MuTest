@@ -63,6 +63,7 @@
     <Compile Include="AridNodes\Filters\ByDefinition\ByDefinitionFilter.cs" />
     <Compile Include="AridNodes\Filters\HardCoded\ConsoleNodeFilter.cs" />
     <Compile Include="AridNodes\Filters\HardCoded\DebugNodeFilter.cs" />
+    <Compile Include="AridNodes\Filters\HardCoded\LoggingNodeFilter.cs" />
     <Compile Include="AridNodes\Filters\IAridNodeFilter.cs" />
     <Compile Include="AridNodes\IAridNodeFilterProvider.cs" />
     <Compile Include="AridNodes\NodesClassifier.cs" />

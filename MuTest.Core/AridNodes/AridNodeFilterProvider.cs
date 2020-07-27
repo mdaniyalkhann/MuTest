@@ -11,7 +11,8 @@ namespace MuTest.Core.AridNodes
             new ByDefinitionFilter(),
             new DebugNodeFilter(),
             new ConsoleNodeFilter(),
-            new IONodeFilter()
+            new IONodeFilter(),
+            new LoggingNodeFilter()
         };
     }
 }

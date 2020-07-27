@@ -30,14 +30,29 @@ namespace MuTest.Core.Model
             MemberAccessExpressionSyntax memberAccessExpressionSyntax,
             string @namespace)
         {
-            var memberNamespaceFullName = _semanticModel.GetTypeInfo(memberAccessExpressionSyntax.Expression).Type
-                ?.ContainingNamespace?.ToDisplayString();
+            var memberNamespaceFullName = GetMemberNamespaceFullName(memberAccessExpressionSyntax);
             return memberNamespaceFullName == @namespace;
+        }
+
+        private string GetMemberNamespaceFullName(MemberAccessExpressionSyntax memberAccessExpressionSyntax)
+        {
+            memberAccessExpressionSyntax = memberAccessExpressionSyntax ??
+                                           throw new ArgumentNullException(nameof(memberAccessExpressionSyntax));
+            return _semanticModel.GetTypeInfo(memberAccessExpressionSyntax.Expression).Type
+                ?.ContainingNamespace?.ToDisplayString();
         }
 
         protected override IAnalyzableNode CreateRelativeNode(SyntaxNode syntaxNode)
         {
             return new RoslynSyntaxNodeWithSemantics(syntaxNode, _semanticModel);
+        }
+
+        protected override bool IsMemberAccessExpressionOfTypeNamespaceContainingText(
+            MemberAccessExpressionSyntax memberAccessExpressionSyntax,
+            string text)
+        {
+            var namespaceName = GetMemberNamespaceFullName(memberAccessExpressionSyntax);
+            return namespaceName.Contains(text);
         }
     }
 }

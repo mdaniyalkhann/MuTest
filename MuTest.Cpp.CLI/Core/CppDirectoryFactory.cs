@@ -339,8 +339,7 @@ namespace MuTest.Cpp.CLI.Core
             var start = "<";
             var end = ">";
             var extension = Path.GetExtension(testContext.SourceClass.FullName);
-            if (extension.EndsWith(".h", StringComparison.InvariantCultureIgnoreCase) ||
-                extension.EndsWith(".hpp", StringComparison.InvariantCultureIgnoreCase))
+            if (extension.IsHeader())
             {
                 end = start = "\"";
             }

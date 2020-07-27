@@ -33,6 +33,12 @@ namespace MuTest.Cpp.CLI.Utility
             return projectFile;
         }
 
+        public static bool IsHeader(this string extension)
+        {
+            return extension.Equals(".h", StringComparison.InvariantCultureIgnoreCase) ||
+                   extension.Equals(".hpp", StringComparison.InvariantCultureIgnoreCase);
+        }
+
         private static FileInfo FindCppProjectFile(this string path, string fileName)
         {
             if (Directory.Exists(path))

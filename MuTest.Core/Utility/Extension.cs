@@ -273,10 +273,12 @@ namespace MuTest.Core.Utility
                     return $"'{Guid.NewGuid().ToString("n").Substring(0, 1)}'";
                 case "string":
                     return $"\"{Guid.NewGuid().ToString("n").Substring(0, 8)}\"";
-                case "T":
-                    return "default(T)";
+                case "Guid":
+                    return "Guid.NewGuid()";
+                case "bool":
+                    return "false";
                 default:
-                    return "null";
+                    return $"default({type})";
             }
         }
 

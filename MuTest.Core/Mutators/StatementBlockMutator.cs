@@ -31,25 +31,26 @@ namespace MuTest.Core.Mutators
             var returnType = method?.ReturnType?.ToString() ?? property?.Type?.ToString();
             var randomValue = returnType?.GetRandomValue();
 
-            if (!string.IsNullOrWhiteSpace(returnType) &&
-                returnType != "void" &&
-                (node.DescendantNodes<ReturnStatementSyntax>().Any() ||
-                 node.DescendantNodes<YieldStatementSyntax>().Any()))
+            if (!string.IsNullOrWhiteSpace(returnType) && returnType != "void")
             {
-                if (returnType == "bool" ||
-                    returnType == "boolean")
+                if (node.DescendantNodes<ReturnStatementSyntax>().Any() ||
+                    node.DescendantNodes<YieldStatementSyntax>().Any())
                 {
-                    var returnNode = node.DescendantNodes<ReturnStatementSyntax>().FirstOrDefault();
-                    if (returnNode?.Expression != null)
+                    if (returnType == "bool" ||
+                        returnType == "boolean")
                     {
-                        randomValue = returnNode.Expression.ToString().Trim();
-                        randomValue = randomValue.StartsWith(BooleanInverter)
-                            ? randomValue.TrimStart('!')
-                            : $"{BooleanInverter}{randomValue}";
-                    }
-                    else
-                    {
-                        randomValue = "false";
+                        var returnNode = node.DescendantNodes<ReturnStatementSyntax>().FirstOrDefault();
+                        if (returnNode?.Expression != null)
+                        {
+                            randomValue = returnNode.Expression.ToString().Trim();
+                            randomValue = randomValue == "false"
+                                ? "true"
+                                : "false";
+                        }
+                        else
+                        {
+                            randomValue = "false";
+                        }
                     }
                 }
 

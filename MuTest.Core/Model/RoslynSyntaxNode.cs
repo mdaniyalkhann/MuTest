@@ -46,6 +46,25 @@ namespace MuTest.Core.Model
                    && IsMemberAccessExpressionOfType(memberAccessExpressionSyntax, type);
         }
 
+        public bool IsInvocationOfMemberOfTypeNamespaceContainingText(string text)
+        {
+            return SyntaxNode is InvocationExpressionSyntax invocationExpressionSyntax
+                   && invocationExpressionSyntax.Expression is MemberAccessExpressionSyntax memberAccessExpressionSyntax
+                   && IsMemberAccessExpressionOfTypeNamespaceContainingText(memberAccessExpressionSyntax, text);
+        }
+
+        protected virtual bool IsMemberAccessExpressionOfTypeNamespaceContainingText(
+            MemberAccessExpressionSyntax memberAccessExpressionSyntax,
+            string text)
+        {
+            memberAccessExpressionSyntax = memberAccessExpressionSyntax ??
+                                           throw new ArgumentNullException(nameof(memberAccessExpressionSyntax));
+            
+            // Not accurate enough, but it's the best we can do with the available data
+            return memberAccessExpressionSyntax.Expression is IdentifierNameSyntax identifierNameSyntax
+                   && identifierNameSyntax.Identifier.Text.Contains(text);
+        }
+
         public bool IsMemberAccessExpressionOfType(Type type)
         {
             if (!(SyntaxNode is MemberAccessExpressionSyntax memberAccessExpressionSyntax))

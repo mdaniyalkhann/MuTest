@@ -11,6 +11,7 @@ using MuTest.Core.Model;
 using MuTest.Core.Mutants;
 using MuTest.Core.Testing;
 using MuTest.Cpp.CLI.Core;
+using MuTest.Cpp.CLI.Core.AridNodes;
 using MuTest.Cpp.CLI.Model;
 using MuTest.Cpp.CLI.Mutants;
 using MuTest.Cpp.CLI.Options;
@@ -39,14 +40,21 @@ namespace MuTest.Cpp.CLI
         private static readonly object Sync = new object();
         private CppClass _cppClass;
         private IMutantSelector _mutantsSelector;
+        private readonly IAridNodeMutantFilterer _aridNodeMutantFilterer;
 
         public ICppMutantExecutor MutantsExecutor { get; private set; }
 
-        public MuTestRunner(IChalk chalk, ICppDirectoryFactory directoryFactory, IMutantSelector mutantsSelector = null)
+        public MuTestRunner(
+            IChalk chalk,
+            ICppDirectoryFactory directoryFactory,
+            IMutantSelector mutantsSelector = null,
+            IAridNodeMutantFilterer aridNodeMutantFilterer = null)
         {
             _chalk = chalk;
             DirectoryFactory = directoryFactory;
             _mutantsSelector = mutantsSelector ?? new MutantSelector();
+            var aridNodeFilterProvider = new AridNodeFilterProvider();
+            _aridNodeMutantFilterer = aridNodeMutantFilterer ?? new AridNodeMutantFilterer(aridNodeFilterProvider);
         }
 
         public async Task RunMutationTest(MuTestOptions options)
@@ -97,6 +105,7 @@ namespace MuTest.Cpp.CLI
 
 
                     var defaultMutants = CppMutantOrchestrator.GetDefaultMutants(_options.SourceClass, _options.SpecificLines).ToList();
+                    defaultMutants = _aridNodeMutantFilterer.FilterMutants(defaultMutants).ToList();
                     defaultMutants = _mutantsSelector.SelectMutants(_options.MutantsPerLine, defaultMutants).ToList();
                     _cppClass.Mutants.AddRange(defaultMutants);
 

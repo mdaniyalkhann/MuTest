@@ -51,7 +51,8 @@ namespace MuTest.Core.Tests.Utility
             return Path.Combine(sampleProjectRoot, "MuTest.Core.Tests.csproj");
         }
 
-        public static Func<ClassDeclarationSyntax, SyntaxNode> GetFirstSyntaxNodeOfMethodFunc<TSyntaxNode>(this string methodName) where TSyntaxNode : SyntaxNode
+        public static Func<ClassDeclarationSyntax, SyntaxNode> GetFirstSyntaxNodeOfMethodFunc<TSyntaxNode>(
+            this string methodName) where TSyntaxNode : SyntaxNode
         {
             if (string.IsNullOrWhiteSpace(methodName))
             {
@@ -59,14 +60,37 @@ namespace MuTest.Core.Tests.Utility
             }
 
             SyntaxNode GetSyntaxNode(ClassDeclarationSyntax classDeclarationSyntax) =>
-                classDeclarationSyntax.DescendantNodes()
-                    .OfType<MethodDeclarationSyntax>()
-                    .First(m => m.Identifier.Text == methodName)
-                    .DescendantNodes()
-                    .OfType<TSyntaxNode>()
-                    .First();
+                GetSyntaxNodesOfMethod<TSyntaxNode>(classDeclarationSyntax, methodName).First();
 
             return GetSyntaxNode;
+        }
+
+        public static Func<ClassDeclarationSyntax, SyntaxNode> GetLastSyntaxNodeOfMethodFunc<TSyntaxNode>(
+            this string methodName) where TSyntaxNode : SyntaxNode
+        {
+            if (string.IsNullOrWhiteSpace(methodName))
+            {
+                throw new ArgumentNullException(nameof(methodName));
+            }
+
+            SyntaxNode GetSyntaxNode(ClassDeclarationSyntax classDeclarationSyntax) =>
+                GetSyntaxNodesOfMethod<TSyntaxNode>(classDeclarationSyntax, methodName).Last();
+
+            return GetSyntaxNode;
+        }
+
+        private static IEnumerable<TSyntaxNode> GetSyntaxNodesOfMethod<TSyntaxNode>(
+            ClassDeclarationSyntax classDeclarationSyntax,
+            string methodName) where TSyntaxNode : SyntaxNode
+        {
+            classDeclarationSyntax =
+                classDeclarationSyntax ?? throw new ArgumentNullException(nameof(classDeclarationSyntax));
+
+            return classDeclarationSyntax.DescendantNodes()
+                .OfType<MethodDeclarationSyntax>()
+                .First(m => m.Identifier.Text == methodName)
+                .DescendantNodes()
+                .OfType<TSyntaxNode>();
         }
 
         public static string GetSampleClassAbsoluteFilePath(this string relativePath)

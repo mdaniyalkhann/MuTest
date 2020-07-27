@@ -51,10 +51,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CLIOptions.cs" />
+    <Compile Include="Core\AridNodeMutantFilterer.cs" />
+    <Compile Include="Core\AridNodes\AridNodeFilterProvider.cs" />
+    <Compile Include="Core\AridNodes\Filters\AssertNodeFilter.cs" />
+    <Compile Include="Core\AridNodes\Filters\ConsoleNodeFilter.cs" />
+    <Compile Include="Core\AridNodes\Filters\MemoryAllocationNodeFilter.cs" />
+    <Compile Include="Core\AridNodes\IAridNodeFilter.cs" />
+    <Compile Include="Core\AridNodes\Filters\PrintfNodeFilter.cs" />
+    <Compile Include="Core\AridNodes\IAridNodeFilterProvider.cs" />
     <Compile Include="Core\GoogleTestCaseLoader.cs" />
     <Compile Include="Core\CoberturaReportLoader.cs" />
     <Compile Include="Core\CppBuildExecutor.cs" />
     <Compile Include="Core\CppDirectoryFactory.cs" />
+    <Compile Include="Core\IAridNodeMutantFilterer.cs" />
     <Compile Include="Core\IMutantSelector.cs" />
     <Compile Include="Core\MutantSelector.cs" />
     <Compile Include="Core\OpenCppCoverageExecutor.cs" />
@@ -109,6 +118,7 @@
       <Name>MuTest.CLI.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack">
       <Version>1.11.24</Version>
@@ -135,5 +145,6 @@
       <Version>4.5.4</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
