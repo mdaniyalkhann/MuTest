@@ -28,6 +28,8 @@ namespace MuTest.Core.Common
 
         event EventHandler<string> OutputDataReceived;
 
+        event EventHandler<string> BeforeTestExecuted;
+
         Task ExecuteTests(IList<MethodDetail> selectedMethods);
 
         string PrintTestResult(TestRun testReport);

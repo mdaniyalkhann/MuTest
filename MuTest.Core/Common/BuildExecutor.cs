@@ -21,6 +21,7 @@ namespace MuTest.Core.Common
         public event EventHandler<EventArgs> BuildStarted;
         public event EventHandler<EventArgs> BuildFinished;
         public event EventHandler<string> OutputDataReceived;
+        public event EventHandler<string> BeforeMsBuildExecuted;
 
         public string BaseAddress { get; set; }
 
@@ -130,6 +131,7 @@ namespace MuTest.Core.Common
                 projectBuilder.Append($" /p:IntermediateOutputPath=\"{IntermediateOutputPath}\\\"");
             }
 
+            OnBeforeMsBuildExecuted(projectBuilder.ToString());
             if (string.IsNullOrWhiteSpace(BaseAddress))
             {
                 try
@@ -217,6 +219,11 @@ namespace MuTest.Core.Common
         private void ProcessOnOutputDataReceived(object sender, DataReceivedEventArgs args)
         {
             OnOutputDataReceived(args);
+        }
+
+        protected virtual void OnBeforeMsBuildExecuted(string e)
+        {
+            BeforeMsBuildExecuted?.Invoke(this, e);
         }
     }
 }

@@ -16,6 +16,8 @@ namespace MuTest.Core.Common
 
         event EventHandler<string> OutputDataReceived;
 
+        event EventHandler<string> BeforeMsBuildExecuted;
+
         Task ExecuteBuildInDebugModeWithDependencies();
 
         Task ExecuteBuildInDebugModeWithoutDependencies();

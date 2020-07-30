@@ -62,6 +62,8 @@ namespace MuTest.Core.Common
 
         public event EventHandler<string> OutputDataReceived;
 
+        public event EventHandler<string> BeforeTestExecuted;
+
         public TestExecutor(MuTestSettings settings, string testClassLibrary)
         {
             if (string.IsNullOrWhiteSpace(testClassLibrary))
@@ -148,6 +150,8 @@ namespace MuTest.Core.Common
                 }
 
                 methodBuilder.Append($@" ""{_testClassLibrary}""");
+
+                OnBeforeTestExecuted(methodBuilder.ToString());
 
                 if (string.IsNullOrWhiteSpace(BaseAddress))
                 {
@@ -410,6 +414,11 @@ namespace MuTest.Core.Common
                 TestResult = null;
                 Trace.TraceError("Unknown Exception Occurred On Getting Test result {0}", exp);
             }
+        }
+
+        protected virtual void OnBeforeTestExecuted(string e)
+        {
+            BeforeTestExecuted?.Invoke(this, e);
         }
     }
 }

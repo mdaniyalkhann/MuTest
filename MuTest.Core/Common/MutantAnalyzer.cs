@@ -237,6 +237,10 @@ namespace MuTest.Core.Common
                 EnableLogging = true
             };
             testExecutor.OutputDataReceived += OutputData;
+            testExecutor.BeforeTestExecuted += (sender, args) =>
+            {
+                _chalk.Yellow($"\nRunning VSTest.Console with {args}\n");
+            };
 
             await testExecutor.ExecuteTests(source.TestClaz.MethodDetails.ToList());
             source.NumberOfTests = Convert.ToInt32(testExecutor.TestResult?.ResultSummary?.Counters?.Total);

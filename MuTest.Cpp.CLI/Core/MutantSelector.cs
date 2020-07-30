@@ -9,8 +9,8 @@ namespace MuTest.Cpp.CLI.Core
     {
         private static readonly IList<MutatorType> MutatorsPriority = new List<MutatorType>
         {
-            MutatorType.Logical,
             MutatorType.Relational,
+            MutatorType.Logical,
             MutatorType.Block,
             MutatorType.Arithmetic,
             MutatorType.Unary

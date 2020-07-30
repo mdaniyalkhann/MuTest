@@ -240,6 +240,11 @@ namespace MuTest.Console
                 QuietWithSymbols = true
             };
             testCodeBuild.OutputDataReceived += OutputData;
+            testCodeBuild.BeforeMsBuildExecuted += (sender, args) =>
+            {
+                _chalk.Yellow($"\nRunning MSBuild with {args}\n");
+            };
+
             if (_options.BuildInReleaseModeParameter)
             {
                 if (_options.OptimizeTestProject)
@@ -270,7 +275,7 @@ namespace MuTest.Console
                 throw new MuTestFailingBuildException(log.ToString());
             }
 
-            _chalk.Green("\nBuild Succeeded!");
+            _chalk.Green("\nBuild Succeeded!\n");
         }
 
         private void GenerateReports()
