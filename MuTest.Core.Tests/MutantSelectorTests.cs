@@ -84,7 +84,7 @@ namespace MuTest.Core.Tests
         }
 
         [Test]
-        public void SelectMutants_Method_With_Two_Mutants_LCR_ROR_Per_Line_ShouldSelect_LCR()
+        public void SelectMutants_Method_With_Two_Mutants_LCR_ROR_Per_Line_ShouldSelect_ROR()
         {
             // Arrange
             var mutants = GetMethodMutants(MethodWithTwoMutantsLcrRorPerLine);
@@ -98,11 +98,11 @@ namespace MuTest.Core.Tests
                 () => mutants.Count(LineWithLcr).ShouldBe(6),
                 () => selectedMutants.Count(LineWithLcr).ShouldBe(1));
 
-            selectedMutants.First(LineWithLcr).Mutation.Type.ShouldBe(MutatorType.Logical);
+            selectedMutants.First(LineWithLcr).Mutation.Type.ShouldBe(MutatorType.Relational);
         }
 
         [Test]
-        public void SelectMutants_Method_With_Two_Mutants_LCR_ROR_Per_Line_Select_Two_ShouldSelect_LCR_ROR()
+        public void SelectMutants_Method_With_Two_Mutants_LCR_ROR_Per_Line_Select_Two_ShouldSelect_ROR()
         {
             // Arrange
             var mutants = GetMethodMutants(MethodWithTwoMutantsLcrRorPerLine);
@@ -117,7 +117,7 @@ namespace MuTest.Core.Tests
                 () => selectedMutants.Count(LineWithLcr).ShouldBe(2));
 
             this.ShouldSatisfyAllConditions(
-                () => selectedMutants.First(LineWithLcr).Mutation.Type.ShouldBe(MutatorType.Logical),
+                () => selectedMutants.First(LineWithLcr).Mutation.Type.ShouldBe(MutatorType.Relational),
                 () => selectedMutants.Last(LineWithLcr).Mutation.Type.ShouldBe(MutatorType.Relational));
         }
 
@@ -240,7 +240,7 @@ namespace MuTest.Core.Tests
         }
 
         [Test]
-        public void Method_With_Five_Mutants_SBR_LCR_ROR_UOR_AOR_Per_Line_Select_Three_ShouldSelect_LCR_ROR()
+        public void Method_With_Five_Mutants_SBR_LCR_ROR_UOR_AOR_Per_Line_Select_Three_ShouldSelect_ROR()
         {
             // Arrange
             var mutants = GetMethodMutants(MethodWithFiveMutantsSbrLcrRorUorAorPerLine);
@@ -256,13 +256,13 @@ namespace MuTest.Core.Tests
 
             selectedMutants = selectedMutants.Where(LineWithLcr).ToList();
             this.ShouldSatisfyAllConditions(
-                () => selectedMutants.First().Mutation.Type.ShouldBe(MutatorType.Logical),
+                () => selectedMutants.First().Mutation.Type.ShouldBe(MutatorType.Relational),
                 () => selectedMutants.Skip(1).First().Mutation.Type.ShouldBe(MutatorType.Relational),
                 () => selectedMutants.Last().Mutation.Type.ShouldBe(MutatorType.Relational));
         }
 
         [Test]
-        public void Method_With_Five_Mutants_SBR_LCR_ROR_UOR_AOR_Per_Line_Select_Seven_ShouldSelect_LCR_ROR_ROR_ROR_ROR_SBR()
+        public void Method_With_Five_Mutants_SBR_LCR_ROR_UOR_AOR_Per_Line_Select_Seven_ShouldSelect_ROR_ROR_ROR_ROR_LCR_SBR()
         {
             // Arrange
             var mutants = GetMethodMutants(MethodWithFiveMutantsSbrLcrRorUorAorPerLine);
@@ -278,11 +278,11 @@ namespace MuTest.Core.Tests
 
             selectedMutants = selectedMutants.Where(LineWithLcr).ToList();
             this.ShouldSatisfyAllConditions(
-                () => selectedMutants.First().Mutation.Type.ShouldBe(MutatorType.Logical),
+                () => selectedMutants.First().Mutation.Type.ShouldBe(MutatorType.Relational),
                 () => selectedMutants.Skip(1).First().Mutation.Type.ShouldBe(MutatorType.Relational),
                 () => selectedMutants.Skip(2).First().Mutation.Type.ShouldBe(MutatorType.Relational),
                 () => selectedMutants.Skip(3).First().Mutation.Type.ShouldBe(MutatorType.Relational),
-                () => selectedMutants.Skip(4).First().Mutation.Type.ShouldBe(MutatorType.Relational),
+                () => selectedMutants.Skip(4).First().Mutation.Type.ShouldBe(MutatorType.Logical),
                 () => selectedMutants.Skip(5).First().Mutation.Type.ShouldBe(MutatorType.Block),
                 () => selectedMutants.Last().Mutation.Type.ShouldBe(MutatorType.Arithmetic));
         }
