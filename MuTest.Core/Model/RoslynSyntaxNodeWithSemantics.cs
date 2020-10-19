@@ -52,7 +52,7 @@ namespace MuTest.Core.Model
             string text)
         {
             var namespaceName = GetMemberNamespaceFullName(memberAccessExpressionSyntax);
-            return namespaceName.Contains(text);
+            return namespaceName?.Contains(text) == true;
         }
     }
 }

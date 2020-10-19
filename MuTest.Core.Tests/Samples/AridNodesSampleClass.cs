@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using log4net;
 using Serilog;
 using Log4NetLogManager = log4net.LogManager;
 using NLogLogManager = NLog.LogManager;
