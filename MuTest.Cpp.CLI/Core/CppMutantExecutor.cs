@@ -91,7 +91,9 @@ namespace MuTest.Cpp.CLI.Core
 
                 if (!_context.UseMultipleSolutions)
                 {
-                    for (var mutationIndex = index; mutationIndex < Math.Min(index + NumberOfMutantsExecutingInParallel, mutants.Count); mutationIndex++)
+                    for (var mutationIndex = index;
+                        mutationIndex < Math.Min(index + NumberOfMutantsExecutingInParallel, mutants.Count);
+                        mutationIndex++)
                     {
                         directoryIndex++;
                         var mutant = mutants[mutationIndex];
@@ -128,15 +130,19 @@ namespace MuTest.Cpp.CLI.Core
                 }
 
                 directoryIndex = -1;
-                for (var mutationIndex = index; mutationIndex < Math.Min(index + NumberOfMutantsExecutingInParallel, mutants.Count); mutationIndex++)
+                for (var mutationIndex = index;
+                    mutationIndex < Math.Min(index + NumberOfMutantsExecutingInParallel, mutants.Count);
+                    mutationIndex++)
                 {
                     if (CancelMutationOperation)
                     {
                         break;
                     }
 
-                    if (decimal.Divide(mutants.Count(x => x.ResultStatus == MutantStatus.Survived), totalMutants) > (decimal)SurvivedThreshold ||
-                        decimal.Divide(mutants.Count(x => x.ResultStatus == MutantStatus.Killed), totalMutants) > (decimal)KilledThreshold)
+                    if (decimal.Divide(mutants.Count(x => x.ResultStatus == MutantStatus.Survived), totalMutants) >
+                        (decimal) SurvivedThreshold ||
+                        decimal.Divide(mutants.Count(x => x.ResultStatus == MutantStatus.Killed), totalMutants) >
+                        (decimal) KilledThreshold)
                     {
                         break;
                     }
@@ -174,7 +180,8 @@ namespace MuTest.Cpp.CLI.Core
                     catch (Exception e)
                     {
                         mutant.ResultStatus = MutantStatus.Skipped;
-                        Trace.TraceError("Unable to Execute Mutant {0} Exception: {1}", mutant.Mutation.OriginalNode.Encode(), e);
+                        Trace.TraceError("Unable to Execute Mutant {0} Exception: {1}",
+                            mutant.Mutation.OriginalNode.Encode(), e);
                     }
                 }
 
@@ -190,12 +197,14 @@ namespace MuTest.Cpp.CLI.Core
             if (_cpp == null || _context == null)
             {
                 return;
-            } 
+            }
 
             var projectName = Path.GetFileNameWithoutExtension(_cpp.TestProject);
-            var projectNameFromTestContext = Path.GetFileNameWithoutExtension(_context.TestProject.Name).Replace("_{0}", string.Empty);
-            var processes = Process.GetProcesses().Where(x => x.ProcessName.StartsWith(projectName) || 
-                                                              x.ProcessName.StartsWith(projectNameFromTestContext)).ToList();
+            var projectNameFromTestContext = Path.GetFileNameWithoutExtension(_context.TestProject.Name)
+                .Replace("_{0}", string.Empty);
+            var processes = Process.GetProcesses().Where(x => x.ProcessName.StartsWith(projectName) ||
+                                                              x.ProcessName.StartsWith(projectNameFromTestContext))
+                .ToList();
             CancelMutationOperation = true;
             foreach (var process in processes)
             {
@@ -286,10 +295,12 @@ namespace MuTest.Cpp.CLI.Core
                         {
                             string.Format(_context.TestProject.FullName, index).RemoveBuildEvents();
                         }
+
                         string.Format(_context.TestProject.FullName, index).OptimizeTestProject();
                     }
 
                     var buildLog = new StringBuilder();
+
                     void BuildOutputDataReceived(object sender, string args)
                     {
                         lock (AppendLock)
@@ -353,7 +364,8 @@ namespace MuTest.Cpp.CLI.Core
                 var projectDirectory = Path.GetDirectoryName(_cpp.TestProject);
                 var projectName = Path.GetFileNameWithoutExtension(_cpp.TestProject);
 
-                var projectNameFromTestContext = string.Format(Path.GetFileNameWithoutExtension(_context.TestProject.Name), index);
+                var projectNameFromTestContext =
+                    string.Format(Path.GetFileNameWithoutExtension(_context.TestProject.Name), index);
                 var app = $"{projectDirectory}/{string.Format(_context.OutDir, index)}{projectName}.exe";
 
                 if (!File.Exists(app))
@@ -363,7 +375,9 @@ namespace MuTest.Cpp.CLI.Core
 
                 await testExecutor.ExecuteTests(
                     app,
-                    $"{Path.GetFileNameWithoutExtension(_context.TestContexts[index].TestClass.Name)}*");
+                    _cpp.UseClassFilter
+                        ? $"{Path.GetFileNameWithoutExtension(_context.TestContexts[index].TestClass.Name)}*"
+                        : string.Empty);
 
                 testExecutor.OutputDataReceived -= OutputDataReceived;
                 if (EnableDiagnostics && testExecutor.LastTestExecutionStatus == Constants.TestExecutionStatus.Timeout)
@@ -414,7 +428,8 @@ namespace MuTest.Cpp.CLI.Core
                 var timeout = mutator.Mutants.Count(x => x.ResultStatus == MutantStatus.Timeout);
                 var buildErrors = mutator.Mutants.Count(x => x.ResultStatus == MutantStatus.BuildError);
                 var skipped = mutator.Mutants.Count(x => x.ResultStatus == MutantStatus.Skipped);
-                var covered = mutator.Mutants.Count(x => x.ResultStatus != MutantStatus.NotCovered) - timeout - buildErrors - skipped;
+                var covered = mutator.Mutants.Count(x => x.ResultStatus != MutantStatus.NotCovered) - timeout -
+                              buildErrors - skipped;
                 var coverage = decimal.Divide(killed, covered == 0
                     ? 1
                     : covered);
@@ -423,8 +438,9 @@ namespace MuTest.Cpp.CLI.Core
                     : $"{killed}/{covered}[{coverage:P}]";
                 mutationProcessLog.AppendLine("<fieldset>");
                 mutationProcessLog.AppendLine($"{mutator.Mutator}".PrintImportantWithLegend());
-                mutationProcessLog.Append($"Coverage: Mutation({mutation}) [Survived({survived}) Killed({killed}) Not Covered({uncovered}) Timeout({timeout}) Build Errors({buildErrors}) Skipped({skipped})]"
-                    .PrintWithPreTagWithMarginImportant(color: Constants.Colors.Blue));
+                mutationProcessLog.Append(
+                    $"Coverage: Mutation({mutation}) [Survived({survived}) Killed({killed}) Not Covered({uncovered}) Timeout({timeout}) Build Errors({buildErrors}) Skipped({skipped})]"
+                        .PrintWithPreTagWithMarginImportant(color: Constants.Colors.Blue));
                 mutationProcessLog.AppendLine("</fieldset>");
             }
 
@@ -436,7 +452,8 @@ namespace MuTest.Cpp.CLI.Core
             cppClass.CalculateMutationScore();
             mutationProcessLog.AppendLine("<fieldset style=\"margin-bottom:10; margin-top:10\">");
             mutationProcessLog.AppendLine("ClassWise Summary".PrintImportantWithLegend());
-            mutationProcessLog.Append(cppClass.MutationScore.ToString().PrintWithPreTagWithMarginImportant(color: Constants.Colors.BlueViolet));
+            mutationProcessLog.Append(cppClass.MutationScore.ToString()
+                .PrintWithPreTagWithMarginImportant(color: Constants.Colors.BlueViolet));
             mutationProcessLog.Append(
                 $"Coverage: Mutation({cppClass.MutationScore.Mutation}) Line({cppClass.LinesCovered}{cppClass.LineCoverage})"
                     .PrintWithPreTagWithMarginImportant(color: Constants.Colors.Blue));

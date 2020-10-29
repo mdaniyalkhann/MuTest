@@ -11,5 +11,7 @@ namespace MuTest.Cpp.CLI.Core
         void DeleteTestFiles(CppBuildContext context);
 
         CppBuildContext PrepareSolutionFiles(CppClass cppClass);
+
+        CppBuildContext TakingSourceCodeBackup(CppClass cppClass);
     }
 }

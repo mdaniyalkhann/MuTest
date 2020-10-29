@@ -19,6 +19,9 @@ namespace MuTest.Cpp.CLI.Model
         [JsonProperty("number-of-tests")]
         public int NumberOfTests { get; set; }
 
+        [JsonProperty("use-class-filter")]
+        public bool UseClassFilter { get; set; } = true;
+
         [JsonProperty("number-of-disabled-tests")]
         public int NumberOfDisabledTests { get; set; }
 

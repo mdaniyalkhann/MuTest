@@ -226,7 +226,10 @@ namespace MuTest.Cpp.CLI
             }
 
             testCodeBuild.OutputDataReceived += OutputData;
-
+            testCodeBuild.BeforeMsBuildExecuted += (sender, args) =>
+            {
+                _chalk.Yellow($"\nRunning MSBuild with {args}\n");
+            };
             await testCodeBuild.ExecuteBuild();
 
             testCodeBuild.OutputDataReceived -= OutputData;
@@ -248,6 +251,31 @@ namespace MuTest.Cpp.CLI
                     IntermediateOutputPath = string.Format(Context.IntermediateOutputPath, 0),
                     OutDir = string.Format(Context.OutDir, 0),
                     OutputPath = string.Format(Context.OutputPath, 0),
+                    Platform = _options.Platform,
+                    QuietWithSymbols = true
+                };
+
+                await testCodeBuild.ExecuteBuild();
+            }
+
+            if (testCodeBuild.LastBuildStatus == BuildExecutionStatus.Failed)
+            {
+                _chalk.Yellow("\nBuild Failed...Taking Source Code Backup\n");
+                _options.ConcurrentTestRunners = 1;
+                DirectoryFactory.DeleteTestFiles(Context);
+                Context = DirectoryFactory.TakingSourceCodeBackup(_cppClass);
+
+                testCodeBuild = new CppBuildExecutor(
+                    MuTestSettings,
+                    Context.TestSolution.FullName,
+                    _cppClass.Target)
+                {
+                    Configuration = _options.Configuration,
+                    EnableLogging = _options.EnableDiagnostics,
+                    IntDir = Context.IntDir,
+                    IntermediateOutputPath = Context.IntermediateOutputPath,
+                    OutDir = Context.OutDir,
+                    OutputPath = Context.OutputPath,
                     Platform = _options.Platform,
                     QuietWithSymbols = true
                 };
@@ -293,6 +321,18 @@ namespace MuTest.Cpp.CLI
             var cppTestContext = Context.TestContexts.First();
             var filter = $"{Path.GetFileNameWithoutExtension(cppTestContext.TestClass.Name)}*";
             await testExecutor.ExecuteTests(app, filter);
+
+            if (testExecutor.TestResult != null)
+            {
+                _cppClass.NumberOfTests = Convert.ToInt32(testExecutor.TestResult.Tests);
+
+                if (_cppClass.NumberOfTests == 0)
+                {
+                    filter = string.Empty;
+                    _cppClass.UseClassFilter = false;
+                    await testExecutor.ExecuteTests(app, string.Empty);
+                }
+            }
 
             if (testExecutor.TestResult != null)
             {

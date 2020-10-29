@@ -10,6 +10,8 @@ namespace MuTest.Cpp.CLI.Model
 
         public FileInfo SourceClass { get; set; }
 
+        public FileInfo BackupSourceClass { get; set; }
+
         public FileInfo SourceHeader { get; set; }
     }
 }

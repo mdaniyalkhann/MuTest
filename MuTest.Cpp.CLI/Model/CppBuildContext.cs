@@ -7,6 +7,8 @@ namespace MuTest.Cpp.CLI.Model
     {
         public FileInfo TestProject { get; set; }
 
+        public FileInfo BackupTestProject { get; set; }
+
         public FileInfo TestSolution { get; set; }
 
         public string OutputPath { get; set; }

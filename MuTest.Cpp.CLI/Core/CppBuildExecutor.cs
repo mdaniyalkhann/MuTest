@@ -16,6 +16,7 @@ namespace MuTest.Cpp.CLI.Core
         public event EventHandler<EventArgs> BuildStarted;
         public event EventHandler<EventArgs> BuildFinished;
         public event EventHandler<string> OutputDataReceived;
+        public event EventHandler<string> BeforeMsBuildExecuted;
 
         public bool EnableLogging { get; set; } = true;
 
@@ -152,6 +153,7 @@ namespace MuTest.Cpp.CLI.Core
                     RedirectStandardError = true
                 };
 
+                OnBeforeMsBuildExecuted(projectBuilder.ToString());
                 await Task.Run(() =>
                 {
                     using (var process = new Process
@@ -182,6 +184,11 @@ namespace MuTest.Cpp.CLI.Core
                 LastBuildStatus = BuildExecutionStatus.Failed;
                 Trace.TraceError("Unable to Build Product {0}", exp);
             }
+        }
+
+        protected virtual void OnBeforeMsBuildExecuted(string e)
+        {
+            BeforeMsBuildExecuted?.Invoke(this, e);
         }
 
         private void ProcessOnOutputDataReceived(object sender, DataReceivedEventArgs args)
