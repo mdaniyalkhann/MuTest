@@ -255,6 +255,10 @@ namespace MuTest.Cpp.CLI
                     QuietWithSymbols = true
                 };
 
+                testCodeBuild.BeforeMsBuildExecuted += (sender, args) =>
+                {
+                    _chalk.Yellow($"\nRunning MSBuild with {args}\n");
+                };
                 await testCodeBuild.ExecuteBuild();
             }
 
@@ -280,6 +284,10 @@ namespace MuTest.Cpp.CLI
                     QuietWithSymbols = true
                 };
 
+                testCodeBuild.BeforeMsBuildExecuted += (sender, args) =>
+                {
+                    _chalk.Yellow($"\nRunning MSBuild with {args}\n");
+                };
                 await testCodeBuild.ExecuteBuild();
             }
 
