@@ -238,6 +238,7 @@ namespace MuTest.Cpp.CodeGenerator
                 outputFile.WriteLines(testFile);
 
                 Console.WriteLine("Generated Test Code!");
+                Console.WriteLine(outputDir.FullName);
                 break;
             }
         }
