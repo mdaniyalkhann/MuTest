@@ -1,0 +1,10 @@
+TEST_F(#class_under_test_name#Tests, #method_name#_WhenCalled_Verify)
+{
+	// Arrange
+#parameters#
+
+	// Act
+	instance.#method_name#(#arguments#);
+
+	// Assert
+}

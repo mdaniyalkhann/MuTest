@@ -1,0 +1,36 @@
+#imports#
+
+#include "gtest/gtest.h"
+#include <gmock/gmock.h>
+
+using ::testing::AtLeast;
+using ::testing::Return;
+using ::testing::StrictMock;
+using ::testing::Invoke;
+using ::testing::ReturnRef;
+using ::testing::ReturnPointee;
+using ::testing::DoAll;
+using ::testing::SetArgPointee;
+using ::testing::SetArgReferee;
+using ::testing::Matcher;
+using ::testing::_;
+using ::testing::A;
+
+#global_stubs#
+
+#include "#class_under_test_path#"
+
+class #class_under_test_name#Tests : public ::testing::Test
+{
+public:
+	#class_name# instance;
+};
+
+#methods#
+
+int main(int argc, char** argv)
+{
+	_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);
+	::testing::InitGoogleTest(&argc, argv);
+	return RUN_ALL_TESTS();
+}
