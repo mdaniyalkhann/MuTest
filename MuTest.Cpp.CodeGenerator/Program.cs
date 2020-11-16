@@ -114,9 +114,12 @@ namespace MuTest.Cpp.CodeGenerator
 
                     imports.Add($"#include \"{import.Name}\"");
 
-                    var fileId = context.FileMaps.First(x => x.CodeItemId == import.Id).FileId;
+                    var headerFile = context.FileMaps.FirstOrDefault(x => x.CodeItemId == import.Id && file.Id > 0);
 
-                    CopyNestedIncludes(context, fileId, outputDir);
+                    if (headerFile != null)
+                    {
+                        CopyNestedIncludes(context, headerFile.FileId, outputDir);
+                    }
                 }
 
 
