@@ -1,6 +1,0 @@
-#type# #method_name#Stub(#parameters#)
-{
-	return GlobalMocks::gMocks->#method#Mock(#parameter_values#);
-}
-
-#define #method_name# #method_name#Stub
