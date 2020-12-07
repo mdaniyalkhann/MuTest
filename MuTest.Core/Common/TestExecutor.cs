@@ -8,7 +8,6 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using System.Xml.Serialization;
 using Microsoft.VisualStudio.Coverage.Analysis;
 using MuTest.Core.Common.Settings;
@@ -17,7 +16,6 @@ using MuTest.Core.Model.Service;
 using MuTest.Core.Utility;
 using Newtonsoft.Json;
 using static MuTest.Core.Common.Constants;
-using Timer = System.Timers.Timer;
 
 namespace MuTest.Core.Common
 {
@@ -55,7 +53,6 @@ namespace MuTest.Core.Common
         public string FullyQualifiedName { get; set; }
 
         private DateTime _currentDateTime;
-        private Timer _timer;
         private Process _currentProcess;
 
         public TestRun TestResult { get; private set; }
@@ -90,15 +87,6 @@ namespace MuTest.Core.Common
             try
             {
                 EnableTimeout = EnableTimeout && string.IsNullOrWhiteSpace(BaseAddress);
-
-                if (EnableTimeout)
-                {
-                    _timer = new Timer(_settings.TestTimeout)
-                    {
-                        AutoReset = false
-                    };
-                }
-
                 _currentDateTime = DateTime.Now;
                 LastTestExecutionStatus = TestExecutionStatus.Success;
                 TestResult = null;
@@ -166,34 +154,39 @@ namespace MuTest.Core.Common
 
                     await Task.Run(() =>
                     {
-                        using (_currentProcess = new Process
+                        lock (TestTimeoutLock)
                         {
-                            StartInfo = processInfo,
-                            EnableRaisingEvents = true
-                        })
-                        {
-                            _currentProcess.OutputDataReceived += ProcessOnOutputDataReceived;
-                            _currentProcess.ErrorDataReceived += ProcessOnOutputDataReceived;
-                            _currentProcess.Start();
-                            _currentProcess.BeginOutputReadLine();
-                            _currentProcess.BeginErrorReadLine();
-
-                            if (EnableTimeout)
+                            using (_currentProcess = new Process
                             {
-                                _timer.Elapsed += TimerOnElapsed;
-                                _timer.Enabled = true;
-                            }
-
-                            _currentProcess.WaitForExit();
-
-                            if (LastTestExecutionStatus != TestExecutionStatus.Failed &&
-                                LastTestExecutionStatus != TestExecutionStatus.Timeout)
+                                StartInfo = processInfo,
+                                EnableRaisingEvents = true
+                            })
                             {
-                                LastTestExecutionStatus = TestStatusList[_currentProcess.ExitCode];
-                            }
+                                _currentProcess.OutputDataReceived += ProcessOnOutputDataReceived;
+                                _currentProcess.ErrorDataReceived += ProcessOnOutputDataReceived;
+                                _currentProcess.Start();
+                                _currentProcess.BeginOutputReadLine();
+                                _currentProcess.BeginErrorReadLine();
 
-                            _currentProcess.OutputDataReceived -= ProcessOnOutputDataReceived;
-                            _currentProcess.ErrorDataReceived -= ProcessOnOutputDataReceived;
+                                if (EnableTimeout)
+                                {
+                                    _currentProcess.WaitForExit(_settings.TestTimeout);
+                                    KillProcess(_currentProcess);
+                                }
+                                else
+                                {
+                                    _currentProcess.WaitForExit();
+                                }
+
+                                if (LastTestExecutionStatus != TestExecutionStatus.Failed &&
+                                    LastTestExecutionStatus != TestExecutionStatus.Timeout)
+                                {
+                                    LastTestExecutionStatus = TestStatusList[_currentProcess.ExitCode];
+                                }
+
+                                _currentProcess.OutputDataReceived -= ProcessOnOutputDataReceived;
+                                _currentProcess.ErrorDataReceived -= ProcessOnOutputDataReceived;
+                            }
                         }
                     });
 
@@ -264,24 +257,10 @@ namespace MuTest.Core.Common
                     }
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Trace.TraceError("{0} - {1}", e.Message, e);
                 throw;
-            }
-            finally
-            {
-                _timer?.Dispose();
-            }
-        }
-
-        private void TimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
-        {
-            lock (TestTimeoutLock)
-            {
-                LastTestExecutionStatus = TestExecutionStatus.Timeout;
-                KillProcess(_currentProcess);
-                _timer.Dispose();
             }
         }
 
@@ -297,21 +276,6 @@ namespace MuTest.Core.Common
         {
             lock (OutputDataReceivedLock)
             {
-                if (EnableTimeout)
-                {
-                    _timer.Stop();
-                    _timer.Enabled = false;
-                    _timer.Elapsed -= TimerOnElapsed;
-                    _timer.Close();
-                    _timer = new Timer(_settings.TestTimeout)
-                    {
-                        Enabled = true,
-                        AutoReset = false
-                    };
-
-                    _timer.Elapsed += TimerOnElapsed;
-                }
-
                 if (args.Data != null && args.Data.EndsWith(CoverageExtension))
                 {
                     var coverageFile = args.Data.Trim();

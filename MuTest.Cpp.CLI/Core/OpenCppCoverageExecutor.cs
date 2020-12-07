@@ -53,6 +53,8 @@ namespace MuTest.Cpp.CLI.Core
                 .Append(sources)
                 .Append(" --export_type=cobertura:")
                 .Append(_coverageFile)
+                .Append(" --export_type=html:")
+                .Append(_coverageFile.Replace(".xml", string.Empty))
                 .Append(" -- ")
                 .Append(app);
 
