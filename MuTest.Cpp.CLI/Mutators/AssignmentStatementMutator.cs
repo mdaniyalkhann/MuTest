@@ -9,16 +9,16 @@ namespace MuTest.Cpp.CLI.Mutators
         {
             KindsToMutate = new Dictionary<string, IList<string>>
             {
-                [" \\+= "] = new List<string> { " = " },
-                [" -= "] = new List<string> { " += " },
-                [" \\*= "] = new List<string> { " /= " },
-                [" \\/= "] = new List<string> { " *= " },
-                [" %= "] = new List<string> { " *= " },
-                [" &= "] = new List<string> { " |= " },
-                [" \\|= "] = new List<string> { " &= " },
-                [" \\^= "] = new List<string> { " &= " },
-                [" <<= "] = new List<string> { " >>= " },
-                [" >>= "] = new List<string> { " <<= " }
+                ["\\+="] = new List<string> { " = " },
+                ["-="] = new List<string> { " += " },
+                ["\\*="] = new List<string> { " /= " },
+                ["\\/="] = new List<string> { " *= " },
+                ["%="] = new List<string> { " *= " },
+                ["&="] = new List<string> { " |= " },
+                ["\\|="] = new List<string> { " &= " },
+                ["\\^="] = new List<string> { " &= " },
+                ["<<="] = new List<string> { " >>= " },
+                [">>="] = new List<string> { " <<= " }
             };
         }
 

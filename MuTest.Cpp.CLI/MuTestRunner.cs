@@ -39,7 +39,7 @@ namespace MuTest.Cpp.CLI
         private int _mutantProgress;
         private static readonly object Sync = new object();
         private CppClass _cppClass;
-        private IMutantSelector _mutantsSelector;
+        private readonly IMutantSelector _mutantsSelector;
         private readonly IAridNodeMutantFilterer _aridNodeMutantFilterer;
 
         public ICppMutantExecutor MutantsExecutor { get; private set; }
@@ -116,6 +116,14 @@ namespace MuTest.Cpp.CLI
                             if (_cppClass.CoveredLineNumbers.All(x => x != mutant.Mutation.LineNumber))
                             {
                                 mutant.ResultStatus = MutantStatus.NotCovered;
+                            }
+                            else if (mutant.Mutation.EndLineNumber > mutant.Mutation.LineNumber)
+                            {
+                                if (!_cppClass.CoveredLineNumbers.Any(x => x > mutant.Mutation.LineNumber &&
+                                                                          x <= mutant.Mutation.EndLineNumber))
+                                {
+                                    mutant.ResultStatus = MutantStatus.Skipped;
+                                }
                             }
                         }
                     }

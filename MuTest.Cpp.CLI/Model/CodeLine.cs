@@ -7,6 +7,8 @@ namespace MuTest.Cpp.CLI.Model
         public string Line { get; set; }
 
         public int LineNumber { get; set; }
+        
+        public int EndLineNumber { get; set; }
 
         public List<StringLine> StringLines { get; } = new List<StringLine>();
 

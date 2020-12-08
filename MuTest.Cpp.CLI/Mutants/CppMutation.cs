@@ -22,5 +22,8 @@ namespace MuTest.Cpp.CLI.Mutants
 
         [JsonIgnore]
         public MutatorType Type { get; set; }
+
+        [JsonIgnore]
+        public int EndLineNumber { get; set; }
     }
 }

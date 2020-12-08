@@ -61,6 +61,48 @@ namespace MuTest.Cpp.CLI.Mutators
                         continue;
                     }
 
+                    if (pattern == "-" &&
+                        line.Line.Length > match.Index + 2 &&
+                        line.Line[match.Index + 1] == '>')
+                    {
+                        continue;
+                    }
+
+                    if (pattern == "-" &&
+                        line.Line.Length > match.Index + 2 &&
+                        line.Line[match.Index + 1] == '-')
+                    {
+                        continue;
+                    }
+
+                    if (pattern == ">" &&
+                        line.Line.Length > match.Index + 2 &&
+                        line.Line[match.Index + 1] == '=')
+                    {
+                        continue;
+                    }
+
+                    if (pattern == "<" &&
+                        line.Line.Length > match.Index + 2 &&
+                        line.Line[match.Index + 1] == '=')
+                    {
+                        continue;
+                    }
+
+                    if (pattern == ">" &&
+                        match.Index > 0 &&
+                        line.Line[match.Index - 1] == '-')
+                    {
+                        continue;
+                    }
+
+                    if (pattern == "-" &&
+                        match.Index > 0 &&
+                        line.Line[match.Index - 1] == '-')
+                    {
+                        continue;
+                    }
+
                     if (pattern == " \\* " &&
                         arrayTypes.Any(x => line.Line.StartsWith(x) && match.Index <= x.Length))
                     {
