@@ -140,9 +140,9 @@ namespace MuTest.Cpp.CLI.Core
                     }
 
                     if (decimal.Divide(mutants.Count(x => x.ResultStatus == MutantStatus.Survived), totalMutants) >
-                        (decimal) SurvivedThreshold ||
+                        (decimal)SurvivedThreshold ||
                         decimal.Divide(mutants.Count(x => x.ResultStatus == MutantStatus.Killed), totalMutants) >
-                        (decimal) KilledThreshold)
+                        (decimal)KilledThreshold)
                     {
                         break;
                     }
@@ -157,10 +157,23 @@ namespace MuTest.Cpp.CLI.Core
                             var testContext = _context.TestContexts[directoryIndex];
                             var destinationFile = testContext.SourceClass.FullName;
 
-                            _cpp.SourceClass.ReplaceLine(
-                                mutant.Mutation.LineNumber,
-                                mutant.Mutation.ReplacementNode,
-                                destinationFile);
+                            if (_context.TestContexts.Any(x => x.BackupSourceClass != null))
+                            {
+                                _context.TestContexts[0]
+                                    .BackupSourceClass
+                                    .FullName
+                                    .ReplaceLine(
+                                        mutant.Mutation.LineNumber,
+                                        mutant.Mutation.ReplacementNode,
+                                        destinationFile);
+                            }
+                            else
+                            {
+                                _cpp.SourceClass.ReplaceLine(
+                                    mutant.Mutation.LineNumber,
+                                    mutant.Mutation.ReplacementNode,
+                                    destinationFile);
+                            }
                         }
                         else if (buildExecutor.LastBuildStatus == Constants.BuildExecutionStatus.Failed)
                         {
