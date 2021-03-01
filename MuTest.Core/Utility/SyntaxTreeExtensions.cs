@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Editing;
 using MuTest.Core.Model;
 
 namespace MuTest.Core.Utility
@@ -149,12 +147,21 @@ namespace MuTest.Core.Utility
                 }
             }
 
+            var className = claz.ClassName();
+            if (claz.NameSpace().StartsWith("System.Linq", StringComparison.InvariantCultureIgnoreCase) ||
+                className != null &&
+                (className.EndsWith("Collections", StringComparison.InvariantCultureIgnoreCase) ||
+                className.EndsWith("Collection", StringComparison.InvariantCultureIgnoreCase)))
+            {
+                return true;
+            }
+
             return claz.DescendantNodes<MethodDeclarationSyntax>().All(x =>
             {
                 var valueText = x.Identifier.ValueText;
 
                 return MethodsToExcludeFromExternalCoverage.Contains(valueText) ||
-                       x.ReturnType.ToString() == claz.ClassName();
+                       x.ReturnType.ToString() == className;
             });
         }
 
@@ -236,13 +243,6 @@ namespace MuTest.Core.Utility
                 : $"{cd.NameSpace()}.{cd.ClassName()}";
         }
 
-        public static string FullNameIncludingTypeParameters(this ClassDeclarationSyntax cd)
-        {
-            return cd == null
-                ? null
-                : $"{cd.NameSpace()}.{cd.ClassNameIncludingTypeParameters()}";
-        }
-
         /// <summary>
         /// Gets class namespace
         /// </summary>
@@ -294,7 +294,7 @@ namespace MuTest.Core.Utility
             var parameters = string.Empty;
             foreach (var type in parameterList)
             {
-                parameters += $"{type.Type.ToString()}, ";
+                parameters += $"{type.Type}, ";
             }
 
             parameters = parameters.Trim().Trim(',');
@@ -348,7 +348,7 @@ namespace MuTest.Core.Utility
         public static bool IsAStringExpression(this ExpressionSyntax node)
         {
             return node.Kind() == SyntaxKind.StringLiteralExpression ||
-                   node.ChildNodes().Any(x=> x.Kind() == SyntaxKind.StringLiteralExpression) ||
+                   node.ChildNodes().Any(x => x.Kind() == SyntaxKind.StringLiteralExpression) ||
                    node.Kind() == SyntaxKind.InterpolatedStringExpression ||
                    node.ChildNodes().Any(x => x.Kind() == SyntaxKind.InterpolatedStringExpression);
         }
@@ -574,19 +574,6 @@ namespace MuTest.Core.Utility
                 .Ancestors()?
                 .OfType<T>()
                 .ToList();
-        }
-
-        public static bool IsMemberInvocation(this SyntaxNode syntaxNode, out MemberAccessExpressionSyntax value)
-        {
-            if (syntaxNode is InvocationExpressionSyntax invocationExpression &&
-                invocationExpression.Expression is MemberAccessExpressionSyntax memberAccessExpression)
-            {
-                value = memberAccessExpression;
-                return true;
-            }
-
-            value = null;
-            return false;
         }
     }
 }
