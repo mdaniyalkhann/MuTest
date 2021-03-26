@@ -13,6 +13,9 @@ namespace MuTest.Cpp.CLI.Model
         [JsonProperty("mutation-score")]
         public MutationScore MutationScore { get; } = new MutationScore();
 
+        [JsonProperty("mutator-wise-mutation")]
+        public List<MutatorMutationScore> MutatorWiseMutationScores { get; } = new List<MutatorMutationScore>();
+
         [JsonProperty("coverage")]
         public Coverage Coverage { get; set; }
 

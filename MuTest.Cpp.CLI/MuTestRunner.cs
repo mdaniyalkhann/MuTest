@@ -397,7 +397,11 @@ namespace MuTest.Cpp.CLI
                             }
 
                             _chalk.Yellow($"\nCode Coverage for Class {Path.GetFileName(_cppClass.SourceClass)} is {decimal.Divide(coveredLines, totalLines):P} ({coveredLines}/{totalLines})\n");
-                            _cppClass.Coverage = Coverage.Create(coveredLines, totalLines - coveredLines, 0, 0);
+                            _cppClass.Coverage = new Coverage
+                            {
+                                LinesCovered = coveredLines,
+                                LinesNotCovered = totalLines - coveredLines
+                            };
 
                             var factor = Context.UseMultipleSolutions || !Context.NamespaceAdded
                                 ? 0u
