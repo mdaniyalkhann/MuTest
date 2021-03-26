@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MuTest.Core.Common;
 using MuTest.Core.Common.Settings;
+using MuTest.Core.Model;
 using MuTest.Core.Mutants;
 using MuTest.Core.Utility;
 using MuTest.Cpp.CLI.Model;
@@ -424,6 +425,7 @@ namespace MuTest.Cpp.CLI.Core
 
         public void PrintMutatorSummary(StringBuilder mutationProcessLog, IList<CppMutant> mutants)
         {
+            _cpp.MutatorWiseMutationScores.Clear();
             var mutators = mutants
                 .GroupBy(grp => grp.Mutation.Type)
                 .Select(x => new
@@ -455,6 +457,22 @@ namespace MuTest.Cpp.CLI.Core
                     $"Coverage: Mutation({mutation}) [Survived({survived}) Killed({killed}) Not Covered({uncovered}) Timeout({timeout}) Build Errors({buildErrors}) Skipped({skipped})]"
                         .PrintWithPreTagWithMarginImportant(color: Constants.Colors.Blue));
                 mutationProcessLog.AppendLine("</fieldset>");
+
+                _cpp.MutatorWiseMutationScores.Add(new MutatorMutationScore
+                {
+                    Mutator = mutator.Mutator.ToString(),
+                    MutationScore = new MutationScore
+                    {
+                        BuildErrors = buildErrors,
+                        Coverage = coverage,
+                        Covered = covered,
+                        Killed = killed,
+                        Skipped = skipped,
+                        Survived = survived,
+                        Timeout = timeout,
+                        Uncovered = uncovered
+                    }
+                });
             }
 
             mutationProcessLog.AppendLine("</fieldset>");
