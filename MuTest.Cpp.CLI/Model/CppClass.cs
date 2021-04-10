@@ -41,6 +41,9 @@ namespace MuTest.Cpp.CLI.Model
         public string SourceClass { get; set; }
 
         [JsonIgnore]
+        public bool StoreInDb { get; set; }
+
+        [JsonIgnore]
         public string SourceHeader { get; set; }
 
         [JsonIgnore]
@@ -105,6 +108,9 @@ namespace MuTest.Cpp.CLI.Model
 
         [JsonIgnore]
         public bool IncludeBuildEvents { get; set; }
+
+        [JsonProperty("sha256")]
+        public string Sha256 { get; set; }
 
         public void CalculateMutationScore()
         {

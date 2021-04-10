@@ -302,14 +302,14 @@ namespace MuTest.Core.Utility
                 return string.Empty;
             }
 
-            using (SHA256 sha256Hash = SHA256.Create())
+            using (var sha256Hash = SHA256.Create())
             {
                 var bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(content));
 
                 var builder = new StringBuilder();
-                for (var i = 0; i < bytes.Length; i++)
+                foreach (var b in bytes)
                 {
-                    builder.Append(bytes[i].ToString("x2"));
+                    builder.Append(b.ToString("x2"));
                 }
                 return builder.ToString();
             }

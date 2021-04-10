@@ -247,8 +247,18 @@ namespace MuTest.Cpp.CLI.Core
             }
         }
 
-        private void PrintMutationReport(StringBuilder mutationProcessLog, IList<CppMutant> mutants)
+        public void PrintMutationReport(StringBuilder mutationProcessLog, IList<CppMutant> mutants)
         {
+            if (mutationProcessLog == null)
+            {
+                throw new ArgumentNullException(nameof(mutationProcessLog));
+            }
+
+            if (mutants == null)
+            {
+                throw new ArgumentNullException(nameof(mutants));
+            }
+
             mutationProcessLog.AppendLine("<fieldset style=\"margin-bottom:10; margin-top:10\">");
             mutationProcessLog.AppendLine("Mutation Report".PrintImportantWithLegend());
             mutationProcessLog.Append("  ".PrintWithPreTag());
