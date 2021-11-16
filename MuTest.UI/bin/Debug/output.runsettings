@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+	<RunConfiguration>
+		<ResultsDirectory>C:\Dashboard\TestResults</ResultsDirectory>
+		<TestSessionTimeout>600000</TestSessionTimeout>
+	</RunConfiguration>
+	<NUnit>
+		<DefaultTimeout>25000</DefaultTimeout>
+	</NUnit>
+</RunSettings>
+

@@ -412,14 +412,14 @@ namespace Dashboard.ViewModel
                 var libraryPathName = $"{Path.GetDirectoryName(_source.TestClaz.ClassLibrary)}0";
                 Path.GetDirectoryName(_source.TestClaz.ClassLibrary).DirectoryCopy(libraryPathName);
                 var xml = $@"
-                            <Reference Include=""KellermanSoftware.Compare-NET-Objects, Version=4.73.0.0, Culture=neutral, PublicKeyToken=d970ace04cc85217, processorArchitecture=MSIL"">
+                            <Reference Include=""KellermanSoftware.Compare-NET-Objects, Version=4.74.0.0, Culture=neutral, PublicKeyToken=d970ace04cc85217, processorArchitecture=MSIL"">
                               <SpecificVersion>False</SpecificVersion>
                               <HintPath>{libraryPathName}\KellermanSoftware.Compare-NET-Objects.dll</HintPath>
                             </Reference>
-                            <Reference Include=""DeepCloner, Version=0.10.0.0, Culture=neutral, PublicKeyToken=dc0b95cf99bf4e99, processorArchitecture=MSIL"">
+                            <Reference Include=""DeepCloner, Version=0.10.3.0, Culture=neutral, PublicKeyToken=dc0b95cf99bf4e99, processorArchitecture=MSIL"">
                               <HintPath>{libraryPathName}\DeepCloner.dll</HintPath>
                             </Reference>
-	                        <Reference Include=""MuTest.DynamicAsserts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"">
+	                        <Reference Include=""MuTest.DynamicAsserts, Version=1.15.0.0, Culture=neutral, processorArchitecture=MSIL"">
                               <SpecificVersion>False</SpecificVersion>
                               <HintPath>{libraryPathName}\MuTest.DynamicAsserts.dll</HintPath>
                             </Reference>

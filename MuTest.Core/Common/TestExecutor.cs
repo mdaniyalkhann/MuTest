@@ -25,7 +25,7 @@ namespace MuTest.Core.Common
         private const string CoverageExtension = ".coverage";
         private const string TestCaseFilter = " /TestCaseFilter:";
         private const string FailedDuringExecution = "Failed ";
-        private const string ErrorDuringExecution = "  X ";
+        private const string ErrorDuringExecution = "X ";
         private static readonly object OutputDataReceivedLock = new object();
         private static readonly object TestTimeoutLock = new object();
 
@@ -300,8 +300,8 @@ namespace MuTest.Core.Common
                 OnThresholdReached(args);
 
                 if (KillProcessOnTestFail && args.Data != null &&
-                    (args.Data.StartsWith(FailedDuringExecution) ||
-                     args.Data.StartsWith(ErrorDuringExecution)))
+                    (args.Data.TrimStart().StartsWith(FailedDuringExecution) ||
+                     args.Data.TrimStart().StartsWith(ErrorDuringExecution)))
                 {
                     LastTestExecutionStatus = TestExecutionStatus.Failed;
 

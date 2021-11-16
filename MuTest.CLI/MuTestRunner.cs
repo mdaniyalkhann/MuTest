@@ -168,7 +168,8 @@ namespace MuTest.Console
                         mutantAnalyzer.ExternalCoveredMutants.Clear();
                         _source = await mutantAnalyzer.Analyze(sourceClass, className, _options.SourceProjectParameter);
                         _source.SHA256 = hash;
-                        _source.StoreToDb = true;
+                        _source.StoreToDb = !string.IsNullOrWhiteSpace(MuTestSettings.FireBaseStorageApiUrl) &&
+                                            !string.IsNullOrWhiteSpace(MuTestSettings.FireBaseDatabaseApiUrl);
 
                         if (_source.ExternalCoveredClassesIncluded.Any() && _options.AnalyzeExternalCoveredClasses)
                         {
