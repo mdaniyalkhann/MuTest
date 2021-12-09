@@ -56,7 +56,10 @@ namespace MuTest.Core.Common
 
         public async Task ExecuteBuildInDebugModeWithDependencies()
         {
-            await Build(new StringBuilder($@"""{_project}"""));
+            var projectBuilder = new StringBuilder($@"""{_project}""")
+                .Append(_settings.BuildProjectReferences);
+
+            await Build(projectBuilder);
         }
 
         public async Task ExecuteBuildInReleaseModeWithDependencies()

@@ -85,16 +85,17 @@ namespace MuTest.Core.Common
         public async Task<SourceClassDetail> Analyze(string sourceClass, string className, string sourceProject)
         {
             var testClaz = TestClass.GetClass();
-            var semanticsClassDeclarationLoader = new SemanticsClassDeclarationLoader();
+            //var semanticsClassDeclarationLoader = new SemanticsClassDeclarationLoader();
             var source = new SourceClassDetail
             {
                 ClassLibrary = SourceProjectLibrary,
                 ClassProject = sourceProject,
                 BuildInReleaseMode = BuildInReleaseMode,
-                Claz = semanticsClassDeclarationLoader.Load(sourceClass, sourceProject, className),
+                Claz = new ClassDeclaration(sourceClass.GetCodeFileContent().RootNode().ClassNode(className)),
                 FullName = className,
                 FilePath = sourceClass,
                 X64TargetPlatform = X64TargetPlatform,
+                DoNetCoreProject = sourceProject.DoNetCoreProject(),
                 TestClaz = new TestClassDetail
                 {
                     Claz = new ClassDeclaration(testClaz),

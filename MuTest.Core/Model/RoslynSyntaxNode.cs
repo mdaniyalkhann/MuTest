@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -59,10 +60,11 @@ namespace MuTest.Core.Model
         {
             memberAccessExpressionSyntax = memberAccessExpressionSyntax ??
                                            throw new ArgumentNullException(nameof(memberAccessExpressionSyntax));
-            
+
             // Not accurate enough, but it's the best we can do with the available data
             return memberAccessExpressionSyntax.Expression is IdentifierNameSyntax identifierNameSyntax
-                   && identifierNameSyntax.Identifier.Text.Contains(text);
+                   && identifierNameSyntax.Identifier.Text.Contains(text) || 
+                   memberAccessExpressionSyntax.ToString().Contains(text);
         }
 
         public bool IsMemberAccessExpressionOfType(Type type)

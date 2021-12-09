@@ -192,6 +192,10 @@ namespace Dashboard.ViewModel
                         _source.TestClaz.ClassProject = originalProject;
                     }
                 }
+                else
+                {
+                    buildPassed = await ExecuteBuild();
+                }
 
                 if (buildPassed)
                 {
@@ -243,11 +247,11 @@ namespace Dashboard.ViewModel
                 testCodeBuild.OutputDataReceived += OutputData;
                 if (_source.BuildInReleaseMode)
                 {
-                    await testCodeBuild.ExecuteBuildInReleaseModeWithoutDependencies();
+                    await testCodeBuild.ExecuteBuildInReleaseModeWithDependencies();
                 }
                 else
                 {
-                    await testCodeBuild.ExecuteBuildInDebugModeWithoutDependencies();
+                    await testCodeBuild.ExecuteBuildInDebugModeWithDependencies();
                 }
 
                 testCodeBuild.OutputDataReceived -= OutputData;

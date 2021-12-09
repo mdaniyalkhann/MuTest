@@ -249,8 +249,15 @@ namespace MuTest.Core.Utility
 
         private static readonly Random Random = new Random();
 
-        public static string GetRandomValue(this string type)
+        public static string GetRandomValue(this string dataType)
         {
+            if (string.IsNullOrWhiteSpace(dataType))
+            {
+                return "null";
+            }
+
+            var type = dataType.StartsWith("Task<") ? dataType.Replace("Task<", string.Empty).TrimEnd('>'): dataType;
+
             switch (UnBoxType(type))
             {
                 case "int":
@@ -280,7 +287,7 @@ namespace MuTest.Core.Utility
                 case "bool":
                     return "false";
                 default:
-                    return $"({type})new object()";
+                    return dataType.StartsWith("Task") ? "null" : $"({dataType})new object()";
             }
         }
 

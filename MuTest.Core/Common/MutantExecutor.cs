@@ -165,6 +165,7 @@ namespace MuTest.Core.Common
             LastExecutionOutput = mutationProcessLog.ToString();
         }
 
+        private IList<int> _listOfDirectoryIndexes = new List<int>();
         private async Task BuildAndSetBinaries(int directoryIndex, Mutant mutant)
         {
             try
@@ -178,10 +179,12 @@ namespace MuTest.Core.Common
                     IntermediateOutputPath = $@"{Path.GetDirectoryName(_source.ClassLibrary)}{directoryIndex}\obj\"
                 };
 
-                await BuildProject(buildExecutor);
-
                 var log = new StringBuilder();
                 void OutputDataReceived(object sender, string args) => log.Append(args.PrintWithPreTag());
+                buildExecutor.OutputDataReceived += OutputDataReceived;
+
+                await BuildProject(buildExecutor, !_listOfDirectoryIndexes.Contains(directoryIndex));
+                _listOfDirectoryIndexes.Add(directoryIndex);
 
                 if (buildExecutor.LastBuildStatus == BuildExecutionStatus.Failed)
                 {
@@ -193,12 +196,10 @@ namespace MuTest.Core.Common
                             $"Method: {mutant.Method.MethodName} Line: {lineNumber.ToString().PrintImportant(color: Colors.Blue)} - {mutant.Mutation.DisplayName.Encode()}"
                                 .PrintWithDateTime()
                                 .PrintWithPreTag());
-                        buildExecutor.OutputDataReceived += OutputDataReceived;
                     }
-
-                    await BuildProject(buildExecutor);
-                    buildExecutor.OutputDataReceived -= OutputDataReceived;
                 }
+
+                buildExecutor.OutputDataReceived -= OutputDataReceived;
 
                 if (buildExecutor.LastBuildStatus == BuildExecutionStatus.Failed)
                 {
@@ -322,8 +323,20 @@ namespace MuTest.Core.Common
             File.Copy(Path.Combine(sourceDirectory, sourceDllPath), sourceDllInTestProject);
         }
 
-        private async Task BuildProject(IBuildExecutor buildExecutor)
+        private async Task BuildProject(IBuildExecutor buildExecutor, bool firstTime)
         {
+            if (_source.DoNetCoreProject && firstTime)
+            {
+                if (!_source.BuildInReleaseMode)
+                {
+                    await buildExecutor.ExecuteBuildInDebugModeWithDependencies();
+                }
+                else
+                {
+                    await buildExecutor.ExecuteBuildInReleaseModeWithDependencies();
+                }
+            }
+
             if (!_source.BuildInReleaseMode)
             {
                 await buildExecutor.ExecuteBuildInDebugModeWithoutDependencies();

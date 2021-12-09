@@ -151,6 +151,13 @@ namespace MuTest.Core.Common.Settings
             set => value = (string)this[nameof(MSBuildDependenciesOption)];
         }
 
+        [ConfigurationProperty(nameof(BuildProjectReferences), DefaultValue = " /p:BuildProjectReferences=true", IsRequired = false)]
+        public string BuildProjectReferences
+        {
+            get => (string)this[nameof(BuildProjectReferences)];
+            set => value = (string)this[nameof(BuildProjectReferences)];
+        }
+
         [ConfigurationProperty(nameof(MSBuildLogger), DefaultValue = " -fl -flp:logfile=", IsRequired = false)]
         public string MSBuildLogger
         {

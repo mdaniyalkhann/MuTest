@@ -13,6 +13,10 @@ namespace MuTest.Core.Common
         string FullyQualifiedName { get; set; }
 
         string BaseAddress { get; set; }
+        
+        string CoverageXmlPath { get; set; }
+
+        bool GenerateXmlCoverage { get; set; }
 
         bool EnableTimeout { get; set; }
 

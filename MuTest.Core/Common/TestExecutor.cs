@@ -35,10 +35,14 @@ namespace MuTest.Core.Common
         public string BaseAddress { get; set; }
 
         public CoverageDS CodeCoverage { get; private set; }
+       
+        public string CoverageXmlPath { get; set; }
+
+        public bool GenerateXmlCoverage { get; set; }
 
         public bool X64TargetPlatform { get; set; }
 
-        public bool KillProcessOnTestFail { get; set; } = false;
+        public bool KillProcessOnTestFail { get; set; }
 
         public bool EnableParallelTestExecution { get; set; } = false;
 
@@ -293,6 +297,12 @@ namespace MuTest.Core.Common
                             }))
                         {
                             CodeCoverage = info.BuildDataSet();
+                            if (GenerateXmlCoverage)
+                            {
+                                CoverageXmlPath = Path.Combine(Path.GetDirectoryName(coverageFile) ?? string.Empty,
+                                    "xml.coveragexml");
+                                CodeCoverage.WriteXml(CoverageXmlPath);
+                            }
                         }
                     }
                 }

@@ -52,7 +52,7 @@ namespace Dashboard.ViewModel
         public virtual ControlViewModel ChkParameterizedAsserts { get; }
 
         public virtual ControlViewModel ChkUseClassFilter { get; }
-        
+
         public virtual ControlViewModel ChkDeepClone { get; }
 
         public virtual ControlViewModel ChkBuildReferences { get; }
@@ -78,6 +78,7 @@ namespace Dashboard.ViewModel
         private readonly IBuildExecutor _testCodeBuild;
         private readonly ICommandPromptOutputLogger _outputLogger;
         private readonly ITestExecutor _testExecutor;
+        private readonly ICoverageGenerator _coverageGenerator;
         private readonly MethodAnalyzer _methodAnalyzer;
         private CommandPromptOutputViewerViewModel _buildLog;
         private string _currentFileName;
@@ -106,6 +107,7 @@ namespace Dashboard.ViewModel
             _outputLogger = new CommandPromptOutputLogger();
             _testExecutor = new TestExecutor(MuTestSettings, source.TestClaz.ClassLibrary);
             _methodAnalyzer = new MethodAnalyzer();
+            _coverageGenerator = new CoverageGenerator();
             InitItemSources();
         }
 
@@ -215,6 +217,7 @@ namespace Dashboard.ViewModel
                 void OutputData(object sender, string args) => log.CommandPromptOutput += args.Encode().PrintWithPreTag();
                 _testExecutor.EnableCustomOptions = true;
                 _testExecutor.EnableLogging = true;
+                _testExecutor.GenerateXmlCoverage = true;
                 _testExecutor.OutputDataReceived += OutputData;
                 _testExecutor.X64TargetPlatform = ChkTargetPlatformX64.IsChecked;
                 _testExecutor.FullyQualifiedName = selectedMethods.Count > Convert.ToInt32(MuTestSettings.UseClassFilterTestsThreshold) ||
@@ -234,6 +237,15 @@ namespace Dashboard.ViewModel
                 var coverageAnalyzer = new CoverageAnalyzer();
                 coverageAnalyzer.FindCoverage(_source, _testExecutor.CodeCoverage);
                 testLog.CommandPromptOutput += coverageAnalyzer.Output;
+
+                if (!string.IsNullOrWhiteSpace(_testExecutor.CoverageXmlPath))
+                {
+                    await _coverageGenerator.Generate(_testExecutor.CoverageXmlPath, Path.GetDirectoryName(_source.ClassProject));
+                    if (!string.IsNullOrWhiteSpace(_coverageGenerator.HtmlCoveragePath))
+                    {
+                        OpenHtmlFile(_coverageGenerator.HtmlCoveragePath);
+                    }
+                }
 
                 var testResult = DocumentManagerService.CreateDocument(nameof(CommandPromptOutputViewer), testLog);
                 testResult.Title = TestsExecutionResult;
@@ -722,7 +734,7 @@ namespace Dashboard.ViewModel
             foreach (var method in methods)
             {
                 var methodName = method.MethodName();
-                var methodAsserts = asserts.Where(x => !string.IsNullOrWhiteSpace(x.Method) && 
+                var methodAsserts = asserts.Where(x => !string.IsNullOrWhiteSpace(x.Method) &&
                                                        (x.Method.Equals(methodName, StringComparison.InvariantCultureIgnoreCase) ||
                                                        x.Method.StartsWith($"{methodName}("))).ToList();
 
@@ -1320,6 +1332,32 @@ namespace Dashboard.ViewModel
                 Trace.TraceError("Unknown Exception Occurred On Exporting data to Html {0}", exp);
                 MessageBoxService.Show(ErrorMessage);
             }
+        }
+
+        private void OpenHtmlFile(string filename)
+        {
+            var runningProcess = Process.GetProcessesByName("chrome");
+            if (runningProcess.Length != 0)
+            {
+                Process.Start("chrome", filename);
+                return;
+            }
+
+            runningProcess = Process.GetProcessesByName("firefox");
+            if (runningProcess.Length != 0)
+            {
+                Process.Start("firefox", filename);
+                return;
+            }
+
+            runningProcess = Process.GetProcessesByName("iexplore");
+            if (runningProcess.Length != 0)
+            {
+                Process.Start("iexplore", filename);
+                return;
+            }
+
+            MessageBoxService.Show("No Browser Found To Open Coverage Report");
         }
     }
 }

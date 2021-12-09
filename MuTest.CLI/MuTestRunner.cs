@@ -146,8 +146,8 @@ namespace MuTest.Console
                     if (_source != null)
                     {
                         var testClaz = targetClass.TestClassPath.GetClass();
-                        var loader = new SemanticsClassDeclarationLoader();
-                        _source.Claz = loader.Load(sourceClass, _options.SourceProjectParameter, className);
+                        //var loader = new SemanticsClassDeclarationLoader();
+                        _source.Claz = new ClassDeclaration(sourceClass.GetCodeFileContent().RootNode().ClassNode(className));
                         _source.ClassLibrary = _options.SourceProjectLibraryParameter;
                         _source.ClassProject = _options.SourceProjectParameter;
                         _source.FilePath = sourceClass;
@@ -161,6 +161,8 @@ namespace MuTest.Console
                             ClassLibrary = _options.TestProjectLibraryParameter,
                             X64TargetPlatform = _options.X64TargetPlatform
                         };
+
+                        _source.DoNetCoreProject = _source.ClassProject.DoNetCoreProject();
                     }
 
                     if (_source == null)

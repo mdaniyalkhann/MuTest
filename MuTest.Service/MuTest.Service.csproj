@@ -91,12 +91,12 @@
       <Version>5.2.7</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers">
-      <Version>3.3.2</Version>
+      <Version>3.3.3</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp">
-      <Version>3.7.0</Version>
+      <Version>4.0.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Owin.Host.HttpListener">
       <Version>4.2.0</Version>

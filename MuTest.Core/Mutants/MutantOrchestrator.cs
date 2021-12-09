@@ -52,7 +52,9 @@ namespace MuTest.Core.Mutants
                 new RelationalOperatorMutator(),
                 new StatementBlockMutator(),
                 new PrefixUnaryMutator(),
-                new PostfixUnaryMutator()
+                new PostfixUnaryMutator(),
+                new MethodCallMutator(),
+                new StringMutator()
             };
 
         private ICollection<Mutant> Mutants { get; set; }
