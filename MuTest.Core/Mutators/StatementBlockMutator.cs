@@ -31,6 +31,11 @@ namespace MuTest.Core.Mutators
             var returnType = method?.ReturnType?.ToString() ?? property?.Type?.ToString();
             var randomValue = returnType?.GetRandomValue();
 
+            if (method != null && method.DescendantNodes<YieldStatementSyntax>().Any())
+            {
+                randomValue = "yield break";
+            }
+
             if (!string.IsNullOrWhiteSpace(returnType) && returnType != "void")
             {
                 if (node.DescendantNodes<ReturnStatementSyntax>().Any() ||
